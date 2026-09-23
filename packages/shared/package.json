@@ -1,0 +1,13 @@
+{
+  "name": "@atur-in/shared",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./pricing": "./src/pricing.js",
+    "./schemas": "./src/schemas.js",
+    "./constants": "./src/constants.js",
+    "./statusMachine": "./src/statusMachine.js"
+  }
+}
