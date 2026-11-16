@@ -1,0 +1,169 @@
+import { useParams, Link } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import { adminApi } from '../../services/api/auth.js';
+import { formatRupiah, formatTanggalWIB } from '../../lib/format.js';
+import { toDisplayRef } from '../../lib/orderRef.js';
+import { ORDER_STATUSES } from '@atur-in/shared';
+import Badge from '../../components/ui/Badge.jsx';
+import Button from '../../components/ui/Button.jsx';
+import Skeleton from '../../components/ui/Skeleton.jsx';
+import { toast } from 'sonner';
+import { ArrowLeft, CheckCircle } from 'lucide-react';
+
+const STATUS_OPTIONS = [
+  { value: ORDER_STATUSES.MENUNGGU_PEMBAYARAN, label: 'Menunggu Pembayaran' },
+  { value: ORDER_STATUSES.DIBAYAR,             label: 'Dibayar' },
+  { value: ORDER_STATUSES.DIVERIFIKASI,        label: 'Diverifikasi' },
+  { value: ORDER_STATUSES.PROSES_SETUP,        label: 'Proses Setup' },
+  { value: ORDER_STATUSES.SELESAI,             label: 'Selesai' },
+  { value: ORDER_STATUSES.KEDALUWARSA,         label: 'Kedaluwarsa' },
+];
+
+const STATUS_BADGE = {
+  menunggu_pembayaran: 'warning',
+  dibayar: 'primary',
+  diverifikasi: 'primary',
+  proses_setup: 'purple',
+  selesai: 'success',
+  kedaluwarsa: 'danger',
+};
+
+export default function OrderDetailPage() {
+  const { id } = useParams();
+  const qc = useQueryClient();
+  const [newStatus, setNewStatus] = useState('');
+  const [catatan, setCatatan] = useState('');
+
+  const { data: order, isLoading } = useQuery({
+    queryKey: ['admin', 'order', id],
+    queryFn: () => adminApi.orderDetail(id),
+  });
+
+  const mutation = useMutation({
+    mutationFn: () => adminApi.updateStatus(id, newStatus, catatan),
+    onSuccess: () => {
+      toast.success('Status berhasil diperbarui.');
+      qc.invalidateQueries(['admin', 'order', id]);
+      qc.invalidateQueries(['admin', 'orders']);
+      qc.invalidateQueries(['admin', 'dashboard']);
+      setNewStatus('');
+      setCatatan('');
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  if (isLoading) return <Skeleton className="h-96 w-full rounded-2xl" />;
+  if (!order) return <p className="text-danger-600">Pesanan tidak ditemukan.</p>;
+
+  return (
+    <div className="space-y-5 max-w-3xl">
+      <div className="flex items-center gap-3">
+        <Link to="/admin/orders" className="p-2 rounded-xl border border-gray-200 hover:bg-gray-50">
+          <ArrowLeft size={18} aria-hidden />
+        </Link>
+        <div>
+          <h1 className="text-xl font-extrabold text-gray-900">{toDisplayRef(order.ref_number)}</h1>
+          <p className="text-sm text-gray-500">{formatTanggalWIB(order.created_at)}</p>
+        </div>
+        <Badge variant={STATUS_BADGE[order.status] ?? 'gray'} className="ml-auto">
+          {STATUS_OPTIONS.find(s => s.value === order.status)?.label ?? order.status}
+        </Badge>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Customer info */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-5">
+          <h2 className="font-bold text-gray-700 mb-3 text-sm uppercase tracking-wide">Info Pelanggan</h2>
+          <dl className="space-y-2 text-sm">
+            {[
+              ['Nama', order.name],
+              ['Email', order.email],
+              ['WhatsApp', `+62 ${order.whatsapp}`],
+              ['Kelompok', order.group_name],
+              ['Jenis Kebutuhan', order.need_type ?? '-'],
+              ['Jumlah Anggota', order.member_count ?? '-'],
+            ].map(([k, v]) => (
+              <div key={k} className="flex justify-between gap-4">
+                <dt className="text-gray-400">{k}</dt>
+                <dd className="font-medium text-gray-800 text-right">{v}</dd>
+              </div>
+            ))}
+          </dl>
+          {order.description && (
+            <div className="mt-3 pt-3 border-t border-gray-100">
+              <p className="text-xs text-gray-400 mb-1">Deskripsi kebutuhan</p>
+              <p className="text-sm text-gray-700 leading-relaxed">{order.description}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Order info */}
+        <div className="bg-white rounded-2xl border border-gray-100 p-5">
+          <h2 className="font-bold text-gray-700 mb-3 text-sm uppercase tracking-wide">Info Pesanan</h2>
+          <dl className="space-y-2 text-sm">
+            {[
+              ['Paket', order.package?.nama ?? order.package_id],
+              ['Total', formatRupiah(order.total)],
+              ['Metode', order.payments?.[0]?.method ?? '-'],
+            ].map(([k, v]) => (
+              <div key={k} className="flex justify-between gap-4">
+                <dt className="text-gray-400">{k}</dt>
+                <dd className="font-medium text-gray-800">{v}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </div>
+
+      {/* Update status */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-5">
+        <h2 className="font-bold text-gray-700 mb-4 text-sm uppercase tracking-wide">Ubah Status</h2>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <select
+            value={newStatus}
+            onChange={(e) => setNewStatus(e.target.value)}
+            className="flex-1 px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+          >
+            <option value="">Pilih status baru...</option>
+            {STATUS_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+          <input
+            type="text"
+            placeholder="Catatan (opsional)"
+            value={catatan}
+            onChange={(e) => setCatatan(e.target.value)}
+            className="flex-1 px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+          />
+          <Button
+            onClick={() => mutation.mutate()}
+            disabled={!newStatus}
+            loading={mutation.isPending}
+          >
+            <CheckCircle size={15} aria-hidden />
+            Simpan
+          </Button>
+        </div>
+      </div>
+
+      {/* Activity log */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-5">
+        <h2 className="font-bold text-gray-700 mb-4 text-sm uppercase tracking-wide">Riwayat Status</h2>
+        <ul className="space-y-3">
+          {[...(order.statusLogs ?? [])].reverse().map((log) => (
+            <li key={log.id} className="flex gap-3 text-sm">
+              <div className="w-2 h-2 bg-primary-400 rounded-full mt-1.5 flex-shrink-0" aria-hidden />
+              <div>
+                <p className="font-medium text-gray-700">{STATUS_OPTIONS.find(s => s.value === log.status)?.label ?? log.status}</p>
+                {log.note && <p className="text-xs text-gray-400">{log.note}</p>}
+                <p className="text-xs text-gray-300">{formatTanggalWIB(log.created_at)} {log.changed_by ? `oleh ${log.changed_by}` : ''}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
