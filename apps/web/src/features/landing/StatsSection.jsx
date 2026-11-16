@@ -39,7 +39,7 @@ function CountUp({ target, suffix, duration = 1800 }) {
 
 export default function StatsSection() {
   return (
-    <section className="py-16 md:py-20 bg-primary-700 px-4 sm:px-6">
+    <section className="py-16 md:py-20 px-4 sm:px-6" style={{ backgroundColor: '#4338ca' }}>
       <div className="max-w-5xl mx-auto text-center">
         <Badge variant="dark" className="mb-5">Divalidasi oleh Data Riset Mahasiswa</Badge>
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-12">
@@ -49,15 +49,15 @@ export default function StatsSection() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {STATS.map((s) => (
             <div key={s.label} className="text-center">
-              <div className="text-5xl md:text-6xl font-extrabold text-success-400 mb-3">
+              <div className="text-5xl md:text-6xl font-extrabold mb-3" style={{ color: '#4ade80' }}>
                 <CountUp target={s.value} suffix={s.suffix} />
               </div>
-              <p className="text-primary-100 text-sm leading-relaxed">{s.label}</p>
+              <p className="text-sm leading-relaxed" style={{ color: '#c7d2fe' }}>{s.label}</p>
             </div>
           ))}
         </div>
 
-        <p className="mt-10 text-xs text-primary-300">{STATS_SOURCE}</p>
+        <p className="mt-10 text-xs" style={{ color: '#a5b4fc' }}>{STATS_SOURCE}</p>
       </div>
     </section>
   );

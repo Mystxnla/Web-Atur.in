@@ -24,7 +24,7 @@ body {
 
 /* Focus visible ring */
 :focus-visible {
-  outline: 2px solid theme(colors.primary.500);
+  outline: 2px solid #6366f1;
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -41,3 +41,70 @@ body {
   background: #d1d5db;
   border-radius: 9999px;
 }
+
+/* ── Manual utility aliases (Tailwind v4 custom token bridge) ── */
+
+/* Primary (indigo) */
+.bg-primary-50  { background-color: #eef2ff; }
+.bg-primary-100 { background-color: #e0e7ff; }
+.bg-primary-200 { background-color: #c7d2fe; }
+.bg-primary-600 { background-color: #4f46e5; }
+.bg-primary-700 { background-color: #4338ca; }
+.text-primary-50  { color: #eef2ff; }
+.text-primary-100 { color: #e0e7ff; }
+.text-primary-300 { color: #a5b4fc; }
+.text-primary-500 { color: #6366f1; }
+.text-primary-600 { color: #4f46e5; }
+.text-primary-700 { color: #4338ca; }
+.border-primary-100 { border-color: #e0e7ff; }
+.border-primary-200 { border-color: #c7d2fe; }
+.border-primary-300 { border-color: #a5b4fc; }
+.border-primary-400 { border-color: #818cf8; }
+.border-primary-500 { border-color: #6366f1; }
+.ring-primary-500   { --tw-ring-color: #6366f1; }
+.hover\:bg-primary-50:hover  { background-color: #eef2ff; }
+.hover\:bg-primary-100:hover { background-color: #e0e7ff; }
+.hover\:bg-primary-700:hover { background-color: #4338ca; }
+.hover\:text-primary-600:hover { color: #4f46e5; }
+.hover\:text-primary-700:hover { color: #4338ca; }
+.hover\:border-primary-300:hover { border-color: #a5b4fc; }
+.focus\:ring-primary-500:focus { --tw-ring-color: #6366f1; }
+
+/* Success (green) */
+.bg-success-50  { background-color: #f0fdf4; }
+.bg-success-100 { background-color: #dcfce7; }
+.bg-success-600 { background-color: #16a34a; }
+.bg-success-700 { background-color: #15803d; }
+.text-success-400 { color: #4ade80; }
+.text-success-500 { color: #22c55e; }
+.text-success-600 { color: #16a34a; }
+.text-success-700 { color: #15803d; }
+.border-success-200 { border-color: #bbf7d0; }
+.hover\:bg-success-700:hover { background-color: #15803d; }
+
+/* Warning / orange */
+.bg-warning-50  { background-color: #fff7ed; }
+.bg-orange-100  { background-color: #ffedd5; }
+.text-warning-600 { color: #ea580c; }
+.text-orange-600  { color: #ea580c; }
+.text-orange-700  { color: #c2410c; }
+.border-warning-200 { border-color: #fed7aa; }
+
+/* Danger */
+.bg-danger-50   { background-color: #fef2f2; }
+.text-danger-500 { color: #ef4444; }
+.text-danger-600 { color: #dc2626; }
+.border-danger-400 { border-color: #f87171; }
+
+/* Purple */
+.bg-purple-100  { background-color: #f3e8ff; }
+.text-purple-600 { color: #9333ea; }
+.text-purple-700 { color: #7e22ce; }
+
+/* Blue */
+.bg-blue-100   { background-color: #dbeafe; }
+.text-blue-700 { color: #1d4ed8; }
+
+/* Teal */
+.bg-teal-100   { background-color: #ccfbf1; }
+.text-teal-600 { color: #0d9488; }
