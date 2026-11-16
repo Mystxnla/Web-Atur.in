@@ -22,7 +22,7 @@ export default function HeroSection() {
           </h1>
 
           <p className="text-lg text-gray-500 leading-relaxed mb-8">
-            Kami merancangkan ruang kerja digital untuk kelompok mahasiswa, kepanitiaan, dan organisasi — supaya koordinasi tugas tidak lagi bergantung pada WhatsApp Group yang penuh drama.
+            Kami merancangkan ruang kerja digital untuk kelompok mahasiswa, kepanitiaan, dan organisasi supaya koordinasi tugas tidak lagi bergantung pada WhatsApp Group yang penuh drama.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 mb-6">
@@ -35,7 +35,7 @@ export default function HeroSection() {
           </div>
 
           <p className="text-sm text-gray-400">
-            Setup beres 24–48 jam <span className="mx-1">•</span> Bimbingan sampai paham
+            Setup beres 24 sampai 48 jam <span className="mx-1">|</span> Bimbingan sampai paham
           </p>
         </div>
 

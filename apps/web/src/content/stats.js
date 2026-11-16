@@ -5,7 +5,7 @@ export const STATS = [
     label: 'Bergantung pada WhatsApp Group untuk koordinasi tugas kuliah',
   },
   {
-    value: 90.9,
+    value: 80,
     suffix: '%',
     label: 'Menilai layanan ini akan membantu koordinasi kelompok mereka',
   },

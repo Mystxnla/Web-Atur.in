@@ -12,7 +12,7 @@ export const FAQ_ITEMS = [
   {
     question: 'Berapa lama proses pengerjaan setup workspace-nya?',
     answer:
-      'Untuk paket Template: kamu langsung dapat akses segera setelah pembayaran. Untuk Setup Custom dan Kepanitiaan: workspace selesai dalam 3–5 hari kerja setelah sesi kick-off. Paket Pro tersedia VIP setup prioritas 24 jam.',
+      'Untuk paket Template: kamu langsung dapat akses segera setelah pembayaran. Untuk Setup Custom dan Kepanitiaan: workspace selesai dalam 3 sampai 5 hari kerja setelah sesi kick-off. Paket Pro tersedia VIP setup prioritas 24 jam.',
   },
   {
     question: 'Apakah ada garansi jika workspace tidak sesuai kebutuhan?',
@@ -22,6 +22,6 @@ export const FAQ_ITEMS = [
   {
     question: 'Apakah ada biaya bulanan setelah bayar?',
     answer:
-      'Tidak ada. Semua paket adalah pembayaran sekali bayar — tidak ada langganan berulang, tidak ada biaya tersembunyi. Kamu hanya perlu berlangganan Notion/Trello sendiri jika membutuhkan fitur premium mereka.',
+      'Tidak ada. Semua paket adalah pembayaran sekali bayar, tidak ada langganan berulang, tidak ada biaya tersembunyi. Kamu hanya perlu berlangganan Notion/Trello sendiri jika membutuhkan fitur premium mereka.',
   },
 ];

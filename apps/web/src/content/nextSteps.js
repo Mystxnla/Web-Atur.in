@@ -1,9 +1,9 @@
 export const NEXT_STEPS = [
   {
-    label: 'Tim Kami Menghubungi Kamu (1×24 Jam)',
+    label: 'Tim Kami Menghubungi Kamu dalam 24 Jam',
     description:
       'Melalui kontak WhatsApp dan email aktif akun kamu. Tim arsitek akan konfirmasi detail pesanan dan jadwal kick-off.',
-    estimate: 'Dalam 1×24 jam setelah pembayaran terverifikasi',
+    estimate: 'Dalam 24 jam setelah pembayaran terverifikasi',
   },
   {
     label: 'Sesi Diskusi Kebutuhan (Kick-off 60 Menit)',
@@ -12,9 +12,9 @@ export const NEXT_STEPS = [
     estimate: 'Dijadwalkan bersama setelah konfirmasi',
   },
   {
-    label: 'Workspace Siap Digunakan (3–5 Hari Kerja)',
+    label: 'Workspace Siap Digunakan (3 sampai 5 Hari Kerja)',
     description:
       'Handover akses arsitektur lengkap, database SOP tim, panduan video walkthrough, dan garansi revisi pendampingan 14 hari penuh.',
-    estimate: '3–5 hari kerja setelah kick-off',
+    estimate: '3 sampai 5 hari kerja setelah kick-off',
   },
 ];
