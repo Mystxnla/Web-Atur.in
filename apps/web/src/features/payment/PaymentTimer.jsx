@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { formatCountdown } from '../../lib/format.js';
 
 export default function PaymentTimer({ expiresAt, onExpired }) {
+  const expiry = expiresAt ?? null;
   const [seconds, setSeconds] = useState(() => {
-    const diff = Math.floor((new Date(expiresAt) - Date.now()) / 1000);
+    if (!expiry) return 15 * 60;
+    const diff = Math.floor((new Date(expiry) - Date.now()) / 1000);
     return Math.max(diff, 0);
   });
 

@@ -51,10 +51,24 @@ export default function PaymentPage() {
     }
   }, [order?.id]);
 
+  // Normalize snake_case dari SQLite ke camelCase
+  function normalizePayment(p) {
+    if (!p) return p;
+    return {
+      ...p,
+      expiresAt:  p.expiresAt  ?? p.expires_at,
+      qrPayload:  p.qrPayload  ?? p.qr_payload,
+      vaNumber:   p.vaNumber   ?? p.va_number,
+      orderId:    p.orderId    ?? p.order_id,
+      metode:     p.metode     ?? p.method,
+    };
+  }
+
   const handleCreateBill = async (method) => {
     setCreatingBill(true);
     try {
-      const p = await createPayment(orderId, method);
+      const raw = await createPayment(orderId, method);
+      const p = normalizePayment(raw);
       setPayment(p);
       setPaymentId(p.id);
       pollPayment(p.id);
@@ -69,7 +83,8 @@ export default function PaymentPage() {
     clearInterval(pollingRef.current);
     pollingRef.current = setInterval(async () => {
       try {
-        const p = await fetchPayment(pid);
+        const raw = await fetchPayment(pid);
+        const p = normalizePayment(raw);
         setPayment(p);
         if (p.status === 'paid') {
           clearInterval(pollingRef.current);
@@ -94,14 +109,20 @@ export default function PaymentPage() {
   };
 
   const handleCheckPayment = async () => {
-    if (!paymentId) return;
+    // Kalau belum ada paymentId, buat dulu baru cek
+    if (!paymentId) {
+      toast.info('Membuat tagihan terlebih dahulu...');
+      await handleCreateBill(paymentMethod);
+      return;
+    }
     try {
-      const p = await fetchPayment(paymentId);
+      const raw = await fetchPayment(paymentId);
+      const p = normalizePayment(raw);
       setPayment(p);
       if (p.status === 'paid') {
         navigate(`/checkout/selesai/${orderId}`);
       } else {
-        toast.info('Pembayaran belum terdeteksi. Coba beberapa saat lagi.');
+        toast.info('Pembayaran belum terdeteksi. Gunakan Demo Panel untuk simulasi bayar, atau coba beberapa saat lagi.');
       }
     } catch {
       toast.error('Gagal memeriksa status pembayaran.');
@@ -151,11 +172,12 @@ export default function PaymentPage() {
           {/* Payment display */}
           {creatingBill ? (
             <Skeleton className="h-48 w-full rounded-2xl" />
-          ) : payment?.metode === PAYMENT_METHODS.QRIS ? (
-            <QrisPanel payment={payment} />
-          ) : payment?.metode === PAYMENT_METHODS.VA ? (
-            <VaPanel payment={payment} />
-          ) : null}
+          ) : (() => {
+            const metode = payment?.metode ?? payment?.method;
+            if (metode === PAYMENT_METHODS.QRIS) return <QrisPanel payment={payment} />;
+            if (metode === PAYMENT_METHODS.VA)   return <VaPanel payment={payment} />;
+            return null;
+          })()}
 
           {/* Guide */}
           <div className="bg-gray-50 rounded-2xl p-4">

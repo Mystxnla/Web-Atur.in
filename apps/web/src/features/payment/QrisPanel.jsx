@@ -3,7 +3,8 @@ import Button from '../../components/ui/Button.jsx';
 import { Download } from 'lucide-react';
 
 export default function QrisPanel({ payment }) {
-  if (!payment?.qrPayload) return null;
+  const qrPayload = payment?.qrPayload ?? payment?.qr_payload;
+  if (!qrPayload) return null;
 
   const handleDownload = () => {
     const svg = document.getElementById('qr-svg');
@@ -23,7 +24,7 @@ export default function QrisPanel({ payment }) {
       <div className="relative">
         <QRCodeSVG
           id="qr-svg"
-          value={payment.qrPayload}
+          value={qrPayload}
           size={200}
           level="M"
           includeMargin

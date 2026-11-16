@@ -2,7 +2,8 @@ import CopyButton from '../../components/ui/CopyButton.jsx';
 import { Building2 } from 'lucide-react';
 
 export default function VaPanel({ payment }) {
-  if (!payment?.vaNumber) return null;
+  const vaNumber = payment?.vaNumber ?? payment?.va_number;
+  if (!vaNumber) return null;
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4">
@@ -14,7 +15,7 @@ export default function VaPanel({ payment }) {
       <div className="bg-gray-50 rounded-xl p-4 flex items-center justify-between">
         <div>
           <p className="text-xs text-gray-400 mb-1">No. Rekening Virtual</p>
-          <p className="text-lg font-bold text-gray-900 font-mono tracking-wider">{payment.vaNumber}</p>
+          <p className="text-lg font-bold text-gray-900 font-mono tracking-wider">{vaNumber}</p>
         </div>
         <CopyButton text={payment.vaNumber} label="Salin" />
       </div>
