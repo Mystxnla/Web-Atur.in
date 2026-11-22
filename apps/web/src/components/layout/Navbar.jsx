@@ -49,10 +49,10 @@ export default function Navbar() {
           <Link
             to="/lacak-pesanan"
             className="hidden md:flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-primary-600"
-            aria-label="Lacak pesanan"
+            aria-label="Coba prototype workspace"
           >
             <User size={16} aria-hidden />
-            <span>Pesanan</span>
+            <span>Coba Workspace</span>
           </Link>
           <a
             href="#harga"
@@ -91,7 +91,7 @@ export default function Navbar() {
             onClick={() => setMenuOpen(false)}
             className="py-2 text-base font-medium text-gray-700"
           >
-            Lacak Pesanan
+            Coba Workspace &amp; Lacak Pesanan
           </Link>
           <a
             href="#harga"

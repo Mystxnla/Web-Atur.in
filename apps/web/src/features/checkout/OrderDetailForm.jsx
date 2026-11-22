@@ -79,8 +79,8 @@ export default function OrderDetailForm() {
       sessionStorage.setItem(`dwa.access.${result.id}`, result.accessToken);
 
       if (result.isTrial) {
-        toast.success('Free Trial 7 Hari berhasil diaktifkan!');
-        navigate(`/checkout/selesai/${result.id}`);
+        toast.success('Ruang kerja Free Trial 7 Hari berhasil dibuat! Membuka ruang kerja...');
+        navigate(`/workspace/${result.id}?welcome=1`);
       } else {
         navigate(`/checkout/pembayaran/${result.id}`);
       }
@@ -94,13 +94,39 @@ export default function OrderDetailForm() {
     }
   };
 
+  const handleQuickFillDemo = () => {
+    const rand = Math.floor(1000 + Math.random() * 9000);
+    setValue('namaLengkap', 'Noya Pratama', { shouldValidate: true });
+    setValue('email', `kelompok.${rand}@kampus.ac.id`, { shouldValidate: true });
+    setValue('noWhatsapp', `8129845${rand}`, { shouldValidate: true });
+    setValue('namaKelompok', 'Kelompok Capstone Sistem Informasi', { shouldValidate: true });
+    setValue('jenisKebutuhan', 'tugas_kelompok', { shouldValidate: true });
+    setValue('jumlahAnggota', '6-15', { shouldValidate: true });
+    setValue(
+      'deskripsiKebutuhan',
+      'Ruang kerja terpusat untuk pembagian tugas per divisi (Riset, Penulisan, Desain) dan meja kerja individu anggota.'
+    );
+    toast.success('Form diisi otomatis dengan data contoh siap pakai');
+  };
+
   return (
     <div className="space-y-5">
-      {/* Step indicator */}
-      <div className="bg-primary-50 border border-primary-100 rounded-2xl p-4">
-        <div className="text-xs text-primary-600 font-semibold mb-1">Langkah 2 dari 4</div>
-        <h1 className="text-xl font-bold text-gray-900">Lengkapi Detail Pesanan</h1>
-        <p className="text-sm text-gray-500 mt-1">Beri tahu kami detail tim dan kebutuhan arsitektur ruang kerja digital Anda.</p>
+      {/* Step indicator + 1-Click Quick Fill for User Testing */}
+      <div className="bg-primary-50 border border-primary-100 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <div className="text-xs text-primary-600 font-semibold mb-1">Langkah 2 dari 4</div>
+          <h1 className="text-xl font-bold text-gray-900">Lengkapi Detail Pesanan</h1>
+          <p className="text-sm text-gray-500 mt-0.5">
+            Isi identitas kelompokmu agar ruang kerja &amp; divisi langsung dibuat otomatis.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={handleQuickFillDemo}
+          className="px-3.5 py-2 rounded-xl bg-white border border-primary-200 text-primary-700 text-xs font-semibold hover:bg-primary-100/50 transition-colors flex-shrink-0 self-start sm:self-center"
+        >
+          Isi Cepat Data Contoh (1-Klik)
+        </button>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>

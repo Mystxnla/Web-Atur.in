@@ -261,45 +261,65 @@ async function seedAdmin(client) {
 export async function seedSampleOrder(client = pool) {
   const ref = 'DWA-2026-0001';
   const { rows } = await client.query('SELECT id FROM orders WHERE ref_number = $1 OR id = $1', [ref]);
-  if (rows.length > 0) return;
+  if (rows.length === 0) {
+    const now = Date.now();
+    const twoDaysAgo = new Date(now - 2 * 24 * 60 * 60 * 1000).toISOString();
+    const onePointNineDaysAgo = new Date(now - 1.9 * 24 * 60 * 60 * 1000).toISOString();
+    const onePointEightDaysAgo = new Date(now - 1.8 * 24 * 60 * 60 * 1000).toISOString();
+    const oneDayAgo = new Date(now - 1 * 24 * 60 * 60 * 1000).toISOString();
+    const subEnds = new Date(now + 28 * 24 * 60 * 60 * 1000).toISOString();
 
-  const now = Date.now();
-  const twoDaysAgo = new Date(now - 2 * 24 * 60 * 60 * 1000).toISOString();
-  const onePointNineDaysAgo = new Date(now - 1.9 * 24 * 60 * 60 * 1000).toISOString();
-  const onePointEightDaysAgo = new Date(now - 1.8 * 24 * 60 * 60 * 1000).toISOString();
-  const oneDayAgo = new Date(now - 1 * 24 * 60 * 60 * 1000).toISOString();
-  const subEnds = new Date(now + 28 * 24 * 60 * 60 * 1000).toISOString();
-
-  await client.query(
-    `INSERT INTO orders (
-      id, ref_number, user_id, package_id, billing_cycle, is_trial, trial_ends_at, subscription_ends_at,
-      recurring_total, name, email, whatsapp, group_name, need_type, member_count, description,
-      doc_url, status, total, payment_method, access_token, created_at, updated_at
-    ) VALUES (
-      $1, $2, NULL, 'custom', 'monthly', FALSE, NULL, $3,
-      25000, 'Budi Pratama', 'budi.pratama@techteam.id', '81298451230',
-      'AI Research Hub & Project Labs', 'tugas_kelompok', '6-15',
-      'Workspace untuk kelompok skripsi 8 orang.', NULL, $4, 25000, 'qris', 'seed-token-001', $5, $6
-    )`,
-    [ref, ref, subEnds, ORDER_STATUSES.PROSES_SETUP, twoDaysAgo, oneDayAgo]
-  );
-
-  const logs = [
-    ['log-seed-1', ref, ORDER_STATUSES.MENUNGGU_PEMBAYARAN, 'Pesanan dibuat.', 'system', twoDaysAgo],
-    ['log-seed-2', ref, ORDER_STATUSES.DIBAYAR, 'Pembayaran QRIS diterima.', 'system', onePointNineDaysAgo],
-    ['log-seed-3', ref, ORDER_STATUSES.DIVERIFIKASI, 'Pembayaran diverifikasi otomatis.', 'system', onePointEightDaysAgo],
-    ['log-seed-4', ref, ORDER_STATUSES.PROSES_SETUP, 'Tim arsitek mulai mengerjakan workspace.', 'admin@atur-in.id', oneDayAgo],
-  ];
-
-  for (const l of logs) {
     await client.query(
-      `INSERT INTO order_logs (id, order_id, status, note, changed_by, created_at)
-       VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (id) DO NOTHING`,
-      l
+      `INSERT INTO orders (
+        id, ref_number, user_id, package_id, billing_cycle, is_trial, trial_ends_at, subscription_ends_at,
+        recurring_total, name, email, whatsapp, group_name, need_type, member_count, description,
+        doc_url, status, total, payment_method, access_token, created_at, updated_at
+      ) VALUES (
+        $1, $2, NULL, 'custom', 'monthly', FALSE, NULL, $3,
+        25000, 'Budi Pratama', 'budi.pratama@techteam.id', '81298451230',
+        'AI Research Hub & Project Labs', 'tugas_kelompok', '6-15',
+        'Workspace untuk kelompok skripsi & riset 8 orang.', NULL, $4, 25000, 'qris', 'seed-token-001', $5, $6
+      )`,
+      [ref, ref, subEnds, ORDER_STATUSES.PROSES_SETUP, twoDaysAgo, oneDayAgo]
     );
+
+    const logs = [
+      ['log-seed-1', ref, ORDER_STATUSES.MENUNGGU_PEMBAYARAN, 'Pesanan dibuat.', 'system', twoDaysAgo],
+      ['log-seed-2', ref, ORDER_STATUSES.DIBAYAR, 'Pembayaran QRIS diterima.', 'system', onePointNineDaysAgo],
+      ['log-seed-3', ref, ORDER_STATUSES.DIVERIFIKASI, 'Pembayaran diverifikasi otomatis.', 'system', onePointEightDaysAgo],
+      ['log-seed-4', ref, ORDER_STATUSES.PROSES_SETUP, 'Tim arsitek mulai mengerjakan workspace.', 'admin@atur-in.id', oneDayAgo],
+    ];
+
+    for (const l of logs) {
+      await client.query(
+        `INSERT INTO order_logs (id, order_id, status, note, changed_by, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (id) DO NOTHING`,
+        l
+      );
+    }
+    console.log(`[db] Sample order seeded in Supabase: #${ref}`);
   }
 
-  console.log(`[db] Sample order seeded in Supabase: #${ref}`);
+  // Seed 2nd prototype scenario for Kepanitiaan & Organisasi
+  const refEvent = 'DWA-2026-0002';
+  const { rows: eventRows } = await client.query('SELECT id FROM orders WHERE ref_number = $1 OR id = $1', [refEvent]);
+  if (eventRows.length === 0) {
+    const nowIso = new Date().toISOString();
+    const subEnds = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+    await client.query(
+      `INSERT INTO orders (
+        id, ref_number, user_id, package_id, billing_cycle, is_trial, trial_ends_at, subscription_ends_at,
+        recurring_total, name, email, whatsapp, group_name, need_type, member_count, description,
+        doc_url, status, total, payment_method, access_token, created_at, updated_at
+      ) VALUES (
+        $1, $2, NULL, 'organisasi', 'monthly', FALSE, NULL, $3,
+        100000, 'Raka Aditya', 'raka.aditya@bem.ac.id', '81298451231',
+        'Panitia Dies Natalis & Festival Kampus 2026', 'kepanitiaan', '30+',
+        'Ruang kerja multi-divisi (BPH, Acara, Humas & Sponsor, Logistik & Pubdok).', NULL, $4, 100000, 'qris', 'seed-token-002', $5, $6
+      ) ON CONFLICT (ref_number) DO NOTHING`,
+      [refEvent, refEvent, subEnds, ORDER_STATUSES.PROSES_SETUP, nowIso, nowIso]
+    );
+  }
 }
 
 export default pool;

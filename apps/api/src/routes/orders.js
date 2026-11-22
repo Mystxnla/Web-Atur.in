@@ -32,14 +32,13 @@ const CreateOrderSchema = z.object({
 async function makeRef() {
   const year = new Date().getFullYear();
   const { rows } = await pool.query('SELECT COUNT(*)::int as c FROM orders');
-  const count = (rows[0]?.c ?? 0) + 1;
-  const candidate = `DWA-${year}-${String(count).padStart(4, '0')}`;
-  // Fallback if collision after delete
-  const { rows: exists } = await pool.query('SELECT id FROM orders WHERE ref_number = $1', [candidate]);
-  if (exists.length > 0) {
-    return `DWA-${year}-${String(count).padStart(4, '0')}-${nanoid(3).toUpperCase()}`;
+  let num = (rows[0]?.c ?? 0) + 1;
+  while (true) {
+    const candidate = `DWA-${year}-${String(num).padStart(4, '0')}`;
+    const { rows: exists } = await pool.query('SELECT id FROM orders WHERE ref_number = $1', [candidate]);
+    if (exists.length === 0) return candidate;
+    num += 1;
   }
-  return candidate;
 }
 
 // ─── Create order ─────────────────────────────────────────────────────────────
@@ -137,6 +136,9 @@ router.post('/', validate(CreateOrderSchema), async (req, res, next) => {
 
     const { rows: createdRows } = await pool.query('SELECT * FROM orders WHERE id = $1', [id]);
     const { rows: logs } = await pool.query('SELECT * FROM order_logs WHERE order_id = $1 ORDER BY created_at ASC', [id]);
+
+    // Auto-provision workspace immediately upon order creation so it is ready right away
+    await ensureWorkspaceForOrder(createdRows[0]);
 
     res.status(201).json(formatOrder(createdRows[0], logs, []));
   } catch (err) { next(err); }

@@ -58,6 +58,9 @@ export default function WorkspacePage() {
   const [activeView, setActiveView] = useState('personal');
   const [activeMemberId, setActiveMemberId] = useState(null);
   const [initializedScope, setInitializedScope] = useState(false);
+  const [showWelcomeBanner, setShowWelcomeBanner] = useState(
+    () => searchParams.get('welcome') === '1'
+  );
 
   const [quickTaskInputs, setQuickTaskInputs] = useState({});
   const [draggedTaskId, setDraggedTaskId] = useState(null);
@@ -103,14 +106,19 @@ export default function WorkspacePage() {
     },
   });
 
-  // Match logged-in account email to member profile and default to their division or personal desk
+  // Match logged-in account email or URL ?member= & ?scope= parameters
   useEffect(() => {
     if (!workspace?.members?.length) return;
     const members = workspace.members;
     const divisions = workspace.divisions ?? [];
 
+    const paramMember = searchParams.get('member');
+    const requestedScope = searchParams.get('scope');
+
     let matched = null;
-    if (authUser?.email) {
+    if (paramMember) {
+      matched = members.find((m) => m.id === paramMember);
+    } else if (authUser?.email) {
       matched = members.find(
         (m) => (m.email || '').toLowerCase() === authUser.email.toLowerCase()
       );
@@ -125,21 +133,21 @@ export default function WorkspacePage() {
       setNewMemberDivision(divisions[0].id);
     }
 
-    if (!initializedScope) {
-      const requestedScope = searchParams.get('scope');
+    if (!initializedScope || paramMember || requestedScope) {
       if (requestedScope === 'personal') {
         setActiveView('personal');
+      } else if (requestedScope === 'org') {
+        setActiveView('org');
       } else if (requestedScope && divisions.some((d) => d.id === requestedScope)) {
         setActiveView(requestedScope);
-      } else if (matched?.divisionId) {
-        // When a member logs in with their email, take them straight to their assigned division!
+      } else if (matched?.divisionId && !searchParams.get('welcome')) {
         setActiveView(matched.divisionId);
       } else {
         setActiveView('org');
       }
       setInitializedScope(true);
     }
-  }, [workspace?.id, authUser?.email]);
+  }, [workspace?.id, authUser?.email, searchParams.get('member'), searchParams.get('scope')]);
 
   const updateWorkspaceOptimistic = (patch, debounceMs = 0) => {
     qc.setQueryData(['workspace', orderId], (old) => (old ? { ...old, ...patch } : old));
@@ -1003,7 +1011,115 @@ export default function WorkspacePage() {
         </header>
 
         {/* Main Workspace Canvas */}
-        <main className="flex-1 max-w-[1360px] w-full mx-auto px-6 py-8">
+        <main className="flex-1 max-w-[1360px] w-full mx-auto px-6 py-6">
+          {/* Welcome Banner after Instant Checkout (Free Trial 7 Hari / Template Rp 10.000) */}
+          {showWelcomeBanner && (
+            <div className="mb-6 p-4 rounded-xl bg-primary-50 border border-primary-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-success-500" aria-hidden />
+                  <span className="text-sm font-semibold text-gray-900">
+                    Ruang kerja {workspace.title} berhasil dibuat dan langsung aktif
+                  </span>
+                </div>
+                <p className="text-xs text-gray-600">
+                  Paket <strong>{order?.package?.nama ?? 'Workspace'}</strong> ({displayRef}) sudah siap dengan {divisions.length} divisi, papan tugas Kanban, dan meja kerja individu.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <Link
+                  to={`/checkout/selesai/${order?.id ?? orderId}`}
+                  className="px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-xs font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  Lihat bukti invoice
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setShowWelcomeBanner(false)}
+                  className="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg"
+                  aria-label="Tutup banner"
+                >
+                  <X size={15} strokeWidth={1.5} />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* 1-Click User Testing Persona & Scope Switcher Bar */}
+          <div className="mb-6 p-3 rounded-xl bg-gray-50 border border-gray-200/80 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs font-medium text-gray-500 mr-1">
+                Simulasi lihat sebagai:
+              </span>
+              {members.map((m) => {
+                const isSelected = m.id === activeMember?.id;
+                const mDiv = divisions.find((d) => d.id === m.divisionId);
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => {
+                      setActiveMemberId(m.id);
+                      if (activeView.startsWith('div-') && m.divisionId) {
+                        setActiveView(m.divisionId);
+                      }
+                    }}
+                    className={cn(
+                      'px-2.5 py-1 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5',
+                      isSelected
+                        ? 'bg-primary-600 text-white'
+                        : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100'
+                    )}
+                  >
+                    <span>{m.name}</span>
+                    <span className={cn('text-[11px]', isSelected ? 'text-primary-100' : 'text-gray-400')}>
+                      ({m.isOwner ? 'Ketua' : mDiv?.name ?? m.role})
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <button
+                type="button"
+                onClick={() => setActiveView('org')}
+                className={cn(
+                  'px-2.5 py-1 rounded-lg text-xs font-medium transition-colors',
+                  activeView === 'org'
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-100'
+                )}
+              >
+                1 Organisasi
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveView(activeMember?.divisionId ?? divisions[0]?.id ?? 'org')}
+                className={cn(
+                  'px-2.5 py-1 rounded-lg text-xs font-medium transition-colors',
+                  activeDivision?.id === activeMember?.divisionId
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-100'
+                )}
+              >
+                Divisi {activeMemberDivision?.name}
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveView('personal')}
+                className={cn(
+                  'px-2.5 py-1 rounded-lg text-xs font-medium transition-colors',
+                  activeView === 'personal'
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-100'
+                )}
+              >
+                Meja kerja {activeMember?.name?.split(' ')[0]}
+              </button>
+            </div>
+          </div>
+
           {/* Context Header based on current scope */}
           <div className="mb-8 flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-6 border-b border-gray-200">
             <div className="space-y-1.5 flex-1">

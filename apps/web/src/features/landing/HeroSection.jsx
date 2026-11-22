@@ -29,8 +29,8 @@ export default function HeroSection() {
             <Button size="lg" onClick={() => document.getElementById('harga')?.scrollIntoView({ behavior: 'smooth' })}>
               Mulai Setup Workspace
             </Button>
-            <Button size="lg" variant="outline" onClick={() => document.getElementById('cara-kerja')?.scrollIntoView({ behavior: 'smooth' })}>
-              Lihat Cara Kerja
+            <Button size="lg" variant="outline" onClick={() => navigate('/lacak-pesanan')}>
+              Coba Prototype Workspace
             </Button>
           </div>
 
