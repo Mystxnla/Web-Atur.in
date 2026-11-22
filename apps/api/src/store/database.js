@@ -206,6 +206,7 @@ export async function initDatabase() {
         title           TEXT NOT NULL,
         icon            TEXT NOT NULL DEFAULT '🚀',
         cover_gradient  TEXT NOT NULL DEFAULT 'from-indigo-600 via-primary-600 to-purple-600',
+        divisions_json  JSONB NOT NULL DEFAULT '[]'::jsonb,
         pages_json      JSONB NOT NULL DEFAULT '[]'::jsonb,
         tasks_json      JSONB NOT NULL DEFAULT '[]'::jsonb,
         members_json    JSONB NOT NULL DEFAULT '[]'::jsonb,
@@ -215,7 +216,7 @@ export async function initDatabase() {
       );
     `);
 
-    // Pastikan kolom baru tetap ada jika tabel orders sudah pernah dibuat sebelumnya
+    // Pastikan kolom baru tetap ada jika tabel orders/workspaces sudah pernah dibuat sebelumnya
     await client.query(`
       ALTER TABLE orders ADD COLUMN IF NOT EXISTS billing_cycle TEXT NOT NULL DEFAULT 'monthly';
       ALTER TABLE orders ADD COLUMN IF NOT EXISTS is_trial BOOLEAN NOT NULL DEFAULT FALSE;
@@ -225,6 +226,7 @@ export async function initDatabase() {
       ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_method TEXT DEFAULT 'qris';
       ALTER TABLE orders ADD COLUMN IF NOT EXISTS access_token TEXT;
       ALTER TABLE payments ADD COLUMN IF NOT EXISTS amount INTEGER;
+      ALTER TABLE workspaces ADD COLUMN IF NOT EXISTS divisions_json JSONB NOT NULL DEFAULT '[]'::jsonb;
     `);
 
     await seedAdmin(client);

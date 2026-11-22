@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { nanoid } from 'nanoid';
 import { z } from 'zod';
 import pool, { formatOrder } from '../store/database.js';
+import { ensureWorkspaceForOrder } from './workspaces.js';
 import { requireAuth } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import {
@@ -165,18 +166,71 @@ router.get('/:id', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-// ─── User: lihat pesanan saya ────────────────────────────────────────────────
+// ─── User: lihat pesanan & workspace saya (sebagai Pemesan ATAU Anggota Divisi) ─
 router.get('/', requireAuth, async (req, res, next) => {
   try {
     const isAdmin = ['admin', 'superadmin'].includes(req.user.role);
-    const { rows } = isAdmin
-      ? await pool.query('SELECT * FROM orders ORDER BY created_at DESC')
-      : await pool.query(
-          'SELECT * FROM orders WHERE user_id = $1 OR LOWER(email) = LOWER($2) ORDER BY created_at DESC',
-          [req.user.id, req.user.email]
-        );
+    if (isAdmin) {
+      const { rows } = await pool.query('SELECT * FROM orders ORDER BY created_at DESC');
+      return res.json(rows.map((o) => formatOrder(o)));
+    }
 
-    res.json(rows.map((o) => formatOrder(o)));
+    const userEmail = (req.user.email || '').toLowerCase();
+
+    // Ensure seed order #DWA-2026-0001 has its workspace initialized so demo members (citra@kampus.ac.id, andi@kampus.ac.id) work out of the box
+    const { rows: seedOrderRows } = await pool.query("SELECT * FROM orders WHERE ref_number = 'DWA-2026-0001' LIMIT 1");
+    if (seedOrderRows[0]) {
+      await ensureWorkspaceForOrder(seedOrderRows[0]);
+    }
+
+    // Ambil semua order di mana user adalah pembuat ATAU email-nya terdaftar di workspaces.members_json
+    const { rows } = await pool.query(
+      `SELECT o.*, w.members_json, w.divisions_json
+       FROM orders o
+       LEFT JOIN workspaces w ON w.order_id = o.id
+       WHERE o.user_id = $1
+          OR LOWER(o.email) = $2
+          OR EXISTS (
+            SELECT 1
+            FROM jsonb_array_elements(COALESCE(w.members_json, '[]'::jsonb)) AS m
+            WHERE LOWER(m->>'email') = $2
+          )
+       ORDER BY o.created_at DESC`,
+      [req.user.id, userEmail]
+    );
+
+    const results = rows.map((row) => {
+      const base = formatOrder(row);
+      const members = Array.isArray(row.members_json) ? row.members_json : [];
+      const divisions = Array.isArray(row.divisions_json) ? row.divisions_json : [];
+      const myMember = members.find((m) => (m.email || '').toLowerCase() === userEmail);
+      const myDivision = divisions.find((d) => d.id === myMember?.divisionId) ?? divisions[0];
+
+      return {
+        ...base,
+        myMemberProfile: myMember
+          ? {
+              id: myMember.id,
+              name: myMember.name,
+              email: myMember.email,
+              role: myMember.role,
+              divisionId: myMember.divisionId ?? myDivision?.id ?? 'div-inti',
+              divisionName: myDivision?.name ?? 'Koordinasi & Inti',
+              isOwner: Boolean(myMember.isOwner || row.email?.toLowerCase() === userEmail),
+            }
+          : {
+              id: 'mem-owner',
+              name: row.name,
+              email: row.email,
+              role: 'Ketua Kelompok / PIC',
+              divisionId: divisions[0]?.id ?? 'div-inti',
+              divisionName: divisions[0]?.name ?? 'Koordinasi & Inti',
+              isOwner: true,
+            },
+      };
+    });
+
+    res.json(results);
   } catch (err) { next(err); }
 });
 

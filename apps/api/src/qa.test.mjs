@@ -117,14 +117,27 @@ async function runQaSuite() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         title: 'QA Automation Squad Updated',
-        icon: '⚡',
+        members: [
+          ...wsData.members,
+          {
+            id: 'mem-invited-qa',
+            name: 'Anggota Riset Baru',
+            email: 'invited.member@kampus.ac.id',
+            role: 'Analis Literatur',
+            divisionId: 'div-riset',
+            isOwner: false,
+            personalNotes: 'Catatan riset pribadi',
+            personalChecklist: [],
+          },
+        ],
       }),
     });
     assert.equal(patchWsRes.status, 200);
     const patchedWs = await patchWsRes.json();
     assert.equal(patchedWs.title, 'QA Automation Squad Updated');
-    assert.equal(patchedWs.icon, '⚡');
-    console.log('  ✓ Notion-style Workspace auto-provisioning & persistence in Supabase passed');
+    assert.ok(Array.isArray(patchedWs.divisions) && patchedWs.divisions.length >= 3, 'Workspace must have divisions');
+    assert.ok(patchedWs.members.some(m => m.email === 'invited.member@kampus.ac.id' && m.divisionId === 'div-riset'));
+    console.log('  ✓ 3-tier Workspace (Organisasi, Divisi, & Member Email Access) persistence passed');
 
     // Cleanup test order
     await pool.query('DELETE FROM orders WHERE id = $1', [createdOrder.id]);
