@@ -187,7 +187,7 @@ export default function OrderStatusPage() {
       {/* Open Interactive Workspace CTA */}
       <Link
         to={`/workspace/${order.id}`}
-        className="flex items-center justify-center gap-2 w-full h-11 bg-[#1f1b16] text-white font-medium rounded-xl text-sm hover:bg-[#332d25] transition-colors"
+        className="flex items-center justify-center gap-2 w-full h-11 bg-primary-600 text-white font-semibold rounded-xl text-sm hover:bg-primary-700 transition-colors"
       >
         <FolderKanban size={16} strokeWidth={1.5} aria-hidden />
         Buka ruang kerja ({customer?.namaKelompok ?? order.group_name ?? displayRef})

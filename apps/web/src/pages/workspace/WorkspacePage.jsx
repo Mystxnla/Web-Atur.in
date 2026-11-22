@@ -8,6 +8,7 @@ import {
 } from '../../services/api/index.js';
 import { toDisplayRef } from '../../lib/orderRef.js';
 import Skeleton from '../../components/ui/Skeleton.jsx';
+import Button from '../../components/ui/Button.jsx';
 import { toast } from 'sonner';
 import { cn } from '../../lib/cn.js';
 import {
@@ -28,10 +29,10 @@ import {
 } from 'lucide-react';
 
 const KANBAN_COLUMNS = [
-  { id: 'todo', label: 'Rencana', dot: 'bg-[#7b7266]', next: 'in_progress', nextLabel: 'Kerjakan' },
-  { id: 'in_progress', label: 'Dikerjakan', dot: 'bg-[#4338ca]', next: 'review', nextLabel: 'Review' },
-  { id: 'review', label: 'Revisi & review', dot: 'bg-[#d97706]', next: 'done', nextLabel: 'Selesai' },
-  { id: 'done', label: 'Selesai', dot: 'bg-[#16a34a]', next: null, nextLabel: null },
+  { id: 'todo', label: 'Rencana', dot: 'bg-gray-400', next: 'in_progress', nextLabel: 'Kerjakan' },
+  { id: 'in_progress', label: 'Dikerjakan', dot: 'bg-primary-600', next: 'review', nextLabel: 'Review' },
+  { id: 'review', label: 'Revisi & review', dot: 'bg-warning-500', next: 'done', nextLabel: 'Selesai' },
+  { id: 'done', label: 'Selesai', dot: 'bg-success-600', next: null, nextLabel: null },
 ];
 
 export default function WorkspacePage() {
@@ -74,7 +75,6 @@ export default function WorkspacePage() {
     },
   });
 
-  // Optimistic update helper so UI feels instant without waiting for network
   const updateWorkspaceOptimistic = (patch, debounceMs = 0) => {
     qc.setQueryData(['workspace', orderId], (old) => (old ? { ...old, ...patch } : old));
     clearTimeout(saveTimerRef.current);
@@ -89,8 +89,8 @@ export default function WorkspacePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#fdfbf7] flex">
-        <div className="w-60 border-r border-[#1f1b16]/8 bg-[#f7f4ee] p-4 hidden md:block space-y-3">
+      <div className="min-h-screen bg-white flex">
+        <div className="w-60 border-r border-gray-200 bg-gray-50 p-4 hidden md:block space-y-3">
           <Skeleton className="h-8 w-full" />
           <Skeleton className="h-6 w-3/4" />
           <Skeleton className="h-6 w-5/6" />
@@ -105,9 +105,9 @@ export default function WorkspacePage() {
 
   if (error || !workspace) {
     return (
-      <div className="min-h-screen bg-[#f7f4ee] flex flex-col items-center justify-center p-6 text-center space-y-3">
-        <p className="text-[#dc2626] text-sm font-medium">Ruang kerja tidak ditemukan</p>
-        <Link to="/lacak-pesanan" className="text-xs text-[#4338ca] font-medium hover:underline">
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6 text-center space-y-3">
+        <p className="text-danger-600 text-sm font-medium">Ruang kerja tidak ditemukan</p>
+        <Link to="/lacak-pesanan" className="text-xs text-primary-600 font-medium hover:underline">
           Kembali ke halaman masuk
         </Link>
       </div>
@@ -124,7 +124,7 @@ export default function WorkspacePage() {
   const activePage = pages.find((p) => p.id === activeView);
   const doneCount = tasks.filter((t) => t.status === 'done').length;
 
-  // ── Kanban Handlers (1-click advance, drag-and-drop, and press-Enter quick add) ──
+  // ── Kanban Handlers ──
   const handleQuickAddTask = (colId) => {
     const title = (quickTaskInputs[colId] ?? '').trim();
     if (!title) return;
@@ -167,7 +167,7 @@ export default function WorkspacePage() {
     updateWorkspaceOptimistic({ tasks: nextTasks });
   };
 
-  // ── Page & Document Canvas Handlers (Auto-saving as you type) ──
+  // ── Document Canvas Handlers ──
   const handleAddPage = () => {
     const newId = `page-${Date.now()}`;
     const newPage = {
@@ -240,7 +240,7 @@ export default function WorkspacePage() {
     updateWorkspaceOptimistic({ pages: nextPages });
   };
 
-  // ── Team & Resource Links Handlers ──
+  // ── Team & Links Handlers ──
   const handleAddMember = (e) => {
     e.preventDefault();
     if (!newMemberName.trim()) return;
@@ -285,21 +285,21 @@ export default function WorkspacePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fdfbf7] text-[#1f1b16] flex">
-      {/* Quiet Warm-Paper Sidebar (248px, 4px grid rhythm, 16px 1.5-stroke icons) */}
+    <div className="min-h-screen bg-white text-gray-900 flex">
+      {/* Unified Atur.in Brand Sidebar (bg-gray-50, border-gray-200, primary-50/primary-700 active state) */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 w-[248px] bg-[#f7f4ee] border-r border-[#1f1b16]/8 flex flex-col transition-transform duration-150 select-none',
+          'fixed inset-y-0 left-0 z-50 w-[248px] bg-gray-50 border-r border-gray-200 flex flex-col transition-transform duration-150 select-none',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full',
           'md:translate-x-0 md:static md:flex'
         )}
       >
         {/* Workspace Identity & Signature Live Reference */}
-        <div className="h-14 px-4 border-b border-[#1f1b16]/8 flex items-center justify-between gap-2">
+        <div className="h-14 px-4 border-b border-gray-200 flex items-center justify-between gap-2">
           <div className="min-w-0">
-            <div className="text-sm font-medium text-[#1f1b16] truncate">{workspace.title}</div>
-            <div className="flex items-center gap-1.5 text-xs text-[#7b7266] font-mono tabular-nums">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#16a34a]" aria-hidden />
+            <div className="text-sm font-semibold text-gray-900 truncate">{workspace.title}</div>
+            <div className="flex items-center gap-1.5 text-xs text-gray-500 font-mono tabular-nums">
+              <span className="w-1.5 h-1.5 rounded-full bg-success-500" aria-hidden />
               <span>{displayRef}</span>
               <span>·</span>
               <span>{doneCount}/{tasks.length}</span>
@@ -308,7 +308,7 @@ export default function WorkspacePage() {
           <button
             type="button"
             onClick={() => setSidebarOpen(false)}
-            className="md:hidden p-1 text-[#7b7266] hover:text-[#1f1b16] rounded-md"
+            className="md:hidden p-1 text-gray-400 hover:text-gray-700 rounded-md"
             aria-label="Tutup navigasi"
           >
             <X size={16} strokeWidth={1.5} />
@@ -319,7 +319,7 @@ export default function WorkspacePage() {
         <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
           {/* Group 1: Ruang kerja utama */}
           <div>
-            <div className="px-2 mb-2 text-xs font-medium text-[#7b7266]">
+            <div className="px-2 mb-2 text-xs font-medium text-gray-400">
               Ruang kerja
             </div>
             <div className="space-y-1">
@@ -329,15 +329,19 @@ export default function WorkspacePage() {
                 className={cn(
                   'w-full h-9 px-2.5 rounded-lg text-sm flex items-center justify-between transition-colors',
                   activeView === 'kanban'
-                    ? 'bg-[#efe9df] text-[#1f1b16] font-medium'
-                    : 'text-[#5e554a] hover:bg-[#efe9df]/50 hover:text-[#1f1b16]'
+                    ? 'bg-primary-50 text-primary-700 font-medium'
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                 )}
               >
                 <span className="flex items-center gap-2.5">
-                  <FolderKanban size={16} strokeWidth={1.5} className="text-[#7b7266] flex-shrink-0" />
+                  <FolderKanban
+                    size={16}
+                    strokeWidth={1.5}
+                    className={activeView === 'kanban' ? 'text-primary-600' : 'text-gray-400'}
+                  />
                   <span>Papan tugas</span>
                 </span>
-                <span className="text-xs font-mono text-[#7b7266] tabular-nums">
+                <span className="text-xs font-mono text-gray-400 tabular-nums">
                   {tasks.length}
                 </span>
               </button>
@@ -348,15 +352,19 @@ export default function WorkspacePage() {
                 className={cn(
                   'w-full h-9 px-2.5 rounded-lg text-sm flex items-center justify-between transition-colors',
                   activeView === 'resources'
-                    ? 'bg-[#efe9df] text-[#1f1b16] font-medium'
-                    : 'text-[#5e554a] hover:bg-[#efe9df]/50 hover:text-[#1f1b16]'
+                    ? 'bg-primary-50 text-primary-700 font-medium'
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                 )}
               >
                 <span className="flex items-center gap-2.5">
-                  <Users size={16} strokeWidth={1.5} className="text-[#7b7266] flex-shrink-0" />
+                  <Users
+                    size={16}
+                    strokeWidth={1.5}
+                    className={activeView === 'resources' ? 'text-primary-600' : 'text-gray-400'}
+                  />
                   <span>Tim &amp; tautan</span>
                 </span>
-                <span className="text-xs font-mono text-[#7b7266] tabular-nums">
+                <span className="text-xs font-mono text-gray-400 tabular-nums">
                   {members.length}
                 </span>
               </button>
@@ -366,13 +374,13 @@ export default function WorkspacePage() {
           {/* Group 2: Kertas kerja & dokumen */}
           <div>
             <div className="px-2 mb-2 flex items-center justify-between">
-              <span className="text-xs font-medium text-[#7b7266]">
+              <span className="text-xs font-medium text-gray-400">
                 Kertas kerja
               </span>
               <button
                 type="button"
                 onClick={handleAddPage}
-                className="p-1 rounded-md text-[#7b7266] hover:text-[#1f1b16] hover:bg-[#efe9df]"
+                className="p-1 rounded-md text-gray-400 hover:text-primary-600 hover:bg-gray-100"
                 title="Tambah halaman kertas kerja"
               >
                 <Plus size={14} strokeWidth={1.5} />
@@ -387,18 +395,22 @@ export default function WorkspacePage() {
                   className={cn(
                     'w-full h-9 px-2.5 rounded-lg text-sm flex items-center gap-2.5 transition-colors text-left',
                     activeView === p.id
-                      ? 'bg-[#efe9df] text-[#1f1b16] font-medium'
-                      : 'text-[#5e554a] hover:bg-[#efe9df]/50 hover:text-[#1f1b16]'
+                      ? 'bg-primary-50 text-primary-700 font-medium'
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                   )}
                 >
-                  <FileText size={16} strokeWidth={1.5} className="text-[#7b7266] flex-shrink-0" />
+                  <FileText
+                    size={16}
+                    strokeWidth={1.5}
+                    className={activeView === p.id ? 'text-primary-600 flex-shrink-0' : 'text-gray-400 flex-shrink-0'}
+                  />
                   <span className="truncate flex-1">{p.title.replace(/^[^\w\s]+\s*/, '')}</span>
                 </button>
               ))}
               <button
                 type="button"
                 onClick={handleAddPage}
-                className="w-full h-8 px-2.5 rounded-lg text-xs text-[#7b7266] hover:text-[#1f1b16] hover:bg-[#efe9df]/50 flex items-center gap-2.5 transition-colors"
+                className="w-full h-8 px-2.5 rounded-lg text-xs text-gray-400 hover:text-primary-600 hover:bg-gray-100 flex items-center gap-2.5 transition-colors"
               >
                 <Plus size={14} strokeWidth={1.5} />
                 <span>Halaman baru</span>
@@ -408,34 +420,34 @@ export default function WorkspacePage() {
         </div>
 
         {/* Trial strip & Bottom Actions */}
-        <div className="p-3 border-t border-[#1f1b16]/8 space-y-2">
+        <div className="p-3 border-t border-gray-200 space-y-2">
           {order?.isTrial && (
-            <div className="p-2.5 rounded-lg bg-[#efe9df] border border-[#1f1b16]/8 space-y-2">
+            <div className="p-2.5 rounded-xl bg-primary-50 border border-primary-100 space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-medium text-[#1f1b16]">Masa uji coba 7 hari</span>
-                <span className="text-[#7b7266] font-mono">Rp 0</span>
+                <span className="font-medium text-primary-700">Masa uji coba 7 hari</span>
+                <span className="text-primary-600 font-mono">Rp 0</span>
               </div>
-              <button
-                type="button"
+              <Button
+                size="sm"
+                fullWidth
                 onClick={() => navigate(`/checkout/pembayaran/${order.id}`)}
-                className="w-full h-8 px-2.5 rounded-md bg-[#1f1b16] text-white text-xs font-medium hover:bg-[#332d25] transition-colors"
               >
                 Aktifkan paket penuh
-              </button>
+              </Button>
             </div>
           )}
 
           <div className="space-y-0.5 text-xs">
             <Link
               to={`/lacak-pesanan/${order?.id ?? orderId}`}
-              className="h-8 px-2.5 rounded-md text-[#5e554a] hover:text-[#1f1b16] hover:bg-[#efe9df]/60 flex items-center gap-2 transition-colors"
+              className="h-8 px-2.5 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 flex items-center gap-2 transition-colors"
             >
               <FileText size={14} strokeWidth={1.5} />
               <span>Detail &amp; invoice pesanan</span>
             </Link>
             <Link
               to="/lacak-pesanan"
-              className="h-8 px-2.5 rounded-md text-[#7b7266] hover:text-[#1f1b16] hover:bg-[#efe9df]/60 flex items-center gap-2 transition-colors"
+              className="h-8 px-2.5 rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-100 flex items-center gap-2 transition-colors"
             >
               <ArrowLeft size={14} strokeWidth={1.5} />
               <span>Pindah ruang kerja</span>
@@ -456,19 +468,19 @@ export default function WorkspacePage() {
       {/* Main Content Shell */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Quiet 56px Top Bar */}
-        <header className="h-14 bg-[#fdfbf7]/90 backdrop-blur border-b border-[#1f1b16]/8 px-6 flex items-center justify-between sticky top-0 z-30">
+        <header className="h-14 bg-white/90 backdrop-blur border-b border-gray-200 px-6 flex items-center justify-between sticky top-0 z-30">
           <div className="flex items-center gap-2 min-w-0 text-sm">
             <button
               type="button"
               onClick={() => setSidebarOpen(true)}
-              className="md:hidden p-1.5 -ml-1.5 text-[#5e554a] hover:bg-[#efe9df] rounded-lg"
+              className="md:hidden p-1.5 -ml-1.5 text-gray-600 hover:bg-gray-100 rounded-lg"
               aria-label="Buka sidebar"
             >
               <Menu size={18} strokeWidth={1.5} />
             </button>
-            <span className="text-[#7b7266] truncate hidden sm:inline">{workspace.title}</span>
-            <ChevronRight size={14} strokeWidth={1.5} className="text-[#7b7266]/60 hidden sm:inline" />
-            <span className="font-medium text-[#1f1b16] truncate">
+            <span className="text-gray-400 truncate hidden sm:inline">{workspace.title}</span>
+            <ChevronRight size={14} strokeWidth={1.5} className="text-gray-300 hidden sm:inline" />
+            <span className="font-medium text-gray-900 truncate">
               {activeView === 'kanban'
                 ? 'Papan tugas'
                 : activeView === 'resources'
@@ -478,14 +490,14 @@ export default function WorkspacePage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-xs text-[#7b7266] tabular-nums">
+            <span className="text-xs text-gray-400 tabular-nums">
               {saveMutation.isPending ? 'Menyimpan...' : 'Tersimpan'}
             </span>
             <button
               type="button"
               onClick={() => resetMutation.mutate()}
               disabled={resetMutation.isPending}
-              className="h-8 px-2.5 rounded-lg border border-[#1f1b16]/10 bg-white text-xs text-[#5e554a] hover:text-[#1f1b16] hover:bg-[#f7f4ee] flex items-center gap-1.5 transition-colors"
+              className="h-8 px-2.5 rounded-lg border border-gray-200 bg-white text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-50 flex items-center gap-1.5 transition-colors"
               title="Kembalikan isi contoh awal"
             >
               <RotateCcw size={13} strokeWidth={1.5} />
@@ -497,7 +509,7 @@ export default function WorkspacePage() {
         {/* Main Workspace Canvas */}
         <main className="flex-1 max-w-[1360px] w-full mx-auto px-6 py-8">
           {/* Editable Workspace Title & Quick Links Bar */}
-          <div className="mb-8 flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-6 border-b border-[#1f1b16]/8">
+          <div className="mb-8 flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-6 border-b border-gray-200">
             <div className="space-y-1 flex-1">
               <input
                 type="text"
@@ -510,14 +522,14 @@ export default function WorkspacePage() {
                   }
                 }}
                 aria-label="Nama ruang kerja"
-                className="text-2xl sm:text-3xl font-medium tracking-tight text-[#1f1b16] bg-transparent focus:outline-none focus:bg-[#f7f4ee] rounded-md px-1.5 -ml-1.5 w-full max-w-xl"
+                className="text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900 bg-transparent focus:outline-none focus:bg-gray-50 rounded-md px-1.5 -ml-1.5 w-full max-w-xl"
               />
-              <p className="text-sm text-[#5e554a]">
-                {order?.package?.nama ?? 'Setup Custom'} · <span className="tabular-nums font-medium text-[#1f1b16]">{doneCount} dari {tasks.length} tugas selesai</span>
+              <p className="text-sm text-gray-500">
+                {order?.package?.nama ?? 'Setup Custom'} · <span className="tabular-nums font-medium text-primary-700">{doneCount} dari {tasks.length} tugas selesai</span>
               </p>
             </div>
 
-            {/* Quick Resource Pills right in the header so users don't have to hunt for Google Drive/Meet */}
+            {/* Quick Resource Pills */}
             <div className="flex items-center gap-2 flex-wrap">
               {links.slice(0, 3).map((lnk) => (
                 <a
@@ -525,17 +537,17 @@ export default function WorkspacePage() {
                   href={lnk.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="h-8 px-3 rounded-lg border border-[#1f1b16]/10 bg-white hover:bg-[#f7f4ee] text-xs font-medium text-[#1f1b16] flex items-center gap-1.5 transition-colors"
+                  className="h-8 px-3 rounded-lg border border-gray-200 bg-white hover:bg-primary-50 hover:border-primary-200 text-xs font-medium text-gray-700 hover:text-primary-700 flex items-center gap-1.5 transition-colors"
                 >
-                  <Link2 size={13} strokeWidth={1.5} className="text-[#7b7266]" />
+                  <Link2 size={13} strokeWidth={1.5} className="text-gray-400" />
                   <span>{lnk.title}</span>
-                  <ExternalLink size={12} strokeWidth={1.5} className="text-[#7b7266]" />
+                  <ExternalLink size={12} strokeWidth={1.5} className="text-gray-400" />
                 </a>
               ))}
             </div>
           </div>
 
-          {/* ── VIEW 1: SPRINT KANBAN BOARD (Drag & Drop + 1-Click Advance + Enter to Add) ── */}
+          {/* ── VIEW 1: SPRINT KANBAN BOARD ── */}
           {activeView === 'kanban' && (
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 items-start">
@@ -560,19 +572,19 @@ export default function WorkspacePage() {
                         }
                       }}
                       className={cn(
-                        'rounded-xl bg-[#f7f4ee] border p-3 space-y-2.5 transition-colors',
-                        isDragTarget ? 'border-[#4338ca] bg-[#eef2ff]/40' : 'border-[#1f1b16]/8'
+                        'rounded-xl bg-gray-50 border p-3 space-y-2.5 transition-colors',
+                        isDragTarget ? 'border-primary-500 bg-primary-50/50' : 'border-gray-200/80'
                       )}
                     >
                       {/* Column Header */}
                       <div className="flex items-center justify-between px-1 py-0.5">
                         <div className="flex items-center gap-2">
                           <span className={cn('w-2 h-2 rounded-full', col.dot)} aria-hidden />
-                          <h2 className="text-xs font-medium text-[#1f1b16]">
+                          <h2 className="text-xs font-medium text-gray-800">
                             {col.label}
                           </h2>
                         </div>
-                        <span className="text-xs font-mono text-[#7b7266] tabular-nums">
+                        <span className="text-xs font-mono text-gray-400 tabular-nums">
                           {colTasks.length}
                         </span>
                       </div>
@@ -590,14 +602,13 @@ export default function WorkspacePage() {
                                 setDraggedTaskId(null);
                                 setDragOverCol(null);
                               }}
-                              className="bg-white rounded-lg p-3 border border-[#1f1b16]/10 shadow-[0_1px_2px_rgba(0,0,0,0.03)] hover:border-[#1f1b16]/25 transition-colors space-y-2.5 cursor-grab active:cursor-grabbing group"
+                              className="bg-white rounded-lg p-3 border border-gray-200/90 shadow-[0_1px_2px_rgba(0,0,0,0.03)] hover:border-primary-300 transition-colors space-y-2.5 cursor-grab active:cursor-grabbing group"
                             >
-                              {/* Title + 1-click delete */}
                               <div className="flex items-start justify-between gap-2">
                                 <p
                                   className={cn(
                                     'text-sm leading-snug',
-                                    isDone ? 'line-through text-[#7b7266]' : 'text-[#1f1b16] font-normal'
+                                    isDone ? 'line-through text-gray-400' : 'text-gray-900 font-normal'
                                   )}
                                 >
                                   {task.title}
@@ -605,20 +616,19 @@ export default function WorkspacePage() {
                                 <button
                                   type="button"
                                   onClick={() => handleDeleteTask(task.id)}
-                                  className="opacity-0 group-hover:opacity-100 text-[#7b7266] hover:text-[#dc2626] p-0.5 rounded transition-opacity flex-shrink-0"
+                                  className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-danger-600 p-0.5 rounded transition-opacity flex-shrink-0"
                                   title="Hapus tugas"
                                 >
                                   <Trash2 size={13} strokeWidth={1.5} />
                                 </button>
                               </div>
 
-                              {/* Footer: Assignee (click to switch member) + 1-Click Advance Button */}
-                              <div className="flex items-center justify-between gap-2 pt-2 border-t border-[#1f1b16]/6 text-xs">
+                              <div className="flex items-center justify-between gap-2 pt-2 border-t border-gray-100 text-xs">
                                 <button
                                   type="button"
                                   onClick={() => handleCycleTaskAssignee(task.id)}
                                   title="Klik untuk ganti penanggung jawab (PIC)"
-                                  className="px-2 py-0.5 rounded bg-[#f7f4ee] hover:bg-[#efe9df] text-[#5e554a] font-medium truncate max-w-[130px] transition-colors"
+                                  className="px-2 py-0.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium truncate max-w-[130px] transition-colors"
                                 >
                                   {task.assignee}
                                 </button>
@@ -627,14 +637,14 @@ export default function WorkspacePage() {
                                   <button
                                     type="button"
                                     onClick={() => handleMoveTask(task.id, col.next)}
-                                    className="px-2 py-0.5 rounded bg-[#f7f4ee] hover:bg-[#1f1b16] hover:text-white text-[#1f1b16] font-medium flex items-center gap-1 transition-colors"
+                                    className="px-2 py-0.5 rounded bg-primary-50 hover:bg-primary-600 hover:text-white text-primary-700 font-medium flex items-center gap-1 transition-colors"
                                     title={`Pindahkan ke ${col.nextLabel}`}
                                   >
                                     <span>{col.nextLabel}</span>
                                     <ArrowRight size={12} strokeWidth={1.5} />
                                   </button>
                                 ) : (
-                                  <span className="text-[#16a34a] font-medium flex items-center gap-1">
+                                  <span className="text-success-600 font-medium flex items-center gap-1">
                                     <Check size={13} strokeWidth={1.5} />
                                     Selesai
                                   </span>
@@ -645,10 +655,10 @@ export default function WorkspacePage() {
                         })}
                       </div>
 
-                      {/* Zero-friction Inline Quick Add (Just type & press Enter) */}
+                      {/* Zero-friction Inline Quick Add */}
                       <div className="pt-0.5">
-                        <div className="flex items-center gap-1.5 bg-white/70 focus-within:bg-white rounded-lg border border-transparent focus-within:border-[#1f1b16]/20 px-2.5 h-9 transition-colors">
-                          <Plus size={14} strokeWidth={1.5} className="text-[#7b7266] flex-shrink-0" />
+                        <div className="flex items-center gap-1.5 bg-white/80 focus-within:bg-white rounded-lg border border-transparent focus-within:border-primary-400 px-2.5 h-9 transition-colors">
+                          <Plus size={14} strokeWidth={1.5} className="text-gray-400 flex-shrink-0" />
                           <input
                             type="text"
                             placeholder="Ketik tugas baru, tekan Enter"
@@ -662,7 +672,7 @@ export default function WorkspacePage() {
                                 handleQuickAddTask(col.id);
                               }
                             }}
-                            className="w-full bg-transparent text-xs text-[#1f1b16] placeholder-[#7b7266] focus:outline-none"
+                            className="w-full bg-transparent text-xs text-gray-900 placeholder-gray-400 focus:outline-none"
                           />
                         </div>
                       </div>
@@ -673,11 +683,10 @@ export default function WorkspacePage() {
             </div>
           )}
 
-          {/* ── VIEW 2: BORDERLESS NOTION-STYLE DOCUMENT CANVAS ── */}
+          {/* ── VIEW 2: BORDERLESS DOCUMENT CANVAS ── */}
           {activePage && (
-            <div className="max-w-3xl bg-white rounded-xl border border-[#1f1b16]/10 p-6 sm:p-10 shadow-[0_1px_2px_rgba(0,0,0,0.03)] space-y-8">
-              {/* Document Header */}
-              <div className="flex items-start justify-between gap-4 border-b border-[#1f1b16]/8 pb-5">
+            <div className="max-w-3xl bg-white rounded-xl border border-gray-200 p-6 sm:p-10 shadow-[0_1px_2px_rgba(0,0,0,0.03)] space-y-8">
+              <div className="flex items-start justify-between gap-4 border-b border-gray-100 pb-5">
                 <input
                   type="text"
                   key={`title-${activePage.id}`}
@@ -686,22 +695,22 @@ export default function WorkspacePage() {
                     handlePageChange(activePage.id, 'title', e.target.value || 'Dokumen tanpa judul')
                   }
                   placeholder="Judul halaman"
-                  className="text-2xl font-medium text-[#1f1b16] bg-transparent w-full focus:outline-none"
+                  className="text-2xl font-semibold text-gray-900 bg-transparent w-full focus:outline-none"
                 />
                 {pages.length > 1 && (
                   <button
                     type="button"
                     onClick={() => handleDeletePage(activePage.id)}
-                    className="text-xs text-[#7b7266] hover:text-[#dc2626] px-2 py-1 rounded hover:bg-[#f7f4ee] transition-colors flex-shrink-0"
+                    className="text-xs text-gray-400 hover:text-danger-600 px-2 py-1 rounded hover:bg-gray-50 transition-colors flex-shrink-0"
                   >
                     Hapus halaman
                   </button>
                 )}
               </div>
 
-              {/* Quiet Summary Callout (1px hairline border, warm paper fill, no emoji) */}
-              <div className="rounded-lg bg-[#f7f4ee] border border-[#1f1b16]/8 p-4">
-                <div className="text-xs font-medium text-[#7b7266] mb-1">
+              {/* Quiet Summary Callout */}
+              <div className="rounded-xl bg-primary-50/60 border border-primary-100 p-4">
+                <div className="text-xs font-medium text-primary-700 mb-1">
                   Kesepakatan &amp; ringkasan
                 </div>
                 <textarea
@@ -710,20 +719,20 @@ export default function WorkspacePage() {
                   rows={2}
                   onChange={(e) => handlePageChange(activePage.id, 'callout', e.target.value)}
                   placeholder="Tulis tujuan utama atau aturan singkat halaman ini..."
-                  className="w-full bg-transparent text-sm text-[#1f1b16] leading-relaxed focus:outline-none resize-none"
+                  className="w-full bg-transparent text-sm text-gray-800 leading-relaxed focus:outline-none resize-none"
                 />
               </div>
 
               {/* Interactive Checklist Section */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-medium text-[#1f1b16]">Daftar periksa (Checklist)</h3>
-                  <span className="text-xs font-mono text-[#7b7266] tabular-nums">
+                  <h3 className="text-sm font-medium text-gray-900">Daftar periksa (Checklist)</h3>
+                  <span className="text-xs font-mono text-gray-500 tabular-nums">
                     {(activePage.checklist ?? []).filter((c) => c.done).length}/{(activePage.checklist ?? []).length} selesai
                   </span>
                 </div>
 
-                <div className="divide-y divide-[#1f1b16]/6 border-t border-b border-[#1f1b16]/8">
+                <div className="divide-y divide-gray-100 border-t border-b border-gray-200/80">
                   {(activePage.checklist ?? []).map((item) => (
                     <div
                       key={item.id}
@@ -738,8 +747,8 @@ export default function WorkspacePage() {
                           className={cn(
                             'w-4 h-4 rounded border flex items-center justify-center transition-colors flex-shrink-0',
                             item.done
-                              ? 'bg-[#1f1b16] border-[#1f1b16] text-white'
-                              : 'border-[#1f1b16]/30 bg-white'
+                              ? 'bg-primary-600 border-primary-600 text-white'
+                              : 'border-gray-300 bg-white'
                           )}
                         >
                           {item.done && <Check size={11} strokeWidth={2} />}
@@ -747,7 +756,7 @@ export default function WorkspacePage() {
                         <span
                           className={cn(
                             'text-sm leading-snug',
-                            item.done ? 'line-through text-[#7b7266]' : 'text-[#1f1b16]'
+                            item.done ? 'line-through text-gray-400' : 'text-gray-800'
                           )}
                         >
                           {item.text}
@@ -756,7 +765,7 @@ export default function WorkspacePage() {
                       <button
                         type="button"
                         onClick={() => handleDeleteChecklistItem(activePage.id, item.id)}
-                        className="opacity-0 group-hover:opacity-100 text-[#7b7266] hover:text-[#dc2626] p-1 transition-opacity"
+                        className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-danger-600 p-1 transition-opacity"
                         aria-label="Hapus baris"
                       >
                         <Trash2 size={14} strokeWidth={1.5} />
@@ -765,9 +774,8 @@ export default function WorkspacePage() {
                   ))}
                 </div>
 
-                {/* Press Enter to add checklist item */}
                 <div className="flex items-center gap-2.5 pt-1">
-                  <Plus size={15} strokeWidth={1.5} className="text-[#7b7266] flex-shrink-0" />
+                  <Plus size={15} strokeWidth={1.5} className="text-gray-400 flex-shrink-0" />
                   <input
                     type="text"
                     placeholder="Tambah item periksa baru lalu tekan Enter"
@@ -779,14 +787,14 @@ export default function WorkspacePage() {
                         handleAddChecklistItem(activePage.id);
                       }
                     }}
-                    className="flex-1 text-sm text-[#1f1b16] placeholder-[#7b7266] bg-transparent focus:outline-none py-1"
+                    className="flex-1 text-sm text-gray-900 placeholder-gray-400 bg-transparent focus:outline-none py-1"
                   />
                 </div>
               </div>
 
-              {/* Seamless Document Body Canvas (No ugly box border) */}
-              <div className="space-y-2 pt-2 border-t border-[#1f1b16]/8">
-                <div className="text-xs font-medium text-[#7b7266]">
+              {/* Seamless Document Body Canvas */}
+              <div className="space-y-2 pt-2 border-t border-gray-100">
+                <div className="text-xs font-medium text-gray-400">
                   Catatan dokumen &amp; notulensi
                 </div>
                 <textarea
@@ -795,7 +803,7 @@ export default function WorkspacePage() {
                   rows={10}
                   onChange={(e) => handlePageChange(activePage.id, 'content', e.target.value)}
                   placeholder="Ketik langsung di sini seperti di halaman buku catatan. Semua perubahan tersimpan otomatis..."
-                  className="w-full bg-transparent text-[15px] text-[#1f1b16] leading-relaxed focus:outline-none resize-y"
+                  className="w-full bg-transparent text-[15px] text-gray-800 leading-relaxed focus:outline-none resize-y"
                 />
               </div>
             </div>
@@ -805,27 +813,27 @@ export default function WorkspacePage() {
           {activeView === 'resources' && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Resource Links Table */}
-              <div className="bg-white rounded-xl border border-[#1f1b16]/10 p-6 space-y-4">
+              <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
                 <div>
-                  <h2 className="text-base font-medium text-[#1f1b16]">Tautan &amp; dokumen tim</h2>
-                  <p className="text-xs text-[#7b7266] mt-0.5">
+                  <h2 className="text-base font-medium text-gray-900">Tautan &amp; dokumen tim</h2>
+                  <p className="text-xs text-gray-500 mt-0.5">
                     Simpan akses folder Google Drive, ruang Meet, Figma, atau referensi jurnal.
                   </p>
                 </div>
 
-                <div className="divide-y divide-[#1f1b16]/6 border-t border-b border-[#1f1b16]/8">
+                <div className="divide-y divide-gray-100 border-t border-b border-gray-200/80">
                   {links.map((lnk) => (
                     <div key={lnk.id} className="py-3 flex items-center justify-between gap-3 group">
                       <a
                         href={lnk.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-3 min-w-0 flex-1 hover:text-[#4338ca] transition-colors"
+                        className="flex items-center gap-3 min-w-0 flex-1 hover:text-primary-600 transition-colors"
                       >
-                        <Link2 size={16} strokeWidth={1.5} className="text-[#7b7266] flex-shrink-0" />
+                        <Link2 size={16} strokeWidth={1.5} className="text-gray-400 flex-shrink-0" />
                         <div className="min-w-0">
                           <div className="text-sm font-medium truncate">{lnk.title}</div>
-                          <div className="text-xs text-[#7b7266] truncate">{lnk.url}</div>
+                          <div className="text-xs text-gray-400 truncate">{lnk.url}</div>
                         </div>
                       </a>
                       <div className="flex items-center gap-2">
@@ -833,14 +841,14 @@ export default function WorkspacePage() {
                           href={lnk.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs text-[#5e554a] hover:text-[#1f1b16] px-2 py-1 rounded border border-[#1f1b16]/10"
+                          className="text-xs text-primary-600 hover:bg-primary-50 px-2.5 py-1 rounded-md border border-primary-200 font-medium"
                         >
                           Buka
                         </a>
                         <button
                           type="button"
                           onClick={() => handleRemoveLink(lnk.id)}
-                          className="opacity-0 group-hover:opacity-100 text-[#7b7266] hover:text-[#dc2626] p-1"
+                          className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-danger-600 p-1"
                           aria-label="Hapus tautan"
                         >
                           <Trash2 size={14} strokeWidth={1.5} />
@@ -856,50 +864,47 @@ export default function WorkspacePage() {
                     placeholder="Nama tautan (mis. Folder Drive)"
                     value={newLinkTitle}
                     onChange={(e) => setNewLinkTitle(e.target.value)}
-                    className="flex-1 h-9 rounded-lg border border-[#1f1b16]/15 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="flex-1 h-9 rounded-lg border border-gray-200 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                   <input
                     type="text"
                     placeholder="https://drive.google.com/..."
                     value={newLinkUrl}
                     onChange={(e) => setNewLinkUrl(e.target.value)}
-                    className="flex-1 h-9 rounded-lg border border-[#1f1b16]/15 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="flex-1 h-9 rounded-lg border border-gray-200 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
-                  <button
-                    type="submit"
-                    className="h-9 px-3.5 rounded-lg bg-[#1f1b16] text-white text-xs font-medium hover:bg-[#332d25] transition-colors flex-shrink-0"
-                  >
+                  <Button type="submit" size="sm">
                     Simpan
-                  </button>
+                  </Button>
                 </form>
               </div>
 
               {/* Team Members List */}
-              <div className="bg-white rounded-xl border border-[#1f1b16]/10 p-6 space-y-4">
+              <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
                 <div>
-                  <h2 className="text-base font-medium text-[#1f1b16]">Anggota kelompok</h2>
-                  <p className="text-xs text-[#7b7266] mt-0.5">
+                  <h2 className="text-base font-medium text-gray-900">Anggota kelompok</h2>
+                  <p className="text-xs text-gray-500 mt-0.5">
                     Klik nama anggota pada kartu tugas di papan Kanban untuk mengganti PIC.
                   </p>
                 </div>
 
-                <div className="divide-y divide-[#1f1b16]/6 border-t border-b border-[#1f1b16]/8">
+                <div className="divide-y divide-gray-100 border-t border-b border-gray-200/80">
                   {members.map((m) => (
                     <div key={m.id} className="py-3 flex items-center justify-between gap-3 group">
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-7 h-7 rounded-md bg-[#efe9df] text-[#1f1b16] text-xs font-medium flex items-center justify-center flex-shrink-0">
+                        <div className="w-7 h-7 rounded-md bg-primary-50 text-primary-700 text-xs font-semibold flex items-center justify-center flex-shrink-0">
                           {m.name[0]?.toUpperCase()}
                         </div>
                         <div className="min-w-0">
-                          <div className="text-sm font-medium text-[#1f1b16] truncate">{m.name}</div>
-                          <div className="text-xs text-[#7b7266] truncate">{m.role}</div>
+                          <div className="text-sm font-medium text-gray-900 truncate">{m.name}</div>
+                          <div className="text-xs text-gray-500 truncate">{m.role}</div>
                         </div>
                       </div>
                       {members.length > 1 && (
                         <button
                           type="button"
                           onClick={() => handleRemoveMember(m.id)}
-                          className="opacity-0 group-hover:opacity-100 text-[#7b7266] hover:text-[#dc2626] p-1"
+                          className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-danger-600 p-1"
                           aria-label="Hapus anggota"
                         >
                           <Trash2 size={14} strokeWidth={1.5} />
@@ -915,21 +920,18 @@ export default function WorkspacePage() {
                     placeholder="Nama anggota"
                     value={newMemberName}
                     onChange={(e) => setNewMemberName(e.target.value)}
-                    className="flex-1 h-9 rounded-lg border border-[#1f1b16]/15 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="flex-1 h-9 rounded-lg border border-gray-200 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                   <input
                     type="text"
                     placeholder="Peran / divisi"
                     value={newMemberRole}
                     onChange={(e) => setNewMemberRole(e.target.value)}
-                    className="flex-1 h-9 rounded-lg border border-[#1f1b16]/15 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="flex-1 h-9 rounded-lg border border-gray-200 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
-                  <button
-                    type="submit"
-                    className="h-9 px-3.5 rounded-lg bg-[#1f1b16] text-white text-xs font-medium hover:bg-[#332d25] transition-colors flex-shrink-0"
-                  >
+                  <Button type="submit" size="sm">
                     Tambah
-                  </button>
+                  </Button>
                 </form>
               </div>
             </div>
