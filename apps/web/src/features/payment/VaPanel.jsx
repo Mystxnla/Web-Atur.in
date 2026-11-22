@@ -17,7 +17,7 @@ export default function VaPanel({ payment }) {
           <p className="text-xs text-gray-400 mb-1">No. Rekening Virtual</p>
           <p className="text-lg font-bold text-gray-900 font-mono tracking-wider">{vaNumber}</p>
         </div>
-        <CopyButton text={payment.vaNumber} label="Salin" />
+        <CopyButton text={vaNumber} label="Salin" />
       </div>
 
       <div className="text-sm text-gray-500 space-y-1">

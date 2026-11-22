@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { useCheckoutStore } from '../../stores/checkoutStore.js';
 import { createOrder } from '../../services/api/index.js';
 import { normalizePhone, isValidPhone } from '../../lib/phone.js';
-import { JENIS_KEBUTUHAN_OPTIONS, JUMLAH_ANGGOTA_OPTIONS, PACKAGES } from '@atur-in/shared';
+import { JENIS_KEBUTUHAN_OPTIONS, JUMLAH_ANGGOTA_OPTIONS, getPackageById } from '@atur-in/shared';
 import Input from '../../components/ui/Input.jsx';
 import Select from '../../components/ui/Select.jsx';
 import Textarea from '../../components/ui/Textarea.jsx';
@@ -16,12 +16,13 @@ import { Card } from '../../components/ui/Card.jsx';
 import SelectedPlanCard from './SelectedPlanCard.jsx';
 import TrustStrip from './TrustStrip.jsx';
 import Dropzone from './Dropzone.jsx';
-import { formatRupiah } from '../../lib/format.js';
-import { ShoppingBag, User, Settings2, Image, ChevronDown } from 'lucide-react';
+import { User, Settings2, Image, ChevronDown, Sparkles } from 'lucide-react';
 
 export default function OrderDetailForm() {
   const navigate = useNavigate();
-  const { packageId, formData, setFormData, setOrderId } = useCheckoutStore();
+  const { packageId, billingCycle, isTrial, setIsTrial, formData, setFormData, setOrderId } = useCheckoutStore();
+  const currentPkg = getPackageById(packageId);
+  const effectiveTrial = Boolean(currentPkg?.hasTrial && isTrial);
 
   const {
     register,
@@ -39,6 +40,7 @@ export default function OrderDetailForm() {
       jenisKebutuhan: '',
       jumlahAnggota: '',
       deskripsiKebutuhan: '',
+      urlDokumenReferensi: null,
     },
   });
 
@@ -62,6 +64,8 @@ export default function OrderDetailForm() {
     try {
       const result = await createOrder({
         packageId,
+        billingCycle,
+        isTrial: effectiveTrial,
         namaLengkap: data.namaLengkap,
         email: data.email,
         noWhatsapp: normalized,
@@ -69,13 +73,24 @@ export default function OrderDetailForm() {
         jenisKebutuhan: data.jenisKebutuhan,
         jumlahAnggota: data.jumlahAnggota,
         deskripsiKebutuhan: data.deskripsiKebutuhan,
+        urlDokumenReferensi: data.urlDokumenReferensi ?? null,
       });
       setOrderId(result.id);
-      // Store access token
       sessionStorage.setItem(`dwa.access.${result.id}`, result.accessToken);
-      navigate(`/checkout/pembayaran/${result.id}`);
+
+      if (result.isTrial) {
+        toast.success('Free Trial 7 Hari berhasil diaktifkan!');
+        navigate(`/checkout/selesai/${result.id}`);
+      } else {
+        navigate(`/checkout/pembayaran/${result.id}`);
+      }
     } catch (err) {
-      toast.error(err.message ?? 'Gagal membuat pesanan. Coba lagi.');
+      if (err.status === 409 || err.code === 'trial_already_used') {
+        toast.error(err.message || 'Nomor WA/Email sudah pernah klaim Free Trial. Mengalihkan ke mode Langsung Berlangganan.');
+        setIsTrial(false);
+      } else {
+        toast.error(err.message ?? 'Gagal membuat pesanan. Coba lagi.');
+      }
     }
   };
 
@@ -192,7 +207,7 @@ export default function OrderDetailForm() {
               {...register('deskripsiKebutuhan')}
             />
 
-            <Dropzone />
+            <Dropzone onChange={(url) => setValue('urlDokumenReferensi', url)} />
           </div>
         </Card>
 
@@ -207,18 +222,25 @@ export default function OrderDetailForm() {
         {/* Mini FAQ */}
         <details className="bg-white rounded-2xl border border-gray-100 p-4">
           <summary className="text-sm font-semibold text-gray-700 cursor-pointer flex items-center justify-between">
-            Berapa lama proses pengerjaan workspace?
+            Bagaimana cara kerja Free Trial 7 Hari?
             <ChevronDown size={16} className="text-gray-400" aria-hidden />
           </summary>
           <p className="text-sm text-gray-500 mt-2 leading-relaxed">
-            Untuk paket Template: akses langsung setelah pembayaran. Setup Custom & Kepanitiaan: 3–5 hari kerja setelah kick-off meeting.
+            Selama 7 hari pertama, kamu tidak dikenakan biaya apapun (Rp 0). Tim arsitek langsung menyiapkan workspace tim kamu. Sebelum masa trial berakhir, kamu bisa membayar tagihan langganan bulanan atau semesteran lewat halaman Lacak Pesanan.
           </p>
         </details>
 
         {/* Sticky CTA */}
         <div className="sticky bottom-0 bg-white border-t border-gray-100 -mx-4 px-4 py-3 -mb-6">
           <Button type="submit" fullWidth size="lg" loading={isSubmitting}>
-            Lanjut ke Pembayaran
+            {effectiveTrial ? (
+              <span className="flex items-center justify-center gap-2">
+                <Sparkles size={16} aria-hidden />
+                Aktifkan 7 Hari Free Trial — Rp 0
+              </span>
+            ) : (
+              'Lanjut ke Pembayaran Langganan'
+            )}
           </Button>
         </div>
       </form>

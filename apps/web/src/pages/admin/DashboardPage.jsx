@@ -33,6 +33,7 @@ export default function DashboardPage() {
   const statCards = [
     { label: 'Total Pesanan',  value: stats.totalOrders,              icon: ShoppingBag,  color: 'bg-primary-50 text-primary-600' },
     { label: 'Revenue',        value: formatRupiah(stats.totalRevenue), icon: TrendingUp, color: 'bg-success-50 text-success-600' },
+    { label: 'Free Trial Aktif', value: stats.trialOrders ?? 0,       icon: AlertCircle,  color: 'bg-primary-50 text-primary-700' },
     { label: 'Menunggu Bayar', value: stats.pendingOrders,            icon: Clock,        color: 'bg-warning-50 text-warning-600' },
     { label: 'Proses Setup',   value: stats.activeSetup,              icon: Settings,     color: 'bg-purple-100 text-purple-600' },
     { label: 'Selesai',        value: stats.doneOrders,               icon: CheckCircle,  color: 'bg-success-50 text-success-600' },

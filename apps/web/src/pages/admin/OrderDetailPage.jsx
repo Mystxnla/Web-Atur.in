@@ -96,20 +96,37 @@ export default function OrderDetailPage() {
               <p className="text-sm text-gray-700 leading-relaxed">{order.description}</p>
             </div>
           )}
+          {order.doc_url && (
+            <div className="mt-3 pt-3 border-t border-gray-100">
+              <p className="text-xs text-gray-400 mb-1">Dokumen Referensi</p>
+              <a
+                href={order.doc_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-semibold text-primary-600 hover:underline break-all"
+              >
+                {order.doc_url}
+              </a>
+            </div>
+          )}
         </div>
 
         {/* Order info */}
         <div className="bg-white rounded-2xl border border-gray-100 p-5">
-          <h2 className="font-bold text-gray-700 mb-3 text-sm uppercase tracking-wide">Info Pesanan</h2>
+          <h2 className="font-bold text-gray-700 mb-3 text-sm uppercase tracking-wide">Info Pesanan &amp; Langganan</h2>
           <dl className="space-y-2 text-sm">
             {[
               ['Paket', order.package?.nama ?? order.package_id],
-              ['Total', formatRupiah(order.total)],
-              ['Metode', order.payments?.[0]?.method ?? '-'],
+              ['Siklus Langganan', order.billing_cycle === 'semester' ? 'Semesteran (6 Bulan)' : 'Bulanan'],
+              ['Tipe', order.is_trial ? 'Free Trial 7 Hari' : 'Langganan Berbayar'],
+              ['Tagihan Saat Ini', order.is_trial ? 'Rp 0 (Free Trial)' : formatRupiah(order.total)],
+              ['Biaya Perpanjangan', formatRupiah(order.recurring_total ?? order.total)],
+              ['Batas Trial', order.trial_ends_at ? formatTanggalWIB(order.trial_ends_at) : '-'],
+              ['Metode', order.payments?.[0]?.method ?? order.payment_method ?? '-'],
             ].map(([k, v]) => (
               <div key={k} className="flex justify-between gap-4">
                 <dt className="text-gray-400">{k}</dt>
-                <dd className="font-medium text-gray-800">{v}</dd>
+                <dd className="font-medium text-gray-800 text-right">{v}</dd>
               </div>
             ))}
           </dl>

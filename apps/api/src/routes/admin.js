@@ -1,9 +1,7 @@
 import { Router } from 'express';
-import { z } from 'zod';
-import db from '../store/database.js';
+import pool, { formatOrder } from '../store/database.js';
 import { requireAdmin, requireSuperAdmin } from '../middleware/auth.js';
-import { validate } from '../middleware/validate.js';
-import { getPackageById, ORDER_STATUSES } from '@atur-in/shared';
+import { ORDER_STATUSES } from '@atur-in/shared';
 import { nanoid } from 'nanoid';
 import bcrypt from 'bcryptjs';
 
@@ -13,110 +11,161 @@ const router = Router();
 router.use(requireAdmin);
 
 // ─── Dashboard stats ──────────────────────────────────────────────────────────
-router.get('/dashboard', (req, res) => {
-  const totalOrders    = db.prepare('SELECT COUNT(*) as c FROM orders').get().c;
-  const totalRevenue   = db.prepare("SELECT COALESCE(SUM(total),0) as r FROM orders WHERE status != 'menunggu_pembayaran' AND status != 'kedaluwarsa'").get().r;
-  const pendingOrders  = db.prepare("SELECT COUNT(*) as c FROM orders WHERE status = 'menunggu_pembayaran'").get().c;
-  const activeSetup    = db.prepare("SELECT COUNT(*) as c FROM orders WHERE status = 'proses_setup'").get().c;
-  const doneOrders     = db.prepare("SELECT COUNT(*) as c FROM orders WHERE status = 'selesai'").get().c;
-  const totalUsers     = db.prepare("SELECT COUNT(*) as c FROM users WHERE role = 'user'").get().c;
-  const totalLeads     = db.prepare('SELECT COUNT(*) as c FROM leads').get().c;
+router.get('/dashboard', async (req, res, next) => {
+  try {
+    const [
+      totalOrdersRes,
+      totalRevenueRes,
+      pendingOrdersRes,
+      activeSetupRes,
+      doneOrdersRes,
+      trialOrdersRes,
+      totalUsersRes,
+      totalLeadsRes,
+      recentOrdersRes,
+    ] = await Promise.all([
+      pool.query('SELECT COUNT(*)::int as c FROM orders'),
+      pool.query("SELECT COALESCE(SUM(total), 0)::int as r FROM orders WHERE status != 'menunggu_pembayaran' AND status != 'kedaluwarsa'"),
+      pool.query("SELECT COUNT(*)::int as c FROM orders WHERE status = 'menunggu_pembayaran'"),
+      pool.query("SELECT COUNT(*)::int as c FROM orders WHERE status = 'proses_setup'"),
+      pool.query("SELECT COUNT(*)::int as c FROM orders WHERE status = 'selesai'"),
+      pool.query('SELECT COUNT(*)::int as c FROM orders WHERE is_trial = TRUE'),
+      pool.query("SELECT COUNT(*)::int as c FROM users WHERE role = 'user'"),
+      pool.query('SELECT COUNT(*)::int as c FROM leads'),
+      pool.query(`
+        SELECT o.*, u.name as user_name, u.email as user_email
+        FROM orders o LEFT JOIN users u ON o.user_id = u.id
+        ORDER BY o.created_at DESC LIMIT 5
+      `),
+    ]);
 
-  const recentOrders = db.prepare(`
-    SELECT o.*, u.name as user_name, u.email as user_email
-    FROM orders o LEFT JOIN users u ON o.user_id = u.id
-    ORDER BY o.created_at DESC LIMIT 5
-  `).all().map(o => ({ ...o, nomorReferensi: `#${o.ref_number}`, package: getPackageById(o.package_id) }));
-
-  res.json({
-    stats: { totalOrders, totalRevenue, pendingOrders, activeSetup, doneOrders, totalUsers, totalLeads },
-    recentOrders,
-  });
+    res.json({
+      stats: {
+        totalOrders:   totalOrdersRes.rows[0].c,
+        totalRevenue:  totalRevenueRes.rows[0].r,
+        pendingOrders: pendingOrdersRes.rows[0].c,
+        activeSetup:   activeSetupRes.rows[0].c,
+        doneOrders:    doneOrdersRes.rows[0].c,
+        trialOrders:   trialOrdersRes.rows[0].c,
+        totalUsers:    totalUsersRes.rows[0].c,
+        totalLeads:    totalLeadsRes.rows[0].c,
+      },
+      recentOrders: recentOrdersRes.rows.map((o) => formatOrder(o)),
+    });
+  } catch (err) { next(err); }
 });
 
 // ─── Orders list ─────────────────────────────────────────────────────────────
-router.get('/orders', (req, res) => {
-  const { status, search, limit = 50, offset = 0 } = req.query;
+router.get('/orders', async (req, res, next) => {
+  try {
+    const { status, search, limit = 50, offset = 0 } = req.query;
 
-  let query = 'SELECT o.*, u.name as user_name FROM orders o LEFT JOIN users u ON o.user_id = u.id';
-  const params = [];
+    let query = 'SELECT o.*, u.name as user_name FROM orders o LEFT JOIN users u ON o.user_id = u.id';
+    const params = [];
+    const conditions = [];
 
-  const conditions = [];
-  if (status) { conditions.push('o.status = ?'); params.push(status); }
-  if (search) {
-    conditions.push('(o.name LIKE ? OR o.email LIKE ? OR o.ref_number LIKE ?)');
-    params.push(`%${search}%`, `%${search}%`, `%${search}%`);
-  }
-  if (conditions.length) query += ' WHERE ' + conditions.join(' AND ');
-  query += ' ORDER BY o.created_at DESC LIMIT ? OFFSET ?';
-  params.push(Number(limit), Number(offset));
+    if (status) {
+      params.push(status);
+      conditions.push(`o.status = $${params.length}`);
+    }
+    if (search) {
+      params.push(`%${search}%`);
+      const idx = params.length;
+      conditions.push(`(o.name ILIKE $${idx} OR o.email ILIKE $${idx} OR o.ref_number ILIKE $${idx})`);
+    }
+    if (conditions.length > 0) {
+      query += ' WHERE ' + conditions.join(' AND ');
+    }
 
-  const rows = db.prepare(query).all(...params);
-  const total = db.prepare('SELECT COUNT(*) as c FROM orders').get().c;
+    params.push(Number(limit), Number(offset));
+    query += ` ORDER BY o.created_at DESC LIMIT $${params.length - 1} OFFSET $${params.length}`;
 
-  res.json({
-    orders: rows.map(o => ({ ...o, nomorReferensi: `#${o.ref_number}`, package: getPackageById(o.package_id) })),
-    total,
-  });
+    const [{ rows }, totalRes] = await Promise.all([
+      pool.query(query, params),
+      pool.query('SELECT COUNT(*)::int as c FROM orders'),
+    ]);
+
+    res.json({
+      orders: rows.map((o) => formatOrder(o)),
+      total: totalRes.rows[0].c,
+    });
+  } catch (err) { next(err); }
 });
 
 // ─── Order detail ─────────────────────────────────────────────────────────────
-router.get('/orders/:id', (req, res) => {
-  const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id);
-  if (!order) return res.status(404).json({ error: 'Pesanan tidak ditemukan.' });
+router.get('/orders/:id', async (req, res, next) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT * FROM orders WHERE id = $1 OR ref_number = $1 LIMIT 1',
+      [req.params.id]
+    );
+    const order = rows[0];
+    if (!order) return res.status(404).json({ error: 'Pesanan tidak ditemukan.' });
 
-  const logs = db.prepare('SELECT * FROM order_logs WHERE order_id = ? ORDER BY created_at ASC').all(order.id);
-  const payments = db.prepare('SELECT * FROM payments WHERE order_id = ? ORDER BY created_at DESC').all(order.id);
+    const [{ rows: logs }, { rows: payments }] = await Promise.all([
+      pool.query('SELECT * FROM order_logs WHERE order_id = $1 ORDER BY created_at ASC', [order.id]),
+      pool.query('SELECT * FROM payments WHERE order_id = $1 ORDER BY created_at DESC', [order.id]),
+    ]);
 
-  res.json({ ...order, nomorReferensi: `#${order.ref_number}`, package: getPackageById(order.package_id), statusLogs: logs, payments });
+    res.json(formatOrder(order, logs, payments));
+  } catch (err) { next(err); }
 });
 
 // ─── Update status ────────────────────────────────────────────────────────────
-router.patch('/orders/:id/status', (req, res, next) => {
+router.patch('/orders/:id/status', async (req, res, next) => {
   try {
     const { status, catatan } = req.body;
     const validStatuses = Object.values(ORDER_STATUSES);
     if (!validStatuses.includes(status)) return res.status(400).json({ error: 'Status tidak valid.' });
 
-    const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id);
+    const { rows } = await pool.query('SELECT * FROM orders WHERE id = $1', [req.params.id]);
+    const order = rows[0];
     if (!order) return res.status(404).json({ error: 'Pesanan tidak ditemukan.' });
 
     const now = new Date().toISOString();
-    db.prepare('UPDATE orders SET status = ?, updated_at = ? WHERE id = ?').run(status, now, order.id);
-    db.prepare(`
-      INSERT INTO order_logs (id, order_id, status, note, changed_by, created_at)
-      VALUES (?,?,?,?,?,?)
-    `).run(nanoid(), order.id, status, catatan ?? null, req.user.email, now);
+    await pool.query('UPDATE orders SET status = $1, updated_at = $2 WHERE id = $3', [status, now, order.id]);
+    await pool.query(
+      `INSERT INTO order_logs (id, order_id, status, note, changed_by, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [nanoid(), order.id, status, catatan ?? null, req.user.email, now]
+    );
 
     res.json({ success: true, status });
   } catch (err) { next(err); }
 });
 
 // ─── Users list ───────────────────────────────────────────────────────────────
-router.get('/users', (req, res) => {
-  const users = db.prepare(`
-    SELECT id, email, name, role, is_active, created_at,
-      (SELECT COUNT(*) FROM orders WHERE user_id = users.id) as order_count
-    FROM users ORDER BY created_at DESC
-  `).all();
-  res.json(users);
+router.get('/users', async (req, res, next) => {
+  try {
+    const { rows } = await pool.query(`
+      SELECT id, email, name, role, is_active, created_at,
+        (SELECT COUNT(*)::int FROM orders WHERE user_id = users.id) as order_count
+      FROM users ORDER BY created_at DESC
+    `);
+    res.json(rows);
+  } catch (err) { next(err); }
 });
 
 // ─── Toggle user active ───────────────────────────────────────────────────────
-router.patch('/users/:id/toggle', requireSuperAdmin, (req, res) => {
-  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.params.id);
-  if (!user) return res.status(404).json({ error: 'User tidak ditemukan.' });
-  if (user.role === 'superadmin') return res.status(400).json({ error: 'Tidak bisa menonaktifkan superadmin.' });
+router.patch('/users/:id/toggle', requireSuperAdmin, async (req, res, next) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [req.params.id]);
+    const user = rows[0];
+    if (!user) return res.status(404).json({ error: 'User tidak ditemukan.' });
+    if (user.role === 'superadmin') return res.status(400).json({ error: 'Tidak bisa menonaktifkan superadmin.' });
 
-  const newActive = user.is_active ? 0 : 1;
-  db.prepare('UPDATE users SET is_active = ? WHERE id = ?').run(newActive, user.id);
-  res.json({ success: true, is_active: newActive });
+    const newActive = user.is_active ? 0 : 1;
+    await pool.query('UPDATE users SET is_active = $1 WHERE id = $2', [newActive, user.id]);
+    res.json({ success: true, is_active: newActive });
+  } catch (err) { next(err); }
 });
 
 // ─── Leads list ───────────────────────────────────────────────────────────────
-router.get('/leads', (req, res) => {
-  const leads = db.prepare('SELECT * FROM leads ORDER BY created_at DESC').all();
-  res.json(leads);
+router.get('/leads', async (req, res, next) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM leads ORDER BY created_at DESC');
+    res.json(rows);
+  } catch (err) { next(err); }
 });
 
 // ─── Create admin (superadmin only) ──────────────────────────────────────────
@@ -125,13 +174,15 @@ router.post('/admins', requireSuperAdmin, async (req, res, next) => {
     const { email, password, name } = req.body;
     if (!email || !password || !name) return res.status(400).json({ error: 'Email, password, dan nama wajib.' });
 
-    const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email.toLowerCase());
-    if (existing) return res.status(409).json({ error: 'Email sudah terdaftar.' });
+    const { rows: existing } = await pool.query('SELECT id FROM users WHERE email = $1', [email.toLowerCase()]);
+    if (existing.length > 0) return res.status(409).json({ error: 'Email sudah terdaftar.' });
 
     const hash = await bcrypt.hash(password, 12);
     const id = `adm-${nanoid(10)}`;
-    db.prepare('INSERT INTO users (id, email, password, name, role) VALUES (?,?,?,?,?)')
-      .run(id, email.toLowerCase(), hash, name, 'admin');
+    await pool.query(
+      'INSERT INTO users (id, email, password, name, role) VALUES ($1,$2,$3,$4,$5)',
+      [id, email.toLowerCase(), hash, name, 'admin']
+    );
 
     res.status(201).json({ id, email, name, role: 'admin' });
   } catch (err) { next(err); }

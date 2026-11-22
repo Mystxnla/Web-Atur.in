@@ -1,6 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, HelpCircle, User } from 'lucide-react';
 import Logo from '../ui/Logo.jsx';
+import { waSupportLink } from '../../lib/wa.js';
+import { SITE } from '../../config/site.js';
 
 export default function PortalHeader() {
   const navigate = useNavigate();
@@ -15,20 +17,30 @@ export default function PortalHeader() {
         >
           <ArrowLeft size={20} aria-hidden />
         </button>
-        <div className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2">
           <Logo compact />
           <div className="text-center">
             <div className="text-xs text-gray-500">Digital Workspace</div>
             <div className="text-sm font-bold text-gray-900">Order Lookup</div>
           </div>
-        </div>
+        </Link>
         <div className="flex items-center gap-1">
-          <button className="p-2 rounded-lg text-gray-500 hover:bg-gray-100" aria-label="Bantuan">
+          <a
+            href={waSupportLink(SITE.supportWa)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-2 rounded-lg text-gray-500 hover:bg-gray-100"
+            aria-label="Bantuan WhatsApp"
+          >
             <HelpCircle size={18} aria-hidden />
-          </button>
-          <button className="p-2 rounded-lg text-gray-500 hover:bg-gray-100" aria-label="Akun">
+          </a>
+          <Link
+            to="/lacak-pesanan"
+            className="p-2 rounded-lg text-gray-500 hover:bg-gray-100"
+            aria-label="Portal Pelanggan"
+          >
             <User size={18} aria-hidden />
-          </button>
+          </Link>
         </div>
       </div>
     </header>

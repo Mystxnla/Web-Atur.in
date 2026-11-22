@@ -1,7 +1,8 @@
+import { useAuthStore } from '../../stores/authStore.js';
+
 const BASE = import.meta.env.VITE_API_BASE_URL ?? '/api';
 
 async function req(method, path, body) {
-  const { useAuthStore } = await import('../../stores/authStore.js');
   const token = useAuthStore.getState().accessToken;
 
   const res = await fetch(`${BASE}${path}`, {
@@ -23,7 +24,8 @@ async function req(method, path, body) {
       return req(method, path, body); // retry sekali
     }
     useAuthStore.getState().clearAuth();
-    window.location.href = '/login';
+    const isAdminRoute = window.location.pathname.startsWith('/admin');
+    window.location.href = isAdminRoute ? '/admin/login' : '/lacak-pesanan';
     throw new Error('Sesi berakhir.');
   }
 
@@ -45,7 +47,6 @@ async function tryRefresh() {
     });
     if (!res.ok) return false;
     const { accessToken } = await res.json();
-    const { useAuthStore } = await import('../../stores/authStore.js');
     useAuthStore.getState().setAccessToken(accessToken);
     return true;
   } catch {

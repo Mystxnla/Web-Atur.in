@@ -20,6 +20,13 @@ export const PACKAGE_IDS = {
   PRO: 'pro',
 };
 
+export const BILLING_CYCLES = {
+  MONTHLY: 'monthly',
+  SEMESTER: 'semester',
+};
+
+export const FREE_TRIAL_DAYS = 7;
+
 export const JENIS_KEBUTUHAN_OPTIONS = [
   { value: 'tugas_kelompok', label: 'Tugas Kelompok Kuliah' },
   { value: 'kepanitiaan', label: 'Kepanitiaan Acara' },

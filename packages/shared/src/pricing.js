@@ -1,4 +1,4 @@
-import { PACKAGE_IDS } from './constants.js';
+import { PACKAGE_IDS, BILLING_CYCLES, FREE_TRIAL_DAYS } from './constants.js';
 
 export const PACKAGES = [
   {
@@ -6,21 +6,28 @@ export const PACKAGES = [
     nama: 'Template Siap Pakai',
     kategori: 'Mandiri',
     harga: 10000,
+    hargaBulanan: 10000,
+    hargaSemester: 48000, // Hemat 20% dari 60.000
     hargaCoret: null,
-    satuan: 'Sekali Bayar',
+    hargaCoretSemester: 60000,
+    satuan: 'Per Bulan / Tim',
+    satuanSemester: 'Per Semester (6 Bulan)',
+    hasTrial: false,
+    trialDays: 0,
+    trialBadge: null,
     badge: null,
     popular: false,
     features: [
       'Template Notion & Trello instan',
       'Video tutorial panduan mandiri',
       'Format deadline tracker standar',
-      'Akses file & duplikasi seumur hidup',
+      'Update template & sinkronisasi berkala',
     ],
     deliverables: [
       'Template Notion & Trello siap pakai',
       'Video tutorial onboarding mandiri',
       'Deadline tracker standar',
-      'Akses file seumur hidup',
+      'Akses penuh selama berlangganan',
     ],
     ctaLabel: 'Pilih Template',
     ctaVariant: 'outline',
@@ -30,26 +37,34 @@ export const PACKAGES = [
     nama: 'Paket Lengkap: Setup Custom',
     kategori: 'Tugas Besar & Proyek',
     harga: 25000,
+    hargaBulanan: 25000,
+    hargaSemester: 120000, // Hemat 20% dari 150.000
     hargaCoret: null,
-    satuan: 'Per Kelompok',
+    hargaCoretSemester: 150000,
+    satuan: 'Per Bulan / Kelompok',
+    satuanSemester: 'Per Semester (6 Bulan)',
+    hasTrial: true,
+    trialDays: FREE_TRIAL_DAYS,
+    trialBadge: 'Gratis Trial 7 Hari',
     badge: 'Paling Populer',
     popular: true,
-    patunganLabel: '-Rp5.000/anak',
+    patunganLabel: 'Patungan ~Rp5.000/anak per bulan',
     features: [
+      'Gratis uji coba 7 hari pertama (Rp 0)',
       'Desain workspace custom sesuai silabus mata kuliah',
       'Setup integrasi Google Calendar & Drive',
       '1x sesi live onboarding',
-      'Support WhatsApp 1 bulan penuh',
-      'Garansi revisi struktur 1x',
+      'Support & maintenance WhatsApp aktif',
+      'Garansi revisi struktur kapan saja',
     ],
     deliverables: [
       'Workspace custom sesuai silabus',
       'Integrasi Google Calendar & Drive',
       '1x sesi live onboarding',
-      'Support WhatsApp 1 bulan',
-      'Garansi revisi struktur 1x',
+      'Support WhatsApp selama berlangganan',
+      'Garansi revisi struktur',
     ],
-    ctaLabel: 'Pesan Paket Lengkap',
+    ctaLabel: 'Mulai Free Trial 7 Hari',
     ctaVariant: 'primary',
   },
   {
@@ -57,8 +72,15 @@ export const PACKAGES = [
     nama: 'Kepanitiaan & Organisasi',
     kategori: 'Event & UKM',
     harga: 100000,
+    hargaBulanan: 100000,
+    hargaSemester: 480000, // Hemat 20% dari 600.000
     hargaCoret: null,
-    satuan: 'Per Event',
+    hargaCoretSemester: 600000,
+    satuan: 'Per Bulan / Organisasi',
+    satuanSemester: 'Per Semester (6 Bulan)',
+    hasTrial: false,
+    trialDays: 0,
+    trialBadge: null,
     badge: null,
     popular: false,
     features: [
@@ -81,8 +103,15 @@ export const PACKAGES = [
     nama: 'Paket Organisasi Pro',
     kategori: 'B2B Setup',
     harga: 499000,
+    hargaBulanan: 499000,
+    hargaSemester: 2390000,
     hargaCoret: 750000,
-    satuan: 'Sekali Bayar / Setup',
+    hargaCoretSemester: 3600000,
+    satuan: 'Per Bulan / Organisasi',
+    satuanSemester: 'Per Semester (6 Bulan)',
+    hasTrial: false,
+    trialDays: 0,
+    trialBadge: null,
     badge: 'Pro',
     popular: false,
     proOnly: true,
@@ -92,7 +121,7 @@ export const PACKAGES = [
       'Database Dokumentasi Tim & SOP Terotomatisasi',
       'Hak Akses Tim & Pembagian Role-based Security',
       'Sesi Onboarding 60 Menit via Google Meet / Zoom',
-      'Garansi Revisi Struktur Ruang Kerja 14 Hari Penuh',
+      'Garansi Revisi & Maintenance Struktur Penuh',
     ],
     deliverables: [
       'Arsitektur Workspace Notion + Google Drive terpadu',
@@ -100,7 +129,7 @@ export const PACKAGES = [
       'Database Dokumentasi Tim & SOP Terotomatisasi',
       'Hak Akses Tim & Role-based Security',
       'Sesi Onboarding 60 Menit via Google Meet / Zoom',
-      'Garansi Revisi 14 Hari Penuh',
+      'Garansi Revisi & Maintenance Penuh',
     ],
     ctaLabel: 'Pesan Paket Pro',
     ctaVariant: 'primary',
@@ -117,15 +146,49 @@ export function getPackageById(packageId) {
 
 /**
  * @param {object} pkg
- * @param {{ ppnRate?: number }} options
- * @returns {{ hargaPokok: number, diskon: number, ppn: number, total: number }}
+ * @param {{ billingCycle?: 'monthly' | 'semester', isTrial?: boolean, ppnRate?: number }} options
+ * @returns {{ hargaPokok: number, diskon: number, ppn: number, recurringTotal: number, total: number, cycleLabel: string, trialDays: number, hasTrial: boolean }}
  */
-export function computePricing(pkg, { ppnRate = 0.11 } = {}) {
-  if (!pkg) return { hargaPokok: 0, diskon: 0, ppn: 0, total: 0 };
-  const hargaPokok = pkg.hargaCoret ?? pkg.harga;
-  const diskon = hargaPokok - pkg.harga;
-  // Untuk prototype: PPN sudah termasuk (ditampilkan Rp 0 / Gratis sebagai insentif promo)
-  const ppn = 0;
-  const total = pkg.harga + ppn;
-  return { hargaPokok, diskon, ppn, total };
+export function computePricing(
+  pkg,
+  { billingCycle = BILLING_CYCLES.MONTHLY, isTrial = false } = {}
+) {
+  if (!pkg) {
+    return {
+      hargaPokok: 0,
+      diskon: 0,
+      ppn: 0,
+      recurringTotal: 0,
+      total: 0,
+      cycleLabel: 'Per Bulan',
+      trialDays: 0,
+      hasTrial: false,
+    };
+  }
+
+  const isSemester = billingCycle === BILLING_CYCLES.SEMESTER;
+  const hargaAktif = isSemester
+    ? (pkg.hargaSemester ?? pkg.harga * 6 * 0.8)
+    : (pkg.hargaBulanan ?? pkg.harga);
+  const hargaPokok = isSemester
+    ? (pkg.hargaCoretSemester ?? (pkg.hargaBulanan ?? pkg.harga) * 6)
+    : (pkg.hargaCoret ?? hargaAktif);
+
+  const diskon = Math.max(0, hargaPokok - hargaAktif);
+  const ppn = 0; // PPN termasuk dalam promo
+  const recurringTotal = hargaAktif + ppn;
+  const effectiveTrial = Boolean(isTrial && pkg.hasTrial);
+  const total = effectiveTrial ? 0 : recurringTotal;
+  const cycleLabel = isSemester ? 'Per Semester (6 Bulan)' : 'Per Bulan';
+
+  return {
+    hargaPokok,
+    diskon,
+    ppn,
+    recurringTotal,
+    total,
+    cycleLabel,
+    trialDays: pkg.hasTrial ? (pkg.trialDays ?? FREE_TRIAL_DAYS) : 0,
+    hasTrial: Boolean(pkg.hasTrial),
+  };
 }

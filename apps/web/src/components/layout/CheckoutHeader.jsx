@@ -1,6 +1,5 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, User } from 'lucide-react';
-import Logo from '../ui/Logo.jsx';
 
 export default function CheckoutHeader() {
   const navigate = useNavigate();
@@ -15,13 +14,17 @@ export default function CheckoutHeader() {
         >
           <ArrowLeft size={20} aria-hidden />
         </button>
-        <div className="text-center">
+        <Link to="/" className="text-center">
           <div className="text-xs text-gray-500">Digital Workspace Architect</div>
           <div className="text-sm font-bold text-gray-900">Order Checkout</div>
-        </div>
-        <button className="p-2 rounded-lg text-gray-500 hover:bg-gray-100" aria-label="Akun">
+        </Link>
+        <Link
+          to="/lacak-pesanan"
+          className="p-2 rounded-lg text-gray-500 hover:bg-gray-100"
+          aria-label="Lacak Pesanan & Akun"
+        >
           <User size={20} aria-hidden />
-        </button>
+        </Link>
       </div>
     </header>
   );

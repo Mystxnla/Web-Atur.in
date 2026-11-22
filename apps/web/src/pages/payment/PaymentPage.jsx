@@ -1,19 +1,20 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { fetchOrder, createPayment, fetchPayment } from '../../services/api/index.js';
+import { fetchOrder, createPayment, fetchPayment, simulatePaid } from '../../services/api/index.js';
 import { useCheckoutStore } from '../../stores/checkoutStore.js';
 import { ORDER_STATUSES, PAYMENT_METHODS } from '@atur-in/shared';
 import Stepper from '../../components/ui/Stepper.jsx';
 import PaymentMethodPicker from '../../features/payment/PaymentMethodPicker.jsx';
 import QrisPanel from '../../features/payment/QrisPanel.jsx';
 import VaPanel from '../../features/payment/VaPanel.jsx';
+import EwalletPanel from '../../features/payment/EwalletPanel.jsx';
 import PaymentTimer from '../../features/payment/PaymentTimer.jsx';
 import OrderSummary from '../../features/payment/OrderSummary.jsx';
 import ExpiredState from '../../features/payment/ExpiredState.jsx';
 import Skeleton from '../../components/ui/Skeleton.jsx';
 import Button from '../../components/ui/Button.jsx';
-import { MessageCircle, ShieldCheck, Clock } from 'lucide-react';
+import { MessageCircle, ShieldCheck, Clock, CheckCircle2 } from 'lucide-react';
 import { toDisplayRef } from '../../lib/orderRef.js';
 import CopyButton from '../../components/ui/CopyButton.jsx';
 import { toast } from 'sonner';
@@ -23,10 +24,11 @@ import { SITE } from '../../config/site.js';
 export default function PaymentPage() {
   const { orderId } = useParams();
   const navigate = useNavigate();
-  const { paymentMethod, paymentId, setPaymentMethod, setPaymentId } = useCheckoutStore();
+  const { paymentMethod, paymentId, setPaymentMethod, setPaymentId, setOrderId } = useCheckoutStore();
 
   const [payment, setPayment] = useState(null);
   const [creatingBill, setCreatingBill] = useState(false);
+  const [simulating, setSimulating] = useState(false);
   const pollingRef = useRef(null);
 
   const { data: order, isLoading, error } = useQuery({
@@ -35,23 +37,25 @@ export default function PaymentPage() {
     refetchInterval: false,
   });
 
-  // Create payment bill once order is loaded
   useEffect(() => {
     if (!order) return;
-    if ([ORDER_STATUSES.DIBAYAR, ORDER_STATUSES.DIVERIFIKASI, ORDER_STATUSES.PROSES_SETUP, ORDER_STATUSES.SELESAI].includes(order.status)) {
+    setOrderId(order.id);
+    const isAlreadyPaidNonTrial =
+      !order.isTrial &&
+      [ORDER_STATUSES.DIBAYAR, ORDER_STATUSES.DIVERIFIKASI, ORDER_STATUSES.PROSES_SETUP, ORDER_STATUSES.SELESAI].includes(order.status);
+
+    if (isAlreadyPaidNonTrial) {
       navigate(`/checkout/selesai/${orderId}`, { replace: true });
       return;
     }
-    // Create initial bill if no paymentId
+
     if (!paymentId) {
       handleCreateBill(paymentMethod);
     } else {
-      // Resume polling existing payment
       pollPayment(paymentId);
     }
   }, [order?.id]);
 
-  // Normalize snake_case dari SQLite ke camelCase
   function normalizePayment(p) {
     if (!p) return p;
     return {
@@ -89,7 +93,7 @@ export default function PaymentPage() {
         if (p.status === 'paid') {
           clearInterval(pollingRef.current);
           toast.success('Pembayaran berhasil! Mengarahkan...');
-          setTimeout(() => navigate(`/checkout/selesai/${orderId}`), 1200);
+          setTimeout(() => navigate(`/checkout/selesai/${orderId}`), 1000);
         }
         if (p.status === 'expired') {
           clearInterval(pollingRef.current);
@@ -108,8 +112,26 @@ export default function PaymentPage() {
     await handleCreateBill(method);
   };
 
+  const handleSimulatePayNow = async () => {
+    const pid = payment?.id ?? paymentId;
+    if (!pid) {
+      toast.info('Sedang menyiapkan tagihan...');
+      return;
+    }
+    setSimulating(true);
+    try {
+      await simulatePaid(pid);
+      clearInterval(pollingRef.current);
+      toast.success('Pembayaran Demo Berhasil! Mengarahkan ke halaman konfirmasi...');
+      setTimeout(() => navigate(`/checkout/selesai/${orderId}`), 800);
+    } catch (err) {
+      toast.error('Gagal simulasi bayar: ' + err.message);
+    } finally {
+      setSimulating(false);
+    }
+  };
+
   const handleCheckPayment = async () => {
-    // Kalau belum ada paymentId, buat dulu baru cek
     if (!paymentId) {
       toast.info('Membuat tagihan terlebih dahulu...');
       await handleCreateBill(paymentMethod);
@@ -122,7 +144,7 @@ export default function PaymentPage() {
       if (p.status === 'paid') {
         navigate(`/checkout/selesai/${orderId}`);
       } else {
-        toast.info('Pembayaran belum terdeteksi. Gunakan Demo Panel untuk simulasi bayar, atau coba beberapa saat lagi.');
+        toast.info('Pembayaran belum terdeteksi. Klik tombol "Simulasikan Bayar Lunas (Demo)" di bawah untuk mencoba alur lunas.');
       }
     } catch {
       toast.error('Gagal memeriksa status pembayaran.');
@@ -152,12 +174,14 @@ export default function PaymentPage() {
             </span>
           )}
         </div>
-        <h1 className="text-xl font-bold text-gray-900">Selesaikan Pembayaran</h1>
+        <h1 className="text-xl font-bold text-gray-900">
+          {order?.isTrial ? 'Aktivasi Langganan Penuh' : 'Selesaikan Pembayaran'}
+        </h1>
         {order && (
           <div className="flex items-center gap-2 text-sm text-gray-500">
-            <span>No. Tagihan:</span>
-            <span className="font-semibold text-gray-800">{toDisplayRef(orderId)}</span>
-            <CopyButton text={toDisplayRef(orderId)} />
+            <span>No. Referensi:</span>
+            <span className="font-semibold text-gray-800">{toDisplayRef(order.ref_number ?? orderId)}</span>
+            <CopyButton text={toDisplayRef(order.ref_number ?? orderId)} />
           </div>
         )}
       </div>
@@ -166,27 +190,25 @@ export default function PaymentPage() {
         <ExpiredState onRenew={() => handleCreateBill(paymentMethod)} />
       ) : (
         <>
-          {/* Method picker */}
           <PaymentMethodPicker value={paymentMethod} onChange={handleMethodChange} />
 
-          {/* Payment display */}
           {creatingBill ? (
             <Skeleton className="h-48 w-full rounded-2xl" />
           ) : (() => {
-            const metode = payment?.metode ?? payment?.method;
-            if (metode === PAYMENT_METHODS.QRIS) return <QrisPanel payment={payment} />;
-            if (metode === PAYMENT_METHODS.VA)   return <VaPanel payment={payment} />;
+            const metode = payment?.metode ?? payment?.method ?? paymentMethod;
+            if (metode === PAYMENT_METHODS.QRIS)    return <QrisPanel payment={payment} />;
+            if (metode === PAYMENT_METHODS.VA)      return <VaPanel payment={payment} />;
+            if (metode === PAYMENT_METHODS.EWALLET) return <EwalletPanel payment={payment} />;
             return null;
           })()}
 
-          {/* Guide */}
           <div className="bg-gray-50 rounded-2xl p-4">
             <h3 className="text-sm font-bold text-gray-700 mb-3">3 Langkah Mudah Pembayaran:</h3>
             <ol className="space-y-2">
               {[
                 'Buka aplikasi m-banking atau e-wallet pilihan Anda (BCA, GoPay, OVO, Livin\', dll).',
-                'Pilih menu Scan QR, arahkan kamera ke kode di atas dan cek nominal tagihan.',
-                'Masukkan PIN transaksi Anda dan simpan bukti konfirmasi pembayaran.',
+                'Lakukan pembayaran sesuai metode di atas (Scan QRIS, Virtual Account, atau Nomor E-Wallet).',
+                'Masukkan PIN transaksi Anda dan klik tombol konfirmasi di bawah.',
               ].map((step, i) => (
                 <li key={i} className="flex items-start gap-3 text-sm text-gray-600">
                   <span className="w-5 h-5 bg-primary-100 text-primary-700 rounded-full text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">{i + 1}</span>
@@ -196,13 +218,25 @@ export default function PaymentPage() {
             </ol>
           </div>
 
-          {/* Sticky CTA */}
           <div className="sticky bottom-0 bg-white border-t border-gray-100 -mx-4 px-4 py-3 space-y-2 -mb-6">
             <Button fullWidth size="lg" onClick={handleCheckPayment}>
               Saya Sudah Bayar
             </Button>
+
+            {SITE.enableDemoPanel && (
+              <button
+                type="button"
+                disabled={simulating || creatingBill}
+                onClick={handleSimulatePayNow}
+                className="w-full py-2.5 px-4 rounded-xl border border-success-300 bg-success-50 text-success-700 text-xs font-bold hover:bg-success-100 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+              >
+                <CheckCircle2 size={14} aria-hidden />
+                {simulating ? 'Memproses Simulasi...' : 'Mode Prototype: Simulasikan Bayar Lunas (1-Klik)'}
+              </button>
+            )}
+
             <a
-              href={waSupportLink(SITE.supportWa, toDisplayRef(orderId))}
+              href={waSupportLink(SITE.supportWa, toDisplayRef(order?.ref_number ?? orderId))}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 text-sm text-success-600 font-medium hover:underline"
@@ -218,7 +252,6 @@ export default function PaymentPage() {
         </>
       )}
 
-      {/* Order summary */}
       {order && <OrderSummary order={order} />}
 
       <div className="pb-28" />
