@@ -199,6 +199,20 @@ export async function initDatabase() {
         expires_at      TIMESTAMPTZ NOT NULL,
         created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
+
+      CREATE TABLE IF NOT EXISTS workspaces (
+        id              TEXT PRIMARY KEY,
+        order_id        TEXT UNIQUE NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+        title           TEXT NOT NULL,
+        icon            TEXT NOT NULL DEFAULT '🚀',
+        cover_gradient  TEXT NOT NULL DEFAULT 'from-indigo-600 via-primary-600 to-purple-600',
+        pages_json      JSONB NOT NULL DEFAULT '[]'::jsonb,
+        tasks_json      JSONB NOT NULL DEFAULT '[]'::jsonb,
+        members_json    JSONB NOT NULL DEFAULT '[]'::jsonb,
+        links_json      JSONB NOT NULL DEFAULT '[]'::jsonb,
+        created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
     `);
 
     // Pastikan kolom baru tetap ada jika tabel orders sudah pernah dibuat sebelumnya

@@ -16,8 +16,9 @@ import lookupRouter   from './routes/lookup.js';
 import leadsRouter    from './routes/leads.js';
 import demoRouter     from './routes/demo.js';
 import uploadRouter   from './routes/upload.js';
-import packagesRouter from './routes/packages.js';
-import adminRouter    from './routes/admin.js';
+import packagesRouter   from './routes/packages.js';
+import adminRouter      from './routes/admin.js';
+import workspacesRouter from './routes/workspaces.js';
 
 const app  = express();
 const PORT = parseInt(process.env.PORT ?? '4000', 10);
@@ -102,8 +103,9 @@ app.use('/api/payments', paymentsRouter); // handles GET/POST /api/payments/:id/
 app.use('/api/lookup',   lookupRouter);
 app.use('/api/leads',    leadsRouter);
 app.use('/api/upload',   uploadRouter);
-app.use('/api/demo',     demoRouter);
-app.use('/api/admin',    adminRouter);
+app.use('/api/demo',       demoRouter);
+app.use('/api/admin',      adminRouter);
+app.use('/api/workspaces', workspacesRouter);
 
 app.get('/api/health', (req, res) => res.json({
   status: 'ok',

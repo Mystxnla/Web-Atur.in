@@ -15,7 +15,7 @@ import { toDisplayRef } from '../../lib/orderRef.js';
 import { waSupportLink } from '../../lib/wa.js';
 import { SITE } from '../../config/site.js';
 import { useCheckoutStore } from '../../stores/checkoutStore.js';
-import { MessageCircle, Home, Download, ShieldCheck, Sparkles, CreditCard } from 'lucide-react';
+import { MessageCircle, Home, Download, ShieldCheck, Sparkles, CreditCard, FolderKanban } from 'lucide-react';
 
 export default function DonePage() {
   const { orderId } = useParams();
@@ -216,6 +216,33 @@ export default function DonePage() {
           <h2 className="font-bold text-gray-800">Apa Langkah Selanjutnya?</h2>
         </div>
         <Timeline steps={NEXT_STEPS} currentIndex={0} />
+      </div>
+
+      {/* Open Interactive Notion-Style Workspace CTA */}
+      <div className="bg-gradient-to-r from-indigo-600 via-primary-600 to-purple-600 rounded-2xl p-5 text-white shadow-md space-y-3">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0 text-xl">
+            🚀
+          </div>
+          <div>
+            <div className="text-xs font-bold uppercase tracking-wider text-indigo-100">
+              Ruang Kerja Digital Siap Digunakan
+            </div>
+            <h2 className="text-base font-extrabold">
+              Workspace {order?.customer?.namaKelompok ?? order?.group_name ?? 'Tim Kamu'} Sudah Aktif!
+            </h2>
+            <p className="text-xs text-indigo-100 mt-0.5 leading-relaxed">
+              Akses Sprint Kanban Board, dokumen SOP, dan checklist kolaborasi tim langsung di browser kamu.
+            </p>
+          </div>
+        </div>
+        <Link
+          to={`/workspace/${order?.id ?? orderId}`}
+          className="flex items-center justify-center gap-2 w-full py-3 bg-white text-primary-700 font-extrabold rounded-xl text-sm hover:bg-indigo-50 transition-colors shadow-xs"
+        >
+          <FolderKanban size={16} aria-hidden />
+          Buka Workspace Digital Tim Sekarang
+        </Link>
       </div>
 
       {/* Track order shortcut */}

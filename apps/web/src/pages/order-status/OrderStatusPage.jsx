@@ -17,7 +17,7 @@ import { formatRupiah, formatTanggalWIB } from '../../lib/format.js';
 import { toDisplayRef } from '../../lib/orderRef.js';
 import { waSupportLink } from '../../lib/wa.js';
 import { SITE } from '../../config/site.js';
-import { MessageCircle, ShieldCheck, Home, RefreshCw, Sparkles, CreditCard } from 'lucide-react';
+import { MessageCircle, ShieldCheck, Home, RefreshCw, Sparkles, CreditCard, FolderKanban } from 'lucide-react';
 
 const STATUS_VARIANT = {
   menunggu_pembayaran: 'warning',
@@ -183,6 +183,15 @@ export default function OrderStatusPage() {
           </ul>
         </div>
       )}
+
+      {/* Open Interactive Workspace CTA */}
+      <Link
+        to={`/workspace/${order.id}`}
+        className="flex items-center justify-center gap-2 w-full py-3.5 bg-primary-600 text-white font-bold rounded-2xl text-sm hover:bg-primary-700 transition-colors shadow-xs"
+      >
+        <FolderKanban size={16} aria-hidden />
+        Buka Workspace Digital Tim ({customer?.namaKelompok ?? order.group_name ?? displayRef})
+      </Link>
 
       {/* Quick contact */}
       <a

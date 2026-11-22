@@ -37,3 +37,8 @@ export const uploadReference = (file) => {
 export const fetchDemoState = () => api.get('/demo/state');
 export const demoAdvanceOrder = (id) => api.post(`/demo/advance-order/${id}`);
 export const demoReset = () => api.post('/demo/reset');
+
+// Workspaces (Notion-like Digital Workspace)
+export const fetchWorkspace = (orderId) => api.get(`/workspaces/${orderId}`);
+export const updateWorkspace = (orderId, data) => api.patch(`/workspaces/${orderId}`, data);
+export const resetWorkspaceTemplate = (orderId) => api.post(`/workspaces/${orderId}/reset-template`);

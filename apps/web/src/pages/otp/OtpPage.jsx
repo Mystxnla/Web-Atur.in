@@ -41,7 +41,7 @@ export default function OtpPage() {
       setSession({ sessionToken: result.sessionToken, customer: result.customer, orders: result.orders });
       toast.success('Verifikasi berhasil!');
       if (result.orders.length === 1) {
-        navigate(`/lacak-pesanan/${result.orders[0].id}`);
+        navigate(`/workspace/${result.orders[0].id}`);
       } else {
         navigate('/lacak-pesanan');
       }

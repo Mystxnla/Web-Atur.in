@@ -14,6 +14,7 @@ const DonePage        = lazy(() => import('../pages/done/DonePage.jsx'));
 const LookupPage      = lazy(() => import('../pages/lookup/LookupPage.jsx'));
 const OtpPage         = lazy(() => import('../pages/otp/OtpPage.jsx'));
 const OrderStatusPage = lazy(() => import('../pages/order-status/OrderStatusPage.jsx'));
+const WorkspacePage   = lazy(() => import('../pages/workspace/WorkspacePage.jsx'));
 const NotFoundPage    = lazy(() => import('../pages/not-found/NotFoundPage.jsx'));
 
 // Admin
@@ -55,6 +56,10 @@ export const router = createBrowserRouter([
       { path: '/lacak-pesanan/verifikasi', element: <OtpPage /> },
       { path: '/lacak-pesanan/:orderId', element: <OrderStatusPage /> },
     ],
+  },
+  {
+    path: '/workspace/:orderId',
+    element: <Wrap><WorkspacePage /></Wrap>,
   },
   // ─── Admin ────────────────────────────────────────────────────
   {
