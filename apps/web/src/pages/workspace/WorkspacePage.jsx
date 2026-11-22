@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -7,54 +7,32 @@ import {
   resetWorkspaceTemplate,
 } from '../../services/api/index.js';
 import { toDisplayRef } from '../../lib/orderRef.js';
-import { formatTanggalWIB } from '../../lib/format.js';
-import Badge from '../../components/ui/Badge.jsx';
-import Button from '../../components/ui/Button.jsx';
 import Skeleton from '../../components/ui/Skeleton.jsx';
 import { toast } from 'sonner';
 import { cn } from '../../lib/cn.js';
 import {
-  LayoutGrid,
+  FolderKanban,
   FileText,
   Users,
   Plus,
   Trash2,
-  CheckSquare,
-  Square,
+  Check,
   ExternalLink,
   RotateCcw,
   ChevronRight,
-  Sparkles,
-  CheckCircle2,
   Menu,
   X,
   ArrowLeft,
-  Calendar,
-  Flag,
-  FolderKanban,
+  ArrowRight,
+  Link2,
 } from 'lucide-react';
 
-const EMOJI_CHOICES = ['🚀', '🎓', '🏛️', '🔬', '⚡', '📚', '🎯', '🧠', '💡', '📌'];
-
-const COVER_CHOICES = [
-  { id: 'indigo', label: 'Indigo Glow', cls: 'from-indigo-600 via-primary-600 to-purple-600' },
-  { id: 'emerald', label: 'Emerald Forest', cls: 'from-emerald-600 via-teal-600 to-cyan-600' },
-  { id: 'sunset', label: 'Sunset Orange', cls: 'from-rose-500 via-orange-500 to-amber-500' },
-  { id: 'slate', label: 'Minimalist Slate', cls: 'from-slate-800 via-gray-800 to-zinc-700' },
-];
-
 const KANBAN_COLUMNS = [
-  { id: 'todo', label: 'To Do', dot: 'bg-gray-400', bg: 'bg-gray-50/90 border-gray-200/80' },
-  { id: 'in_progress', label: 'In Progress', dot: 'bg-primary-500', bg: 'bg-primary-50/40 border-primary-100' },
-  { id: 'review', label: 'In Review', dot: 'bg-amber-500', bg: 'bg-amber-50/40 border-amber-100' },
-  { id: 'done', label: 'Done', dot: 'bg-emerald-500', bg: 'bg-emerald-50/40 border-emerald-100' },
+  { id: 'todo', label: 'Rencana', dot: 'bg-[#7b7266]', next: 'in_progress', nextLabel: 'Kerjakan' },
+  { id: 'in_progress', label: 'Dikerjakan', dot: 'bg-[#4338ca]', next: 'review', nextLabel: 'Review' },
+  { id: 'review', label: 'Revisi & review', dot: 'bg-[#d97706]', next: 'done', nextLabel: 'Selesai' },
+  { id: 'done', label: 'Selesai', dot: 'bg-[#16a34a]', next: null, nextLabel: null },
 ];
-
-const PRIORITY_BADGE = {
-  high: { label: 'High', cls: 'bg-rose-50 text-rose-700 border-rose-200' },
-  medium: { label: 'Medium', cls: 'bg-amber-50 text-amber-700 border-amber-200' },
-  low: { label: 'Low', cls: 'bg-slate-100 text-slate-600 border-slate-200' },
-};
 
 export default function WorkspacePage() {
   const { orderId } = useParams();
@@ -63,22 +41,17 @@ export default function WorkspacePage() {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeView, setActiveView] = useState('kanban'); // 'kanban' | 'resources' | pageId
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [quickTaskInputs, setQuickTaskInputs] = useState({});
+  const [draggedTaskId, setDraggedTaskId] = useState(null);
+  const [dragOverCol, setDragOverCol] = useState(null);
 
-  // Task Modal / Inline add state
-  const [newTaskTitle, setNewTaskTitle] = useState('');
-  const [newTaskCol, setNewTaskCol] = useState('todo');
-  const [newTaskAssignee, setNewTaskAssignee] = useState('');
-  const [newTaskPriority, setNewTaskPriority] = useState('medium');
-  const [newTaskTag, setNewTaskTag] = useState('Umum');
-  const [addingTaskCol, setAddingTaskCol] = useState(null);
-
-  // Checklist & Page editing state
   const [newChecklistText, setNewChecklistText] = useState('');
   const [newMemberName, setNewMemberName] = useState('');
   const [newMemberRole, setNewMemberRole] = useState('');
   const [newLinkTitle, setNewLinkTitle] = useState('');
   const [newLinkUrl, setNewLinkUrl] = useState('');
+
+  const saveTimerRef = useRef(null);
 
   const { data: workspace, isLoading, error } = useQuery({
     queryKey: ['workspace', orderId],
@@ -90,35 +63,41 @@ export default function WorkspacePage() {
     onSuccess: (updated) => {
       qc.setQueryData(['workspace', orderId], updated);
     },
-    onError: (err) => toast.error('Gagal menyimpan perubahan: ' + err.message),
+    onError: (err) => toast.error('Gagal menyimpan: ' + err.message),
   });
 
   const resetMutation = useMutation({
     mutationFn: () => resetWorkspaceTemplate(orderId),
     onSuccess: (updated) => {
       qc.setQueryData(['workspace', orderId], updated);
-      toast.success('Workspace dikembalikan ke blueprint standar.');
+      toast.success('Ruang kerja dikembalikan ke templat awal');
     },
   });
 
-  useEffect(() => {
-    if (workspace?.pages?.length > 0 && activeView === 'default') {
-      setActiveView(workspace.pages[0].id);
+  // Optimistic update helper so UI feels instant without waiting for network
+  const updateWorkspaceOptimistic = (patch, debounceMs = 0) => {
+    qc.setQueryData(['workspace', orderId], (old) => (old ? { ...old, ...patch } : old));
+    clearTimeout(saveTimerRef.current);
+    if (debounceMs > 0) {
+      saveTimerRef.current = setTimeout(() => {
+        saveMutation.mutate(patch);
+      }, debounceMs);
+    } else {
+      saveMutation.mutate(patch);
     }
-  }, [workspace?.id]);
+  };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white flex">
-        <div className="w-64 border-r border-gray-200 p-4 hidden md:block space-y-3">
+      <div className="min-h-screen bg-[#fdfbf7] flex">
+        <div className="w-60 border-r border-[#1f1b16]/8 bg-[#f7f4ee] p-4 hidden md:block space-y-3">
           <Skeleton className="h-8 w-full" />
           <Skeleton className="h-6 w-3/4" />
           <Skeleton className="h-6 w-5/6" />
         </div>
         <div className="flex-1 p-8 space-y-4">
-          <Skeleton className="h-36 w-full rounded-2xl" />
-          <Skeleton className="h-10 w-1/2" />
-          <Skeleton className="h-64 w-full rounded-2xl" />
+          <Skeleton className="h-10 w-1/3" />
+          <Skeleton className="h-64 w-full rounded-xl" />
         </div>
       </div>
     );
@@ -126,10 +105,10 @@ export default function WorkspacePage() {
 
   if (error || !workspace) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6 text-center space-y-4">
-        <p className="text-danger-600 font-semibold">Workspace tidak ditemukan.</p>
-        <Link to="/lacak-pesanan" className="text-sm text-primary-600 font-semibold hover:underline">
-          ← Kembali ke Portal Workspace
+      <div className="min-h-screen bg-[#f7f4ee] flex flex-col items-center justify-center p-6 text-center space-y-3">
+        <p className="text-[#dc2626] text-sm font-medium">Ruang kerja tidak ditemukan</p>
+        <Link to="/lacak-pesanan" className="text-xs text-[#4338ca] font-medium hover:underline">
+          Kembali ke halaman masuk
         </Link>
       </div>
     );
@@ -143,59 +122,83 @@ export default function WorkspacePage() {
   const links = workspace.links ?? [];
 
   const activePage = pages.find((p) => p.id === activeView);
+  const doneCount = tasks.filter((t) => t.status === 'done').length;
 
-  // Handlers for updating workspace state in Supabase
-  const handleAddTask = (colId) => {
-    if (!newTaskTitle.trim()) return;
+  // ── Kanban Handlers (1-click advance, drag-and-drop, and press-Enter quick add) ──
+  const handleQuickAddTask = (colId) => {
+    const title = (quickTaskInputs[colId] ?? '').trim();
+    if (!title) return;
+
     const nextTasks = [
       ...tasks,
       {
         id: `tsk-${Date.now()}`,
-        title: newTaskTitle.trim(),
+        title,
         status: colId,
-        assignee: newTaskAssignee.trim() || members[0]?.name || 'Tim',
-        priority: newTaskPriority,
-        tag: newTaskTag.trim() || 'Task',
-        dueDate: 'Minggu Ini',
+        assignee: members[0]?.name || 'Anggota',
+        priority: 'medium',
+        tag: 'Tugas',
+        dueDate: 'Minggu ini',
       },
     ];
-    setNewTaskTitle('');
-    setAddingTaskCol(null);
-    saveMutation.mutate({ tasks: nextTasks });
-    toast.success('Kartu tugas ditambahkan.');
+    setQuickTaskInputs((prev) => ({ ...prev, [colId]: '' }));
+    updateWorkspaceOptimistic({ tasks: nextTasks });
   };
 
   const handleMoveTask = (taskId, nextStatus) => {
+    if (!nextStatus) return;
     const nextTasks = tasks.map((t) => (t.id === taskId ? { ...t, status: nextStatus } : t));
-    saveMutation.mutate({ tasks: nextTasks });
+    updateWorkspaceOptimistic({ tasks: nextTasks });
+  };
+
+  const handleCycleTaskAssignee = (taskId) => {
+    if (members.length === 0) return;
+    const nextTasks = tasks.map((t) => {
+      if (t.id !== taskId) return t;
+      const idx = members.findIndex((m) => m.name === t.assignee);
+      const nextMember = members[(idx + 1) % members.length];
+      return { ...t, assignee: nextMember.name };
+    });
+    updateWorkspaceOptimistic({ tasks: nextTasks });
   };
 
   const handleDeleteTask = (taskId) => {
     const nextTasks = tasks.filter((t) => t.id !== taskId);
-    saveMutation.mutate({ tasks: nextTasks });
+    updateWorkspaceOptimistic({ tasks: nextTasks });
   };
 
+  // ── Page & Document Canvas Handlers (Auto-saving as you type) ──
   const handleAddPage = () => {
     const newId = `page-${Date.now()}`;
     const newPage = {
       id: newId,
-      title: 'Halaman Dokumen Baru',
-      icon: '📄',
-      callout: 'Tulis ringkasan atau instruksi penting di kotak callout ini.',
-      content: 'Ketik catatan rapat, pembagian tugas, atau dokumentasi proyek di sini...',
+      title: 'Kertas kerja baru',
+      callout: 'Ringkasan atau kesepakatan utama untuk dokumen ini.',
+      content: '',
       checklist: [
-        { id: `chk-${Date.now()}`, text: 'Item to-do pertama di halaman ini', done: false },
+        { id: `chk-${Date.now()}`, text: 'Tulis langkah pertama tim di sini', done: false },
       ],
     };
     const nextPages = [...pages, newPage];
-    saveMutation.mutate({ pages: nextPages });
+    updateWorkspaceOptimistic({ pages: nextPages });
     setActiveView(newId);
-    toast.success('Halaman baru dibuat.');
   };
 
-  const handleUpdatePageField = (pageId, field, value) => {
+  const handleDeletePage = (pageId) => {
+    if (pages.length <= 1) {
+      toast.error('Minimal harus ada satu halaman dokumen');
+      return;
+    }
+    const nextPages = pages.filter((p) => p.id !== pageId);
+    updateWorkspaceOptimistic({ pages: nextPages });
+    if (activeView === pageId) {
+      setActiveView(nextPages[0]?.id ?? 'kanban');
+    }
+  };
+
+  const handlePageChange = (pageId, field, value) => {
     const nextPages = pages.map((p) => (p.id === pageId ? { ...p, [field]: value } : p));
-    saveMutation.mutate({ pages: nextPages });
+    updateWorkspaceOptimistic({ pages: nextPages }, 450);
   };
 
   const handleToggleChecklist = (pageId, chkId) => {
@@ -206,23 +209,24 @@ export default function WorkspacePage() {
       );
       return { ...p, checklist: nextList };
     });
-    saveMutation.mutate({ pages: nextPages });
+    updateWorkspaceOptimistic({ pages: nextPages });
   };
 
   const handleAddChecklistItem = (pageId) => {
-    if (!newChecklistText.trim()) return;
+    const text = newChecklistText.trim();
+    if (!text) return;
     const nextPages = pages.map((p) => {
       if (p.id !== pageId) return p;
       return {
         ...p,
         checklist: [
           ...(p.checklist ?? []),
-          { id: `chk-${Date.now()}`, text: newChecklistText.trim(), done: false },
+          { id: `chk-${Date.now()}`, text, done: false },
         ],
       };
     });
     setNewChecklistText('');
-    saveMutation.mutate({ pages: nextPages });
+    updateWorkspaceOptimistic({ pages: nextPages });
   };
 
   const handleDeleteChecklistItem = (pageId, chkId) => {
@@ -233,9 +237,10 @@ export default function WorkspacePage() {
         checklist: (p.checklist ?? []).filter((c) => c.id !== chkId),
       };
     });
-    saveMutation.mutate({ pages: nextPages });
+    updateWorkspaceOptimistic({ pages: nextPages });
   };
 
+  // ── Team & Resource Links Handlers ──
   const handleAddMember = (e) => {
     e.preventDefault();
     if (!newMemberName.trim()) return;
@@ -244,14 +249,17 @@ export default function WorkspacePage() {
       {
         id: `mem-${Date.now()}`,
         name: newMemberName.trim(),
-        role: newMemberRole.trim() || 'Anggota Tim',
-        avatarBg: 'bg-primary-600',
+        role: newMemberRole.trim() || 'Anggota',
       },
     ];
     setNewMemberName('');
     setNewMemberRole('');
-    saveMutation.mutate({ members: nextMembers });
-    toast.success('Anggota ditambahkan ke workspace.');
+    updateWorkspaceOptimistic({ members: nextMembers });
+  };
+
+  const handleRemoveMember = (memberId) => {
+    if (members.length <= 1) return;
+    updateWorkspaceOptimistic({ members: members.filter((m) => m.id !== memberId) });
   };
 
   const handleAddLink = (e) => {
@@ -263,92 +271,73 @@ export default function WorkspacePage() {
       {
         id: `lnk-${Date.now()}`,
         title: newLinkTitle.trim(),
-        category: 'Tautan Tim',
+        category: 'Tautan',
         url,
-        icon: '🔗',
       },
     ];
     setNewLinkTitle('');
     setNewLinkUrl('');
-    saveMutation.mutate({ links: nextLinks });
-    toast.success('Tautan berhasil disimpan.');
+    updateWorkspaceOptimistic({ links: nextLinks });
   };
 
-  const doneCount = tasks.filter((t) => t.status === 'done').length;
-  const progressPct = tasks.length > 0 ? Math.round((doneCount / tasks.length) * 100) : 0;
+  const handleRemoveLink = (linkId) => {
+    updateWorkspaceOptimistic({ links: links.filter((l) => l.id !== linkId) });
+  };
 
   return (
-    <div className="min-h-screen bg-[#fbfbfa] text-gray-900 flex">
-      {/* Notion-style Sidebar */}
+    <div className="min-h-screen bg-[#fdfbf7] text-[#1f1b16] flex">
+      {/* Quiet Warm-Paper Sidebar (248px, 4px grid rhythm, 16px 1.5-stroke icons) */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 w-64 bg-[#f7f7f5] border-r border-gray-200/80 flex flex-col transition-transform duration-200 select-none',
+          'fixed inset-y-0 left-0 z-50 w-[248px] bg-[#f7f4ee] border-r border-[#1f1b16]/8 flex flex-col transition-transform duration-150 select-none',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full',
           'md:translate-x-0 md:static md:flex'
         )}
       >
-        {/* Workspace Switcher Top */}
-        <div className="p-3.5 border-b border-gray-200/70 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-7 h-7 rounded-lg bg-white shadow-xs border border-gray-200 flex items-center justify-center text-base flex-shrink-0">
-              {workspace.icon}
-            </div>
-            <div className="min-w-0">
-              <div className="text-sm font-bold text-gray-900 truncate">{workspace.title}</div>
-              <div className="text-[11px] text-gray-400 font-mono truncate">{displayRef}</div>
+        {/* Workspace Identity & Signature Live Reference */}
+        <div className="h-14 px-4 border-b border-[#1f1b16]/8 flex items-center justify-between gap-2">
+          <div className="min-w-0">
+            <div className="text-sm font-medium text-[#1f1b16] truncate">{workspace.title}</div>
+            <div className="flex items-center gap-1.5 text-xs text-[#7b7266] font-mono tabular-nums">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#16a34a]" aria-hidden />
+              <span>{displayRef}</span>
+              <span>·</span>
+              <span>{doneCount}/{tasks.length}</span>
             </div>
           </div>
           <button
+            type="button"
             onClick={() => setSidebarOpen(false)}
-            className="md:hidden p-1 text-gray-400 hover:text-gray-700 rounded"
-            aria-label="Tutup sidebar"
+            className="md:hidden p-1 text-[#7b7266] hover:text-[#1f1b16] rounded-md"
+            aria-label="Tutup navigasi"
           >
-            <X size={16} />
+            <X size={16} strokeWidth={1.5} />
           </button>
         </div>
 
-        {/* Trial / Plan Status Strip */}
-        {order?.isTrial && (
-          <div className="mx-3 mt-3 p-2.5 rounded-xl bg-primary-50 border border-primary-200/80 text-xs space-y-1.5">
-            <div className="flex items-center justify-between font-bold text-primary-800">
-              <span className="flex items-center gap-1">
-                <Sparkles size={12} /> Free Trial 7 Hari
-              </span>
-              <span>Aktif</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => navigate(`/checkout/pembayaran/${order.id}`)}
-              className="w-full py-1 px-2 rounded-lg bg-primary-600 text-white font-semibold text-[11px] hover:bg-primary-700 transition-colors"
-            >
-              Upgrade ke Full Plan →
-            </button>
-          </div>
-        )}
-
-        {/* Navigation Sections */}
-        <div className="flex-1 overflow-y-auto px-2.5 py-4 space-y-5">
-          {/* Core Workspace Views */}
+        {/* Navigation List */}
+        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
+          {/* Group 1: Ruang kerja utama */}
           <div>
-            <div className="px-2.5 mb-1.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-              Database &amp; Views
+            <div className="px-2 mb-2 text-xs font-medium text-[#7b7266]">
+              Ruang kerja
             </div>
-            <div className="space-y-0.5">
+            <div className="space-y-1">
               <button
                 type="button"
                 onClick={() => { setActiveView('kanban'); setSidebarOpen(false); }}
                 className={cn(
-                  'w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-sm font-medium transition-colors',
+                  'w-full h-9 px-2.5 rounded-lg text-sm flex items-center justify-between transition-colors',
                   activeView === 'kanban'
-                    ? 'bg-gray-200/80 text-gray-900 font-semibold'
-                    : 'text-gray-600 hover:bg-gray-200/40'
+                    ? 'bg-[#efe9df] text-[#1f1b16] font-medium'
+                    : 'text-[#5e554a] hover:bg-[#efe9df]/50 hover:text-[#1f1b16]'
                 )}
               >
-                <span className="flex items-center gap-2">
-                  <FolderKanban size={16} className="text-primary-600" />
-                  Sprint Kanban Board
+                <span className="flex items-center gap-2.5">
+                  <FolderKanban size={16} strokeWidth={1.5} className="text-[#7b7266] flex-shrink-0" />
+                  <span>Papan tugas</span>
                 </span>
-                <span className="text-xs bg-white px-1.5 py-0.5 rounded-md border border-gray-200 text-gray-500">
+                <span className="text-xs font-mono text-[#7b7266] tabular-nums">
                   {tasks.length}
                 </span>
               </button>
@@ -357,412 +346,325 @@ export default function WorkspacePage() {
                 type="button"
                 onClick={() => { setActiveView('resources'); setSidebarOpen(false); }}
                 className={cn(
-                  'w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-sm font-medium transition-colors',
+                  'w-full h-9 px-2.5 rounded-lg text-sm flex items-center justify-between transition-colors',
                   activeView === 'resources'
-                    ? 'bg-gray-200/80 text-gray-900 font-semibold'
-                    : 'text-gray-600 hover:bg-gray-200/40'
+                    ? 'bg-[#efe9df] text-[#1f1b16] font-medium'
+                    : 'text-[#5e554a] hover:bg-[#efe9df]/50 hover:text-[#1f1b16]'
                 )}
               >
-                <span className="flex items-center gap-2">
-                  <Users size={16} className="text-emerald-600" />
-                  Tim &amp; Resource Hub
+                <span className="flex items-center gap-2.5">
+                  <Users size={16} strokeWidth={1.5} className="text-[#7b7266] flex-shrink-0" />
+                  <span>Tim &amp; tautan</span>
                 </span>
-                <span className="text-xs bg-white px-1.5 py-0.5 rounded-md border border-gray-200 text-gray-500">
+                <span className="text-xs font-mono text-[#7b7266] tabular-nums">
                   {members.length}
                 </span>
               </button>
             </div>
           </div>
 
-          {/* Notion-style Pages */}
+          {/* Group 2: Kertas kerja & dokumen */}
           <div>
-            <div className="px-2.5 mb-1.5 flex items-center justify-between">
-              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                Halaman &amp; Dokumen
+            <div className="px-2 mb-2 flex items-center justify-between">
+              <span className="text-xs font-medium text-[#7b7266]">
+                Kertas kerja
               </span>
               <button
                 type="button"
                 onClick={handleAddPage}
-                className="p-0.5 rounded hover:bg-gray-200 text-gray-500 hover:text-gray-800"
-                title="Tambah Halaman Baru"
+                className="p-1 rounded-md text-[#7b7266] hover:text-[#1f1b16] hover:bg-[#efe9df]"
+                title="Tambah halaman kertas kerja"
               >
-                <Plus size={14} />
+                <Plus size={14} strokeWidth={1.5} />
               </button>
             </div>
-            <div className="space-y-0.5">
+            <div className="space-y-1">
               {pages.map((p) => (
                 <button
                   key={p.id}
                   type="button"
                   onClick={() => { setActiveView(p.id); setSidebarOpen(false); }}
                   className={cn(
-                    'w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm transition-colors text-left',
+                    'w-full h-9 px-2.5 rounded-lg text-sm flex items-center gap-2.5 transition-colors text-left',
                     activeView === p.id
-                      ? 'bg-gray-200/80 text-gray-900 font-semibold'
-                      : 'text-gray-600 hover:bg-gray-200/40'
+                      ? 'bg-[#efe9df] text-[#1f1b16] font-medium'
+                      : 'text-[#5e554a] hover:bg-[#efe9df]/50 hover:text-[#1f1b16]'
                   )}
                 >
-                  <span className="text-base">{p.icon || '📄'}</span>
-                  <span className="truncate flex-1">{p.title}</span>
+                  <FileText size={16} strokeWidth={1.5} className="text-[#7b7266] flex-shrink-0" />
+                  <span className="truncate flex-1">{p.title.replace(/^[^\w\s]+\s*/, '')}</span>
                 </button>
               ))}
               <button
                 type="button"
                 onClick={handleAddPage}
-                className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs text-gray-400 hover:text-gray-700 hover:bg-gray-200/40 transition-colors"
+                className="w-full h-8 px-2.5 rounded-lg text-xs text-[#7b7266] hover:text-[#1f1b16] hover:bg-[#efe9df]/50 flex items-center gap-2.5 transition-colors"
               >
-                <Plus size={14} />
-                <span>Tambah halaman...</span>
+                <Plus size={14} strokeWidth={1.5} />
+                <span>Halaman baru</span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* Footer links */}
-        <div className="p-3 border-t border-gray-200/70 space-y-1 text-xs">
-          <Link
-            to={`/lacak-pesanan/${order?.id ?? orderId}`}
-            className="flex items-center gap-2 px-2.5 py-2 rounded-lg text-gray-600 hover:bg-gray-200/50 font-medium"
-          >
-            <FileText size={14} />
-            Status &amp; Detail Pesanan
-          </Link>
-          <Link
-            to="/lacak-pesanan"
-            className="flex items-center gap-2 px-2.5 py-2 rounded-lg text-gray-500 hover:bg-gray-200/50"
-          >
-            <ArrowLeft size={14} />
-            Ganti Workspace / Portal
-          </Link>
+        {/* Trial strip & Bottom Actions */}
+        <div className="p-3 border-t border-[#1f1b16]/8 space-y-2">
+          {order?.isTrial && (
+            <div className="p-2.5 rounded-lg bg-[#efe9df] border border-[#1f1b16]/8 space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-medium text-[#1f1b16]">Masa uji coba 7 hari</span>
+                <span className="text-[#7b7266] font-mono">Rp 0</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate(`/checkout/pembayaran/${order.id}`)}
+                className="w-full h-8 px-2.5 rounded-md bg-[#1f1b16] text-white text-xs font-medium hover:bg-[#332d25] transition-colors"
+              >
+                Aktifkan paket penuh
+              </button>
+            </div>
+          )}
+
+          <div className="space-y-0.5 text-xs">
+            <Link
+              to={`/lacak-pesanan/${order?.id ?? orderId}`}
+              className="h-8 px-2.5 rounded-md text-[#5e554a] hover:text-[#1f1b16] hover:bg-[#efe9df]/60 flex items-center gap-2 transition-colors"
+            >
+              <FileText size={14} strokeWidth={1.5} />
+              <span>Detail &amp; invoice pesanan</span>
+            </Link>
+            <Link
+              to="/lacak-pesanan"
+              className="h-8 px-2.5 rounded-md text-[#7b7266] hover:text-[#1f1b16] hover:bg-[#efe9df]/60 flex items-center gap-2 transition-colors"
+            >
+              <ArrowLeft size={14} strokeWidth={1.5} />
+              <span>Pindah ruang kerja</span>
+            </Link>
+          </div>
         </div>
       </aside>
 
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/40 md:hidden"
+          className="fixed inset-0 z-40 bg-black/30 md:hidden"
           onClick={() => setSidebarOpen(false)}
           aria-hidden
         />
       )}
 
-      {/* Main Content Area */}
+      {/* Main Content Shell */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Notion Bar */}
-        <header className="h-12 bg-white/90 backdrop-blur border-b border-gray-200/70 px-4 flex items-center justify-between sticky top-0 z-30">
+        {/* Quiet 56px Top Bar */}
+        <header className="h-14 bg-[#fdfbf7]/90 backdrop-blur border-b border-[#1f1b16]/8 px-6 flex items-center justify-between sticky top-0 z-30">
           <div className="flex items-center gap-2 min-w-0 text-sm">
             <button
               type="button"
               onClick={() => setSidebarOpen(true)}
-              className="md:hidden p-1.5 text-gray-600 hover:bg-gray-100 rounded-lg"
-              aria-label="Buka menu workspace"
+              className="md:hidden p-1.5 -ml-1.5 text-[#5e554a] hover:bg-[#efe9df] rounded-lg"
+              aria-label="Buka sidebar"
             >
-              <Menu size={18} />
+              <Menu size={18} strokeWidth={1.5} />
             </button>
-            <span className="text-gray-400 truncate hidden sm:inline">{workspace.title}</span>
-            <ChevronRight size={14} className="text-gray-300 hidden sm:inline" />
-            <span className="font-semibold text-gray-800 truncate">
+            <span className="text-[#7b7266] truncate hidden sm:inline">{workspace.title}</span>
+            <ChevronRight size={14} strokeWidth={1.5} className="text-[#7b7266]/60 hidden sm:inline" />
+            <span className="font-medium text-[#1f1b16] truncate">
               {activeView === 'kanban'
-                ? '🗂️ Sprint Kanban Board'
+                ? 'Papan tugas'
                 : activeView === 'resources'
-                ? '👥 Tim & Resource Hub'
-                : `${activePage?.icon ?? '📄'} ${activePage?.title ?? 'Dokumen'}`}
+                ? 'Tim & tautan'
+                : activePage?.title}
             </span>
           </div>
 
-          <div className="flex items-center gap-2.5">
-            <span className="text-xs text-gray-400 flex items-center gap-1">
-              <CheckCircle2 size={14} className="text-emerald-500" />
-              <span className="hidden sm:inline">
-                {saveMutation.isPending ? 'Menyimpan...' : 'Tersimpan di Cloud'}
-              </span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-[#7b7266] tabular-nums">
+              {saveMutation.isPending ? 'Menyimpan...' : 'Tersimpan'}
             </span>
             <button
               type="button"
               onClick={() => resetMutation.mutate()}
               disabled={resetMutation.isPending}
-              className="text-xs text-gray-500 hover:text-gray-800 px-2.5 py-1 rounded-lg border border-gray-200 hover:bg-gray-50 flex items-center gap-1"
-              title="Reset ke template awal"
+              className="h-8 px-2.5 rounded-lg border border-[#1f1b16]/10 bg-white text-xs text-[#5e554a] hover:text-[#1f1b16] hover:bg-[#f7f4ee] flex items-center gap-1.5 transition-colors"
+              title="Kembalikan isi contoh awal"
             >
-              <RotateCcw size={12} />
-              <span className="hidden sm:inline">Reset Template</span>
+              <RotateCcw size={13} strokeWidth={1.5} />
+              <span className="hidden sm:inline">Reset templat</span>
             </button>
           </div>
         </header>
 
-        {/* Notion Cover Banner */}
-        <div className={cn('h-32 sm:h-40 w-full bg-gradient-to-r relative', workspace.coverGradient)}>
-          <div className="absolute bottom-3 right-4 flex items-center gap-1.5 bg-black/30 backdrop-blur-xs px-2.5 py-1 rounded-lg">
-            {COVER_CHOICES.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => saveMutation.mutate({ coverGradient: c.cls })}
-                className={cn(
-                  'w-4 h-4 rounded-full bg-gradient-to-r border border-white/70 transition-transform hover:scale-110',
-                  c.cls
-                )}
-                title={`Ganti tema: ${c.label}`}
+        {/* Main Workspace Canvas */}
+        <main className="flex-1 max-w-[1360px] w-full mx-auto px-6 py-8">
+          {/* Editable Workspace Title & Quick Links Bar */}
+          <div className="mb-8 flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-6 border-b border-[#1f1b16]/8">
+            <div className="space-y-1 flex-1">
+              <input
+                type="text"
+                key={workspace.title}
+                defaultValue={workspace.title}
+                onBlur={(e) => {
+                  const val = e.target.value.trim();
+                  if (val && val !== workspace.title) {
+                    updateWorkspaceOptimistic({ title: val });
+                  }
+                }}
+                aria-label="Nama ruang kerja"
+                className="text-2xl sm:text-3xl font-medium tracking-tight text-[#1f1b16] bg-transparent focus:outline-none focus:bg-[#f7f4ee] rounded-md px-1.5 -ml-1.5 w-full max-w-xl"
               />
-            ))}
-          </div>
-        </div>
-
-        {/* Workspace Body */}
-        <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-8 pb-16 -mt-8 relative z-10">
-          {/* Icon + Title Header */}
-          <div className="mb-6">
-            <div className="relative inline-block">
-              <button
-                type="button"
-                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                className="w-16 h-16 rounded-2xl bg-white shadow-md border border-gray-100 flex items-center justify-center text-3xl hover:scale-105 transition-transform"
-                title="Klik untuk ganti ikon"
-              >
-                {workspace.icon}
-              </button>
-              {showEmojiPicker && (
-                <div className="absolute left-0 mt-2 p-2 bg-white rounded-xl shadow-xl border border-gray-200 flex gap-1.5 z-40">
-                  {EMOJI_CHOICES.map((em) => (
-                    <button
-                      key={em}
-                      type="button"
-                      onClick={() => {
-                        saveMutation.mutate({ icon: em });
-                        setShowEmojiPicker(false);
-                      }}
-                      className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-lg"
-                    >
-                      {em}
-                    </button>
-                  ))}
-                </div>
-              )}
+              <p className="text-sm text-[#5e554a]">
+                {order?.package?.nama ?? 'Setup Custom'} · <span className="tabular-nums font-medium text-[#1f1b16]">{doneCount} dari {tasks.length} tugas selesai</span>
+              </p>
             </div>
 
-            <div className="mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <input
-                  type="text"
-                  defaultValue={workspace.title}
-                  onBlur={(e) => {
-                    if (e.target.value.trim() && e.target.value !== workspace.title) {
-                      saveMutation.mutate({ title: e.target.value.trim() });
-                    }
-                  }}
-                  className="text-2xl sm:text-3xl font-extrabold text-gray-900 bg-transparent focus:outline-none focus:ring-2 focus:ring-primary-300 rounded-lg px-1 -ml-1 w-full sm:w-auto"
-                />
-                <p className="text-xs text-gray-500 mt-0.5">
-                  Paket: <strong>{order?.package?.nama ?? 'Workspace Custom'}</strong> • Progress Sprint:{' '}
-                  <strong className="text-primary-700">{doneCount}/{tasks.length} selesai ({progressPct}%)</strong>
-                </p>
-              </div>
-
-              {/* Quick View Tabs */}
-              <div className="inline-flex bg-gray-100 p-1 rounded-xl border border-gray-200 self-start">
-                <button
-                  type="button"
-                  onClick={() => setActiveView('kanban')}
-                  className={cn(
-                    'px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all',
-                    activeView === 'kanban' ? 'bg-white text-gray-900 shadow-xs' : 'text-gray-500 hover:text-gray-800'
-                  )}
+            {/* Quick Resource Pills right in the header so users don't have to hunt for Google Drive/Meet */}
+            <div className="flex items-center gap-2 flex-wrap">
+              {links.slice(0, 3).map((lnk) => (
+                <a
+                  key={lnk.id}
+                  href={lnk.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="h-8 px-3 rounded-lg border border-[#1f1b16]/10 bg-white hover:bg-[#f7f4ee] text-xs font-medium text-[#1f1b16] flex items-center gap-1.5 transition-colors"
                 >
-                  <LayoutGrid size={13} />
-                  Kanban
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveView(pages[0]?.id ?? 'kanban')}
-                  className={cn(
-                    'px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all',
-                    activePage ? 'bg-white text-gray-900 shadow-xs' : 'text-gray-500 hover:text-gray-800'
-                  )}
-                >
-                  <FileText size={13} />
-                  Dokumen SOP
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveView('resources')}
-                  className={cn(
-                    'px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all',
-                    activeView === 'resources' ? 'bg-white text-gray-900 shadow-xs' : 'text-gray-500 hover:text-gray-800'
-                  )}
-                >
-                  <Users size={13} />
-                  Tim &amp; Link
-                </button>
-              </div>
+                  <Link2 size={13} strokeWidth={1.5} className="text-[#7b7266]" />
+                  <span>{lnk.title}</span>
+                  <ExternalLink size={12} strokeWidth={1.5} className="text-[#7b7266]" />
+                </a>
+              ))}
             </div>
           </div>
 
-          {/* VIEW 1: SPRINT KANBAN BOARD */}
+          {/* ── VIEW 1: SPRINT KANBAN BOARD (Drag & Drop + 1-Click Advance + Enter to Add) ── */}
           {activeView === 'kanban' && (
-            <div className="space-y-5">
-              {/* Sprint Progress Bar */}
-              <div className="bg-white rounded-2xl border border-gray-200/80 p-4 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-                    Sprint Tracker Aktif
-                  </div>
-                  <div className="text-sm font-semibold text-gray-800 mt-0.5">
-                    {doneCount} dari {tasks.length} kartu tugas selesai dikerjakan
-                  </div>
-                </div>
-                <div className="w-full sm:w-64 bg-gray-100 h-2.5 rounded-full overflow-hidden">
-                  <div
-                    className="bg-primary-600 h-full rounded-full transition-all duration-300"
-                    style={{ width: `${progressPct}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* 4-Column Kanban Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 items-start">
                 {KANBAN_COLUMNS.map((col) => {
                   const colTasks = tasks.filter((t) => t.status === col.id);
+                  const isDragTarget = dragOverCol === col.id;
+
                   return (
                     <div
                       key={col.id}
-                      className={cn('rounded-2xl border p-3 space-y-3 min-h-[260px]', col.bg)}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        if (dragOverCol !== col.id) setDragOverCol(col.id);
+                      }}
+                      onDragLeave={() => setDragOverCol(null)}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        setDragOverCol(null);
+                        if (draggedTaskId) {
+                          handleMoveTask(draggedTaskId, col.id);
+                          setDraggedTaskId(null);
+                        }
+                      }}
+                      className={cn(
+                        'rounded-xl bg-[#f7f4ee] border p-3 space-y-2.5 transition-colors',
+                        isDragTarget ? 'border-[#4338ca] bg-[#eef2ff]/40' : 'border-[#1f1b16]/8'
+                      )}
                     >
                       {/* Column Header */}
-                      <div className="flex items-center justify-between px-1">
+                      <div className="flex items-center justify-between px-1 py-0.5">
                         <div className="flex items-center gap-2">
-                          <span className={cn('w-2.5 h-2.5 rounded-full', col.dot)} />
-                          <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wide">
+                          <span className={cn('w-2 h-2 rounded-full', col.dot)} aria-hidden />
+                          <h2 className="text-xs font-medium text-[#1f1b16]">
                             {col.label}
-                          </h3>
-                          <span className="text-xs font-semibold text-gray-400">
-                            {colTasks.length}
-                          </span>
+                          </h2>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setAddingTaskCol(col.id);
-                            setNewTaskCol(col.id);
-                          }}
-                          className="p-1 rounded-lg hover:bg-white/80 text-gray-500 hover:text-gray-800"
-                          title={`Tambah tugas di ${col.label}`}
-                        >
-                          <Plus size={14} />
-                        </button>
+                        <span className="text-xs font-mono text-[#7b7266] tabular-nums">
+                          {colTasks.length}
+                        </span>
                       </div>
 
-                      {/* Cards */}
-                      <div className="space-y-2.5">
+                      {/* Task Cards */}
+                      <div className="space-y-2">
                         {colTasks.map((task) => {
-                          const prio = PRIORITY_BADGE[task.priority] ?? PRIORITY_BADGE.medium;
+                          const isDone = task.status === 'done';
                           return (
                             <div
                               key={task.id}
-                              className="bg-white rounded-xl p-3 shadow-2xs border border-gray-200/80 hover:border-primary-300 transition-all space-y-2.5 group"
+                              draggable
+                              onDragStart={() => setDraggedTaskId(task.id)}
+                              onDragEnd={() => {
+                                setDraggedTaskId(null);
+                                setDragOverCol(null);
+                              }}
+                              className="bg-white rounded-lg p-3 border border-[#1f1b16]/10 shadow-[0_1px_2px_rgba(0,0,0,0.03)] hover:border-[#1f1b16]/25 transition-colors space-y-2.5 cursor-grab active:cursor-grabbing group"
                             >
+                              {/* Title + 1-click delete */}
                               <div className="flex items-start justify-between gap-2">
-                                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-primary-50 text-primary-700">
-                                  {task.tag || 'Task'}
-                                </span>
+                                <p
+                                  className={cn(
+                                    'text-sm leading-snug',
+                                    isDone ? 'line-through text-[#7b7266]' : 'text-[#1f1b16] font-normal'
+                                  )}
+                                >
+                                  {task.title}
+                                </p>
                                 <button
                                   type="button"
                                   onClick={() => handleDeleteTask(task.id)}
-                                  className="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-danger-600 transition-opacity"
-                                  title="Hapus kartu"
+                                  className="opacity-0 group-hover:opacity-100 text-[#7b7266] hover:text-[#dc2626] p-0.5 rounded transition-opacity flex-shrink-0"
+                                  title="Hapus tugas"
                                 >
-                                  <Trash2 size={13} />
+                                  <Trash2 size={13} strokeWidth={1.5} />
                                 </button>
                               </div>
 
-                              <p className="text-sm font-semibold text-gray-800 leading-snug">
-                                {task.title}
-                              </p>
-
-                              <div className="flex items-center justify-between text-xs text-gray-500 pt-1 border-t border-gray-100">
-                                <span className="truncate font-medium">👤 {task.assignee}</span>
-                                <span className={cn('text-[10px] px-1.5 py-0.5 rounded border font-semibold', prio.cls)}>
-                                  {prio.label}
-                                </span>
-                              </div>
-
-                              {/* Quick status switcher */}
-                              <div className="pt-1 flex items-center justify-between gap-1">
-                                <span className="text-[11px] text-gray-400 flex items-center gap-1">
-                                  <Calendar size={11} /> {task.dueDate || 'Minggu Ini'}
-                                </span>
-                                <select
-                                  value={task.status}
-                                  onChange={(e) => handleMoveTask(task.id, e.target.value)}
-                                  className="text-[11px] bg-gray-50 border border-gray-200 rounded-md px-1.5 py-0.5 text-gray-600 font-medium focus:outline-none focus:ring-1 focus:ring-primary-500"
-                                  aria-label="Pindahkan kolom"
+                              {/* Footer: Assignee (click to switch member) + 1-Click Advance Button */}
+                              <div className="flex items-center justify-between gap-2 pt-2 border-t border-[#1f1b16]/6 text-xs">
+                                <button
+                                  type="button"
+                                  onClick={() => handleCycleTaskAssignee(task.id)}
+                                  title="Klik untuk ganti penanggung jawab (PIC)"
+                                  className="px-2 py-0.5 rounded bg-[#f7f4ee] hover:bg-[#efe9df] text-[#5e554a] font-medium truncate max-w-[130px] transition-colors"
                                 >
-                                  {KANBAN_COLUMNS.map((c) => (
-                                    <option key={c.id} value={c.id}>
-                                      → {c.label}
-                                    </option>
-                                  ))}
-                                </select>
+                                  {task.assignee}
+                                </button>
+
+                                {col.next ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleMoveTask(task.id, col.next)}
+                                    className="px-2 py-0.5 rounded bg-[#f7f4ee] hover:bg-[#1f1b16] hover:text-white text-[#1f1b16] font-medium flex items-center gap-1 transition-colors"
+                                    title={`Pindahkan ke ${col.nextLabel}`}
+                                  >
+                                    <span>{col.nextLabel}</span>
+                                    <ArrowRight size={12} strokeWidth={1.5} />
+                                  </button>
+                                ) : (
+                                  <span className="text-[#16a34a] font-medium flex items-center gap-1">
+                                    <Check size={13} strokeWidth={1.5} />
+                                    Selesai
+                                  </span>
+                                )}
                               </div>
                             </div>
                           );
                         })}
+                      </div>
 
-                        {/* Inline Add Task Form */}
-                        {addingTaskCol === col.id ? (
-                          <div className="bg-white rounded-xl p-3 border-2 border-primary-400 shadow-sm space-y-2">
-                            <input
-                              type="text"
-                              placeholder="Judul tugas baru..."
-                              value={newTaskTitle}
-                              onChange={(e) => setNewTaskTitle(e.target.value)}
-                              autoFocus
-                              className="w-full text-sm font-medium text-gray-900 placeholder-gray-400 focus:outline-none"
-                            />
-                            <div className="grid grid-cols-2 gap-1.5">
-                              <input
-                                type="text"
-                                placeholder="Nama PIC"
-                                value={newTaskAssignee}
-                                onChange={(e) => setNewTaskAssignee(e.target.value)}
-                                className="text-xs border border-gray-200 rounded-lg px-2 py-1"
-                              />
-                              <select
-                                value={newTaskPriority}
-                                onChange={(e) => setNewTaskPriority(e.target.value)}
-                                className="text-xs border border-gray-200 rounded-lg px-2 py-1 bg-white"
-                              >
-                                <option value="high">High Priority</option>
-                                <option value="medium">Medium</option>
-                                <option value="low">Low</option>
-                              </select>
-                            </div>
-                            <div className="flex items-center justify-end gap-1.5 pt-1">
-                              <button
-                                type="button"
-                                onClick={() => setAddingTaskCol(null)}
-                                className="px-2.5 py-1 text-xs text-gray-500 hover:bg-gray-100 rounded-lg"
-                              >
-                                Batal
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => handleAddTask(col.id)}
-                                className="px-3 py-1 text-xs font-semibold bg-primary-600 text-white rounded-lg hover:bg-primary-700"
-                              >
-                                Tambah
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => setAddingTaskCol(col.id)}
-                            className="w-full py-2 px-2.5 rounded-xl text-xs font-medium text-gray-500 hover:text-gray-800 hover:bg-white/70 flex items-center gap-1.5 transition-colors"
-                          >
-                            <Plus size={14} />
-                            Tambah kartu
-                          </button>
-                        )}
+                      {/* Zero-friction Inline Quick Add (Just type & press Enter) */}
+                      <div className="pt-0.5">
+                        <div className="flex items-center gap-1.5 bg-white/70 focus-within:bg-white rounded-lg border border-transparent focus-within:border-[#1f1b16]/20 px-2.5 h-9 transition-colors">
+                          <Plus size={14} strokeWidth={1.5} className="text-[#7b7266] flex-shrink-0" />
+                          <input
+                            type="text"
+                            placeholder="Ketik tugas baru, tekan Enter"
+                            value={quickTaskInputs[col.id] ?? ''}
+                            onChange={(e) =>
+                              setQuickTaskInputs((prev) => ({ ...prev, [col.id]: e.target.value }))
+                            }
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleQuickAddTask(col.id);
+                              }
+                            }}
+                            className="w-full bg-transparent text-xs text-[#1f1b16] placeholder-[#7b7266] focus:outline-none"
+                          />
+                        </div>
                       </div>
                     </div>
                   );
@@ -771,78 +673,81 @@ export default function WorkspacePage() {
             </div>
           )}
 
-          {/* VIEW 2: NOTION-STYLE DOCUMENT & CHECKLIST PAGE */}
+          {/* ── VIEW 2: BORDERLESS NOTION-STYLE DOCUMENT CANVAS ── */}
           {activePage && (
-            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-2xs p-6 sm:p-8 space-y-6">
-              <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
-                <span className="text-3xl">{activePage.icon || '📄'}</span>
+            <div className="max-w-3xl bg-white rounded-xl border border-[#1f1b16]/10 p-6 sm:p-10 shadow-[0_1px_2px_rgba(0,0,0,0.03)] space-y-8">
+              {/* Document Header */}
+              <div className="flex items-start justify-between gap-4 border-b border-[#1f1b16]/8 pb-5">
                 <input
                   type="text"
-                  key={activePage.id}
-                  defaultValue={activePage.title}
-                  onBlur={(e) =>
-                    handleUpdatePageField(activePage.id, 'title', e.target.value.trim() || 'Dokumen')
+                  key={`title-${activePage.id}`}
+                  defaultValue={activePage.title.replace(/^[^\w\s]+\s*/, '')}
+                  onChange={(e) =>
+                    handlePageChange(activePage.id, 'title', e.target.value || 'Dokumen tanpa judul')
                   }
-                  className="text-xl sm:text-2xl font-extrabold text-gray-900 w-full focus:outline-none focus:ring-2 focus:ring-primary-200 rounded-lg px-1"
+                  placeholder="Judul halaman"
+                  className="text-2xl font-medium text-[#1f1b16] bg-transparent w-full focus:outline-none"
                 />
+                {pages.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => handleDeletePage(activePage.id)}
+                    className="text-xs text-[#7b7266] hover:text-[#dc2626] px-2 py-1 rounded hover:bg-[#f7f4ee] transition-colors flex-shrink-0"
+                  >
+                    Hapus halaman
+                  </button>
+                )}
               </div>
 
-              {/* Callout Block ala Notion */}
-              <div className="bg-amber-50/70 border border-amber-200/80 rounded-xl p-4 flex items-start gap-3">
-                <span className="text-xl" aria-hidden>💡</span>
+              {/* Quiet Summary Callout (1px hairline border, warm paper fill, no emoji) */}
+              <div className="rounded-lg bg-[#f7f4ee] border border-[#1f1b16]/8 p-4">
+                <div className="text-xs font-medium text-[#7b7266] mb-1">
+                  Kesepakatan &amp; ringkasan
+                </div>
                 <textarea
                   key={`callout-${activePage.id}`}
                   defaultValue={activePage.callout}
                   rows={2}
-                  onBlur={(e) => handleUpdatePageField(activePage.id, 'callout', e.target.value)}
-                  className="w-full bg-transparent text-sm text-amber-900 font-medium leading-relaxed focus:outline-none resize-none"
+                  onChange={(e) => handlePageChange(activePage.id, 'callout', e.target.value)}
+                  placeholder="Tulis tujuan utama atau aturan singkat halaman ini..."
+                  className="w-full bg-transparent text-sm text-[#1f1b16] leading-relaxed focus:outline-none resize-none"
                 />
               </div>
 
-              {/* Main Notes Block */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-                  Catatan &amp; Dokumentasi Tim (Klik untuk mengedit)
-                </label>
-                <textarea
-                  key={`content-${activePage.id}`}
-                  defaultValue={activePage.content}
-                  rows={6}
-                  onBlur={(e) => handleUpdatePageField(activePage.id, 'content', e.target.value)}
-                  placeholder="Tulis pembagian tugas, SOP, atau notulensi rapat di sini..."
-                  className="w-full rounded-xl border border-gray-200 p-4 text-sm text-gray-800 leading-relaxed focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
-
-              {/* Action Checklist Block ala Notion */}
-              <div className="space-y-3 pt-2 border-t border-gray-100">
+              {/* Interactive Checklist Section */}
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-gray-800">Checklist Action Items</h3>
-                  <span className="text-xs text-gray-400">
-                    {(activePage.checklist ?? []).filter((c) => c.done).length} / {(activePage.checklist ?? []).length} selesai
+                  <h3 className="text-sm font-medium text-[#1f1b16]">Daftar periksa (Checklist)</h3>
+                  <span className="text-xs font-mono text-[#7b7266] tabular-nums">
+                    {(activePage.checklist ?? []).filter((c) => c.done).length}/{(activePage.checklist ?? []).length} selesai
                   </span>
                 </div>
 
-                <div className="space-y-2">
+                <div className="divide-y divide-[#1f1b16]/6 border-t border-b border-[#1f1b16]/8">
                   {(activePage.checklist ?? []).map((item) => (
                     <div
                       key={item.id}
-                      className="flex items-center justify-between gap-3 p-2.5 rounded-xl hover:bg-gray-50 border border-transparent hover:border-gray-200 group"
+                      className="flex items-center justify-between gap-3 py-2.5 group"
                     >
                       <button
                         type="button"
                         onClick={() => handleToggleChecklist(activePage.id, item.id)}
                         className="flex items-center gap-3 text-left flex-1"
                       >
-                        {item.done ? (
-                          <CheckSquare size={18} className="text-primary-600 flex-shrink-0" />
-                        ) : (
-                          <Square size={18} className="text-gray-400 flex-shrink-0" />
-                        )}
                         <span
                           className={cn(
-                            'text-sm',
-                            item.done ? 'line-through text-gray-400' : 'text-gray-800 font-medium'
+                            'w-4 h-4 rounded border flex items-center justify-center transition-colors flex-shrink-0',
+                            item.done
+                              ? 'bg-[#1f1b16] border-[#1f1b16] text-white'
+                              : 'border-[#1f1b16]/30 bg-white'
+                          )}
+                        >
+                          {item.done && <Check size={11} strokeWidth={2} />}
+                        </span>
+                        <span
+                          className={cn(
+                            'text-sm leading-snug',
+                            item.done ? 'line-through text-[#7b7266]' : 'text-[#1f1b16]'
                           )}
                         >
                           {item.text}
@@ -851,145 +756,180 @@ export default function WorkspacePage() {
                       <button
                         type="button"
                         onClick={() => handleDeleteChecklistItem(activePage.id, item.id)}
-                        className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-danger-600 p-1"
-                        aria-label="Hapus checklist"
+                        className="opacity-0 group-hover:opacity-100 text-[#7b7266] hover:text-[#dc2626] p-1 transition-opacity"
+                        aria-label="Hapus baris"
                       >
-                        <Trash2 size={14} />
+                        <Trash2 size={14} strokeWidth={1.5} />
                       </button>
                     </div>
                   ))}
                 </div>
 
-                <div className="flex gap-2 pt-1">
+                {/* Press Enter to add checklist item */}
+                <div className="flex items-center gap-2.5 pt-1">
+                  <Plus size={15} strokeWidth={1.5} className="text-[#7b7266] flex-shrink-0" />
                   <input
                     type="text"
-                    placeholder="Tambah checklist baru..."
+                    placeholder="Tambah item periksa baru lalu tekan Enter"
                     value={newChecklistText}
                     onChange={(e) => setNewChecklistText(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleAddChecklistItem(activePage.id)}
-                    className="flex-1 rounded-xl border border-gray-200 px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddChecklistItem(activePage.id);
+                      }
+                    }}
+                    className="flex-1 text-sm text-[#1f1b16] placeholder-[#7b7266] bg-transparent focus:outline-none py-1"
                   />
-                  <Button size="sm" onClick={() => handleAddChecklistItem(activePage.id)}>
-                    <Plus size={14} />
-                    Tambah
-                  </Button>
                 </div>
+              </div>
+
+              {/* Seamless Document Body Canvas (No ugly box border) */}
+              <div className="space-y-2 pt-2 border-t border-[#1f1b16]/8">
+                <div className="text-xs font-medium text-[#7b7266]">
+                  Catatan dokumen &amp; notulensi
+                </div>
+                <textarea
+                  key={`content-${activePage.id}`}
+                  defaultValue={activePage.content}
+                  rows={10}
+                  onChange={(e) => handlePageChange(activePage.id, 'content', e.target.value)}
+                  placeholder="Ketik langsung di sini seperti di halaman buku catatan. Semua perubahan tersimpan otomatis..."
+                  className="w-full bg-transparent text-[15px] text-[#1f1b16] leading-relaxed focus:outline-none resize-y"
+                />
               </div>
             </div>
           )}
 
-          {/* VIEW 3: TEAM & RESOURCE HUB */}
+          {/* ── VIEW 3: TEAM & RESOURCE LINKS ── */}
           {activeView === 'resources' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Quick Links Card */}
-              <div className="bg-white rounded-2xl border border-gray-200/80 p-6 shadow-2xs space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Resource Links Table */}
+              <div className="bg-white rounded-xl border border-[#1f1b16]/10 p-6 space-y-4">
                 <div>
-                  <h2 className="text-base font-bold text-gray-900">Resource Hub &amp; Integrasi</h2>
-                  <p className="text-xs text-gray-500">
-                    Tautan penting tim (Google Drive, Google Meet, Figma, GitHub, Silabus)
+                  <h2 className="text-base font-medium text-[#1f1b16]">Tautan &amp; dokumen tim</h2>
+                  <p className="text-xs text-[#7b7266] mt-0.5">
+                    Simpan akses folder Google Drive, ruang Meet, Figma, atau referensi jurnal.
                   </p>
                 </div>
 
-                <div className="space-y-2.5">
+                <div className="divide-y divide-[#1f1b16]/6 border-t border-b border-[#1f1b16]/8">
                   {links.map((lnk) => (
-                    <a
-                      key={lnk.id}
-                      href={lnk.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-between p-3 rounded-xl border border-gray-200 hover:border-primary-400 hover:bg-primary-50/30 transition-all"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="text-xl">{lnk.icon || '🔗'}</span>
-                        <div>
-                          <div className="text-sm font-semibold text-gray-800">{lnk.title}</div>
-                          <div className="text-xs text-gray-400 truncate max-w-[220px]">{lnk.url}</div>
+                    <div key={lnk.id} className="py-3 flex items-center justify-between gap-3 group">
+                      <a
+                        href={lnk.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 min-w-0 flex-1 hover:text-[#4338ca] transition-colors"
+                      >
+                        <Link2 size={16} strokeWidth={1.5} className="text-[#7b7266] flex-shrink-0" />
+                        <div className="min-w-0">
+                          <div className="text-sm font-medium truncate">{lnk.title}</div>
+                          <div className="text-xs text-[#7b7266] truncate">{lnk.url}</div>
                         </div>
-                      </div>
-                      <ExternalLink size={15} className="text-gray-400" />
-                    </a>
-                  ))}
-                </div>
-
-                <form onSubmit={handleAddLink} className="pt-3 border-t border-gray-100 space-y-2">
-                  <div className="text-xs font-semibold text-gray-600">Tambah Tautan Baru</div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <input
-                      type="text"
-                      placeholder="Nama (mis. Drive Bab 2)"
-                      value={newLinkTitle}
-                      onChange={(e) => setNewLinkTitle(e.target.value)}
-                      className="rounded-xl border border-gray-200 px-3 py-2 text-xs"
-                    />
-                    <input
-                      type="text"
-                      placeholder="https://drive.google.com/..."
-                      value={newLinkUrl}
-                      onChange={(e) => setNewLinkUrl(e.target.value)}
-                      className="rounded-xl border border-gray-200 px-3 py-2 text-xs"
-                    />
-                  </div>
-                  <Button type="submit" size="sm" variant="outline" fullWidth>
-                    <Plus size={14} /> Simpan Tautan
-                  </Button>
-                </form>
-              </div>
-
-              {/* Team Directory Card */}
-              <div className="bg-white rounded-2xl border border-gray-200/80 p-6 shadow-2xs space-y-4">
-                <div>
-                  <h2 className="text-base font-bold text-gray-900">Direktori Anggota Kelompok</h2>
-                  <p className="text-xs text-gray-500">
-                    Daftar anggota &amp; pembagian peran di dalam workspace
-                  </p>
-                </div>
-
-                <div className="space-y-2.5">
-                  {members.map((m) => (
-                    <div
-                      key={m.id}
-                      className="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={cn(
-                            'w-8 h-8 rounded-full text-white text-xs font-bold flex items-center justify-center',
-                            m.avatarBg || 'bg-primary-600'
-                          )}
+                      </a>
+                      <div className="flex items-center gap-2">
+                        <a
+                          href={lnk.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-[#5e554a] hover:text-[#1f1b16] px-2 py-1 rounded border border-[#1f1b16]/10"
                         >
-                          {m.name[0]?.toUpperCase()}
-                        </div>
-                        <div>
-                          <div className="text-sm font-semibold text-gray-800">{m.name}</div>
-                          <div className="text-xs text-gray-500">{m.role}</div>
-                        </div>
+                          Buka
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveLink(lnk.id)}
+                          className="opacity-0 group-hover:opacity-100 text-[#7b7266] hover:text-[#dc2626] p-1"
+                          aria-label="Hapus tautan"
+                        >
+                          <Trash2 size={14} strokeWidth={1.5} />
+                        </button>
                       </div>
-                      <Badge variant="success">Aktif</Badge>
                     </div>
                   ))}
                 </div>
 
-                <form onSubmit={handleAddMember} className="pt-3 border-t border-gray-100 space-y-2">
-                  <div className="text-xs font-semibold text-gray-600">Undang / Tambah Anggota Tim</div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <input
-                      type="text"
-                      placeholder="Nama anggota..."
-                      value={newMemberName}
-                      onChange={(e) => setNewMemberName(e.target.value)}
-                      className="rounded-xl border border-gray-200 px-3 py-2 text-xs"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Peran / Divisi..."
-                      value={newMemberRole}
-                      onChange={(e) => setNewMemberRole(e.target.value)}
-                      className="rounded-xl border border-gray-200 px-3 py-2 text-xs"
-                    />
-                  </div>
-                  <Button type="submit" size="sm" variant="outline" fullWidth>
-                    <Plus size={14} /> Tambah Anggota
-                  </Button>
+                <form onSubmit={handleAddLink} className="flex flex-col sm:flex-row gap-2 pt-1">
+                  <input
+                    type="text"
+                    placeholder="Nama tautan (mis. Folder Drive)"
+                    value={newLinkTitle}
+                    onChange={(e) => setNewLinkTitle(e.target.value)}
+                    className="flex-1 h-9 rounded-lg border border-[#1f1b16]/15 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="https://drive.google.com/..."
+                    value={newLinkUrl}
+                    onChange={(e) => setNewLinkUrl(e.target.value)}
+                    className="flex-1 h-9 rounded-lg border border-[#1f1b16]/15 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                  <button
+                    type="submit"
+                    className="h-9 px-3.5 rounded-lg bg-[#1f1b16] text-white text-xs font-medium hover:bg-[#332d25] transition-colors flex-shrink-0"
+                  >
+                    Simpan
+                  </button>
+                </form>
+              </div>
+
+              {/* Team Members List */}
+              <div className="bg-white rounded-xl border border-[#1f1b16]/10 p-6 space-y-4">
+                <div>
+                  <h2 className="text-base font-medium text-[#1f1b16]">Anggota kelompok</h2>
+                  <p className="text-xs text-[#7b7266] mt-0.5">
+                    Klik nama anggota pada kartu tugas di papan Kanban untuk mengganti PIC.
+                  </p>
+                </div>
+
+                <div className="divide-y divide-[#1f1b16]/6 border-t border-b border-[#1f1b16]/8">
+                  {members.map((m) => (
+                    <div key={m.id} className="py-3 flex items-center justify-between gap-3 group">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-7 h-7 rounded-md bg-[#efe9df] text-[#1f1b16] text-xs font-medium flex items-center justify-center flex-shrink-0">
+                          {m.name[0]?.toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-sm font-medium text-[#1f1b16] truncate">{m.name}</div>
+                          <div className="text-xs text-[#7b7266] truncate">{m.role}</div>
+                        </div>
+                      </div>
+                      {members.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveMember(m.id)}
+                          className="opacity-0 group-hover:opacity-100 text-[#7b7266] hover:text-[#dc2626] p-1"
+                          aria-label="Hapus anggota"
+                        >
+                          <Trash2 size={14} strokeWidth={1.5} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                <form onSubmit={handleAddMember} className="flex flex-col sm:flex-row gap-2 pt-1">
+                  <input
+                    type="text"
+                    placeholder="Nama anggota"
+                    value={newMemberName}
+                    onChange={(e) => setNewMemberName(e.target.value)}
+                    className="flex-1 h-9 rounded-lg border border-[#1f1b16]/15 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Peran / divisi"
+                    value={newMemberRole}
+                    onChange={(e) => setNewMemberRole(e.target.value)}
+                    className="flex-1 h-9 rounded-lg border border-[#1f1b16]/15 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                  <button
+                    type="submit"
+                    className="h-9 px-3.5 rounded-lg bg-[#1f1b16] text-white text-xs font-medium hover:bg-[#332d25] transition-colors flex-shrink-0"
+                  >
+                    Tambah
+                  </button>
                 </form>
               </div>
             </div>

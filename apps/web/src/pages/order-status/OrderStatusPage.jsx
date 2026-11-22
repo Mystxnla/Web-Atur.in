@@ -187,10 +187,10 @@ export default function OrderStatusPage() {
       {/* Open Interactive Workspace CTA */}
       <Link
         to={`/workspace/${order.id}`}
-        className="flex items-center justify-center gap-2 w-full py-3.5 bg-primary-600 text-white font-bold rounded-2xl text-sm hover:bg-primary-700 transition-colors shadow-xs"
+        className="flex items-center justify-center gap-2 w-full h-11 bg-[#1f1b16] text-white font-medium rounded-xl text-sm hover:bg-[#332d25] transition-colors"
       >
-        <FolderKanban size={16} aria-hidden />
-        Buka Workspace Digital Tim ({customer?.namaKelompok ?? order.group_name ?? displayRef})
+        <FolderKanban size={16} strokeWidth={1.5} aria-hidden />
+        Buka ruang kerja ({customer?.namaKelompok ?? order.group_name ?? displayRef})
       </Link>
 
       {/* Quick contact */}

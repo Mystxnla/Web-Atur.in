@@ -218,30 +218,25 @@ export default function DonePage() {
         <Timeline steps={NEXT_STEPS} currentIndex={0} />
       </div>
 
-      {/* Open Interactive Notion-Style Workspace CTA */}
-      <div className="bg-gradient-to-r from-indigo-600 via-primary-600 to-purple-600 rounded-2xl p-5 text-white shadow-md space-y-3">
-        <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0 text-xl">
-            🚀
-          </div>
+      {/* Quiet Warm-Paper Workspace Access Card */}
+      <div className="bg-[#f7f4ee] border border-[#1f1b16]/10 rounded-2xl p-5 space-y-3">
+        <div className="flex items-start justify-between gap-3">
           <div>
-            <div className="text-xs font-bold uppercase tracking-wider text-indigo-100">
-              Ruang Kerja Digital Siap Digunakan
-            </div>
-            <h2 className="text-base font-extrabold">
-              Workspace {order?.customer?.namaKelompok ?? order?.group_name ?? 'Tim Kamu'} Sudah Aktif!
+            <h2 className="text-base font-semibold text-[#1f1b16]">
+              Ruang kerja {order?.customer?.namaKelompok ?? order?.group_name ?? 'tim kamu'} siap digunakan
             </h2>
-            <p className="text-xs text-indigo-100 mt-0.5 leading-relaxed">
-              Akses Sprint Kanban Board, dokumen SOP, dan checklist kolaborasi tim langsung di browser kamu.
+            <p className="text-xs text-[#5e554a] mt-1 leading-relaxed">
+              Buka papan tugas Kanban, kertas kerja SOP, dan daftar periksa kolaborasi tim langsung di browser.
             </p>
           </div>
+          <span className="text-xs font-mono text-[#7b7266] flex-shrink-0">{displayRef}</span>
         </div>
         <Link
           to={`/workspace/${order?.id ?? orderId}`}
-          className="flex items-center justify-center gap-2 w-full py-3 bg-white text-primary-700 font-extrabold rounded-xl text-sm hover:bg-indigo-50 transition-colors shadow-xs"
+          className="flex items-center justify-center gap-2 w-full h-10 bg-[#1f1b16] text-white font-medium rounded-xl text-sm hover:bg-[#332d25] transition-colors"
         >
-          <FolderKanban size={16} aria-hidden />
-          Buka Workspace Digital Tim Sekarang
+          <FolderKanban size={16} strokeWidth={1.5} aria-hidden />
+          Buka ruang kerja tim
         </Link>
       </div>
 
