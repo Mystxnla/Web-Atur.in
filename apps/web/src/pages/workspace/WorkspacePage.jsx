@@ -61,6 +61,9 @@ export default function WorkspacePage() {
   const [showWelcomeBanner, setShowWelcomeBanner] = useState(
     () => searchParams.get('welcome') === '1'
   );
+  const [showQuickGuide, setShowQuickGuide] = useState(true);
+  const [didMoveTask, setDidMoveTask] = useState(false);
+  const [didSwitchScope, setDidSwitchScope] = useState(false);
 
   const [quickTaskInputs, setQuickTaskInputs] = useState({});
   const [draggedTaskId, setDraggedTaskId] = useState(null);
@@ -259,6 +262,7 @@ export default function WorkspacePage() {
 
   const handleMoveTask = (taskId, nextStatus) => {
     if (!nextStatus) return;
+    setDidMoveTask(true);
     const nextTasks = tasks.map((t) => (t.id === taskId ? { ...t, status: nextStatus } : t));
     updateWorkspaceOptimistic({ tasks: nextTasks });
   };
@@ -717,7 +721,7 @@ export default function WorkspacePage() {
             <div className="space-y-1">
               <button
                 type="button"
-                onClick={() => { setActiveView('personal'); setSidebarOpen(false); }}
+                onClick={() => { setActiveView('personal'); setDidSwitchScope(true); setSidebarOpen(false); }}
                 className={cn(
                   'w-full h-9 px-2.5 rounded-lg text-sm flex items-center justify-between transition-colors',
                   activeView === 'personal'
@@ -847,7 +851,7 @@ export default function WorkspacePage() {
                   <button
                     key={div.id}
                     type="button"
-                    onClick={() => { setActiveView(div.id); setSidebarOpen(false); }}
+                    onClick={() => { setActiveView(div.id); setDidSwitchScope(true); setSidebarOpen(false); }}
                     className={cn(
                       'w-full h-9 px-2.5 rounded-lg text-sm flex items-center justify-between transition-colors text-left',
                       activeView === div.id
@@ -1045,80 +1049,66 @@ export default function WorkspacePage() {
             </div>
           )}
 
-          {/* 1-Click User Testing Persona & Scope Switcher Bar */}
-          <div className="mb-6 p-3 rounded-xl bg-gray-50 border border-gray-200/80 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs font-medium text-gray-500 mr-1">
-                Simulasi lihat sebagai:
-              </span>
-              {members.map((m) => {
-                const isSelected = m.id === activeMember?.id;
-                const mDiv = divisions.find((d) => d.id === m.divisionId);
-                return (
-                  <button
-                    key={m.id}
-                    type="button"
-                    onClick={() => {
-                      setActiveMemberId(m.id);
-                      if (activeView.startsWith('div-') && m.divisionId) {
-                        setActiveView(m.divisionId);
-                      }
-                    }}
+          {/* Guided First-Run 3-Step Checklist (Endowed Progress, Dismissible) */}
+          {showQuickGuide && (
+            <div className="mb-6 p-4 rounded-xl bg-gray-50 border border-gray-200/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="space-y-2 flex-1">
+                <div className="flex items-center justify-between md:justify-start gap-2">
+                  <span className="text-xs font-semibold text-gray-900">
+                    Panduan cepat mencoba workspace
+                  </span>
+                  <span className="text-[11px] font-mono text-primary-700 bg-primary-50 px-2 py-0.5 rounded-full">
+                    {1 + (didMoveTask ? 1 : 0) + (didSwitchScope ? 1 : 0)}/3 selesai
+                  </span>
+                </div>
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs">
+                  <span className="flex items-center gap-1.5 text-success-700 font-medium">
+                    <Check size={13} strokeWidth={2} />
+                    Workspace siap dipakai
+                  </span>
+                  <span
                     className={cn(
-                      'px-2.5 py-1 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5',
-                      isSelected
-                        ? 'bg-primary-600 text-white'
-                        : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100'
+                      'flex items-center gap-1.5',
+                      didMoveTask ? 'text-success-700 font-medium line-through' : 'text-gray-600'
                     )}
                   >
-                    <span>{m.name}</span>
-                    <span className={cn('text-[11px]', isSelected ? 'text-primary-100' : 'text-gray-400')}>
-                      ({m.isOwner ? 'Ketua' : mDiv?.name ?? m.role})
+                    <span
+                      className={cn(
+                        'w-3.5 h-3.5 rounded-full border flex items-center justify-center',
+                        didMoveTask ? 'bg-success-600 border-success-600 text-white' : 'border-gray-300 bg-white'
+                      )}
+                    >
+                      {didMoveTask && <Check size={9} strokeWidth={2.5} />}
                     </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="flex items-center gap-1.5 flex-wrap">
+                    Pindahkan 1 tugas di papan Kanban
+                  </span>
+                  <span
+                    className={cn(
+                      'flex items-center gap-1.5',
+                      didSwitchScope ? 'text-success-700 font-medium line-through' : 'text-gray-600'
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        'w-3.5 h-3.5 rounded-full border flex items-center justify-center',
+                        didSwitchScope ? 'bg-success-600 border-success-600 text-white' : 'border-gray-300 bg-white'
+                      )}
+                    >
+                      {didSwitchScope && <Check size={9} strokeWidth={2.5} />}
+                    </span>
+                    Coba buka Ruang Divisi atau Meja Kerja Saya di sidebar kiri
+                  </span>
+                </div>
+              </div>
               <button
                 type="button"
-                onClick={() => setActiveView('org')}
-                className={cn(
-                  'px-2.5 py-1 rounded-lg text-xs font-medium transition-colors',
-                  activeView === 'org'
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-100'
-                )}
+                onClick={() => setShowQuickGuide(false)}
+                className="text-xs text-gray-500 hover:text-gray-800 px-2.5 py-1 rounded-lg hover:bg-gray-200/60 transition-colors self-start md:self-center flex-shrink-0"
               >
-                1 Organisasi
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveView(activeMember?.divisionId ?? divisions[0]?.id ?? 'org')}
-                className={cn(
-                  'px-2.5 py-1 rounded-lg text-xs font-medium transition-colors',
-                  activeDivision?.id === activeMember?.divisionId
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-100'
-                )}
-              >
-                Divisi {activeMemberDivision?.name}
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveView('personal')}
-                className={cn(
-                  'px-2.5 py-1 rounded-lg text-xs font-medium transition-colors',
-                  activeView === 'personal'
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-100'
-                )}
-              >
-                Meja kerja {activeMember?.name?.split(' ')[0]}
+                Tutup panduan
               </button>
             </div>
-          </div>
+          )}
 
           {/* Context Header based on current scope */}
           <div className="mb-8 flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-6 border-b border-gray-200">
@@ -1308,41 +1298,6 @@ export default function WorkspacePage() {
           {/* ── VIEW B: 1 ORGANISASI OR PER-DIVISION KANBAN BOARD ── */}
           {isKanbanScope && (
             <div className="space-y-6">
-              {/* Division Filter Pills for quick switching across the organization */}
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <button
-                  type="button"
-                  onClick={() => setActiveView('org')}
-                  className={cn(
-                    'h-8 px-3 rounded-lg text-xs font-medium transition-colors',
-                    activeView === 'org'
-                      ? 'bg-primary-600 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  )}
-                >
-                  Semua divisi ({tasks.length})
-                </button>
-                {divisions.map((d) => {
-                  const count = tasks.filter((t) => t.divisionId === d.id).length;
-                  return (
-                    <button
-                      key={d.id}
-                      type="button"
-                      onClick={() => setActiveView(d.id)}
-                      className={cn(
-                        'h-8 px-3 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5',
-                        activeView === d.id
-                          ? 'bg-primary-600 text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      )}
-                    >
-                      <span>{d.name}</span>
-                      <span className="opacity-75 font-mono">({count})</span>
-                    </button>
-                  );
-                })}
-              </div>
-
               {renderKanbanBoard()}
             </div>
           )}

@@ -9,7 +9,7 @@ const NAV_LINKS = [
   { label: 'Solusi', href: '#solusi' },
   { label: 'Cara Kerja', href: '#cara-kerja' },
   { label: 'Harga', href: '#harga' },
-  { label: 'Order', href: '#order' },
+  { label: 'Kontak', href: '#kontak' },
 ];
 
 export default function Navbar() {

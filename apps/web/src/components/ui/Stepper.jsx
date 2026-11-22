@@ -1,13 +1,13 @@
 import { Check } from 'lucide-react';
 import { cn } from '../../lib/cn.js';
 
-const STEPS = ['Paket', 'Detail', 'Bayar', 'Selesai'];
+const DEFAULT_STEPS = ['Paket', 'Info Tim', 'Bayar', 'Workspace'];
 
-export default function Stepper({ currentStep }) {
-  // currentStep: 1-based (1=Paket, 2=Detail, 3=Bayar, 4=Selesai)
+export default function Stepper({ currentStep, steps = DEFAULT_STEPS }) {
+  // currentStep: 1-based
   return (
-    <div className="flex items-center w-full" role="list" aria-label="Langkah checkout">
-      {STEPS.map((step, idx) => {
+    <div className="flex items-center w-full" role="list" aria-label="Langkah aktivasi workspace">
+      {steps.map((step, idx) => {
         const stepNum = idx + 1;
         const done = stepNum < currentStep;
         const active = stepNum === currentStep;
@@ -28,17 +28,17 @@ export default function Stepper({ currentStep }) {
               </div>
               <span
                 className={cn(
-                  'mt-1 text-xs font-medium',
+                  'mt-1 text-xs font-medium whitespace-nowrap',
                   active ? 'text-primary-600' : done ? 'text-success-700' : 'text-gray-400'
                 )}
               >
                 {step}
               </span>
             </div>
-            {idx < STEPS.length - 1 && (
+            {idx < steps.length - 1 && (
               <div
                 className={cn(
-                  'flex-1 h-0.5 mx-1 mb-5 transition-colors',
+                  'flex-1 h-0.5 mx-1.5 mb-5 transition-colors',
                   done ? 'bg-success-500' : 'bg-gray-200'
                 )}
                 aria-hidden

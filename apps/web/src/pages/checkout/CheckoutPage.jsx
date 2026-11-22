@@ -8,7 +8,12 @@ import { PACKAGES, BILLING_CYCLES } from '@atur-in/shared';
 export default function CheckoutPage() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const { packageId, setPackageId, setBillingCycle, setIsTrial } = useCheckoutStore();
+  const { packageId, isTrial, setPackageId, setBillingCycle, setIsTrial } = useCheckoutStore();
+  const activePkg = PACKAGES.find((p) => p.id === packageId);
+  const effectiveTrial = Boolean(activePkg?.hasTrial && isTrial);
+  const steps = effectiveTrial
+    ? ['Paket', 'Info Tim', 'Workspace Aktif']
+    : ['Paket', 'Info Tim', 'Bayar', 'Workspace Aktif'];
 
   useEffect(() => {
     const paketParam = params.get('paket');
@@ -46,7 +51,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="space-y-6">
-      <Stepper currentStep={2} />
+      <Stepper currentStep={2} steps={steps} />
       <OrderDetailForm />
     </div>
   );
