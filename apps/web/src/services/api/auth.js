@@ -67,6 +67,7 @@ export const adminApi = {
   orders:           (params = '')         => req('GET',   `/admin/orders${params}`),
   orderDetail:      (id)                  => req('GET',   `/admin/orders/${id}`),
   updateStatus:     (id, status, catatan) => req('PATCH', `/admin/orders/${id}/status`, { status, catatan }),
+  updateDelivery:   (id, data)            => req('PATCH', `/admin/orders/${id}/delivery`, data),
   users:            ()                    => req('GET',   '/admin/users'),
   toggleUser:       (id)                  => req('PATCH', `/admin/users/${id}/toggle`),
   leads:            ()                    => req('GET',   '/admin/leads'),

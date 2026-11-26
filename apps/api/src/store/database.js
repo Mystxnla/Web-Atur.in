@@ -71,6 +71,9 @@ export function formatOrder(row, logs = null, payments = null) {
     jumlahAnggota: row.member_count,
     deskripsiKebutuhan: row.description,
     urlDokumenReferensi: row.doc_url,
+    notionUrl: row.notion_url ?? null,
+    driveUrl: row.drive_url ?? null,
+    accessType: row.access_type ?? (row.is_trial ? 'guest_trial' : 'full_owner'),
     dibuatPada: createdAtIso,
     accessToken: row.access_token,
     customer: {
@@ -225,6 +228,9 @@ export async function initDatabase() {
       ALTER TABLE orders ADD COLUMN IF NOT EXISTS recurring_total INTEGER NOT NULL DEFAULT 0;
       ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_method TEXT DEFAULT 'qris';
       ALTER TABLE orders ADD COLUMN IF NOT EXISTS access_token TEXT;
+      ALTER TABLE orders ADD COLUMN IF NOT EXISTS notion_url TEXT;
+      ALTER TABLE orders ADD COLUMN IF NOT EXISTS drive_url TEXT;
+      ALTER TABLE orders ADD COLUMN IF NOT EXISTS access_type TEXT DEFAULT 'guest_trial';
       ALTER TABLE payments ADD COLUMN IF NOT EXISTS amount INTEGER;
       ALTER TABLE workspaces ADD COLUMN IF NOT EXISTS divisions_json JSONB NOT NULL DEFAULT '[]'::jsonb;
     `);

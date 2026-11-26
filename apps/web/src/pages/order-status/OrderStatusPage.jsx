@@ -17,7 +17,7 @@ import { formatRupiah, formatTanggalWIB } from '../../lib/format.js';
 import { toDisplayRef } from '../../lib/orderRef.js';
 import { waSupportLink } from '../../lib/wa.js';
 import { SITE } from '../../config/site.js';
-import { MessageCircle, ShieldCheck, Home, RefreshCw, Sparkles, CreditCard, FolderKanban } from 'lucide-react';
+import { MessageCircle, ShieldCheck, Home, RefreshCw, Sparkles, CreditCard, ExternalLink, PlayCircle } from 'lucide-react';
 
 const STATUS_VARIANT = {
   menunggu_pembayaran: 'warning',
@@ -184,14 +184,57 @@ export default function OrderStatusPage() {
         </div>
       )}
 
-      {/* Open Interactive Workspace CTA */}
-      <Link
-        to={`/workspace/${order.id}`}
-        className="flex items-center justify-center gap-2 w-full h-11 bg-primary-600 text-white font-semibold rounded-xl text-sm hover:bg-primary-700 transition-colors"
-      >
-        <FolderKanban size={16} strokeWidth={1.5} aria-hidden />
-        Buka ruang kerja ({customer?.namaKelompok ?? order.group_name ?? displayRef})
-      </Link>
+      {/* Notion Workspace Delivery Card */}
+      <div className="bg-white rounded-2xl border border-primary-200 shadow-sm p-5 space-y-3">
+        <div className="flex items-start justify-between gap-2 flex-wrap">
+          <div>
+            <h2 className="font-bold text-gray-900 text-sm">Akses Workspace Notion &amp; Google Drive</h2>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {order.notionUrl
+                ? 'Tautan ruang kerja tim kamu sudah aktif dan siap digunakan.'
+                : 'Tim arsitek sedang menyiapkan ruang kerja Notion kamu (estimasi maks. 24 jam).'}
+            </p>
+          </div>
+          <Badge variant={order.accessType === 'full_owner' ? 'success' : 'primary'}>
+            {order.accessType === 'full_owner'
+              ? 'Hak Milik Penuh (Bisa Duplicate)'
+              : 'Akses Guest Trial 7 Hari (Anti-Duplicate)'}
+          </Badge>
+        </div>
+
+        {order.notionUrl ? (
+          <div className="flex flex-col sm:flex-row gap-2">
+            <a
+              href={order.notionUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 flex items-center justify-center gap-2 h-11 bg-primary-600 text-white font-semibold rounded-xl text-sm hover:bg-primary-700 transition-colors"
+            >
+              <ExternalLink size={16} aria-hidden />
+              Buka Workspace di Notion
+            </a>
+            {order.driveUrl && (
+              <a
+                href={order.driveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 px-4 h-11 bg-primary-50 border border-primary-200 text-primary-700 font-semibold rounded-xl text-sm hover:bg-primary-100 transition-colors"
+              >
+                <ExternalLink size={16} aria-hidden />
+                Folder Google Drive
+              </a>
+            )}
+          </div>
+        ) : (
+          <Link
+            to="/demo"
+            className="flex items-center justify-center gap-2 w-full h-10 bg-primary-50 text-primary-700 font-semibold rounded-xl text-xs hover:bg-primary-100 transition-colors"
+          >
+            <PlayCircle size={15} aria-hidden />
+            Sambil menunggu, coba Simulasi Interaktif di Browser
+          </Link>
+        )}
+      </div>
 
       {/* Quick contact */}
       <a

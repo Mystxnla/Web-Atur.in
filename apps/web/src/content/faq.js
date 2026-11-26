@@ -1,8 +1,8 @@
 export const FAQ_ITEMS = [
   {
-    question: 'Bagaimana cara kerja Free Trial 7 Hari?',
+    question: 'Bagaimana cara kerja Free Trial 7 Hari di Notion?',
     answer:
-      'Setiap kelompok atau organisasi berhak mencoba layanan kami secara gratis selama 7 hari pertama (Rp 0 di awal, berlaku 1x per nomor WhatsApp / Email). Tim arsitek akan langsung mulai menyiapkan workspace kamu. Jika cocok, kamu bisa melanjutkan langganan bulanan atau semesteran kapan saja.',
+      'Setiap kelompok berhak mencoba workspace Notion custom secara gratis selama 7 hari (Rp 0 di awal, 1x per WhatsApp/Email). Selama masa uji coba, seluruh anggota diundang sebagai Notion Guest (Can Edit) di ruang host Atur.in dengan proteksi Anti-Duplicate. Jika cocok dan melanjutkan langganan, hak kepemilikan penuh (Full Duplicate ke akun Notion tim) langsung dibuka; jika tidak lanjut, akses Guest otomatis selesai tanpa biaya.',
   },
   {
     question: 'Apa bedanya langganan Bulanan dan Semesteran?',

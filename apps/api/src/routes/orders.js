@@ -111,7 +111,7 @@ router.post('/', validate(CreateOrderSchema), async (req, res, next) => {
           nanoid(),
           id,
           ORDER_STATUSES.DIVERIFIKASI,
-          'Free Trial 7 Hari berhasil diklaim (Rp 0).',
+          'Free Trial 7 Hari (Notion Guest Access — Anti-Duplicate) berhasil diajukan (Rp 0).',
           nowIso,
         ]
       );
@@ -122,7 +122,7 @@ router.post('/', validate(CreateOrderSchema), async (req, res, next) => {
           nanoid(),
           id,
           ORDER_STATUSES.PROSES_SETUP,
-          'Masa Free Trial aktif! Tim arsitek mulai menyiapkan workspace kamu.',
+          'Masa Free Trial aktif! Tim arsitek sedang menyiapkan workspace Notion Guest kamu (maks. 24 jam).',
           new Date(now.getTime() + 1000).toISOString(),
         ]
       );

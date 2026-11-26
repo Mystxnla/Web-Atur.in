@@ -92,8 +92,8 @@ export default function PaymentPage() {
         setPayment(p);
         if (p.status === 'paid') {
           clearInterval(pollingRef.current);
-          toast.success('Pembayaran berhasil! Membuka ruang kerja tim kamu...');
-          setTimeout(() => navigate(`/workspace/${orderId}?welcome=1`), 900);
+          toast.success('Pembayaran berhasil! Membuka halaman konfirmasi pesanan...');
+          setTimeout(() => navigate(`/checkout/selesai/${orderId}`), 900);
         }
         if (p.status === 'expired') {
           clearInterval(pollingRef.current);
@@ -122,8 +122,8 @@ export default function PaymentPage() {
     try {
       await simulatePaid(pid);
       clearInterval(pollingRef.current);
-      toast.success('Pembayaran berhasil! Ruang kerja tim langsung dibuka...');
-      setTimeout(() => navigate(`/workspace/${orderId}?welcome=1`), 600);
+      toast.success('Pembayaran berhasil! Membuka halaman konfirmasi...');
+      setTimeout(() => navigate(`/checkout/selesai/${orderId}`), 600);
     } catch (err) {
       toast.error('Gagal simulasi bayar: ' + err.message);
     } finally {
@@ -142,7 +142,7 @@ export default function PaymentPage() {
       const p = normalizePayment(raw);
       setPayment(p);
       if (p.status === 'paid') {
-        navigate(`/workspace/${orderId}?welcome=1`);
+        navigate(`/checkout/selesai/${orderId}`);
       } else {
         toast.info('Pembayaran belum terdeteksi. Klik tombol "Simulasikan Bayar Lunas (1-Klik)" di bawah untuk langsung masuk ke ruang kerja.');
       }

@@ -1,0 +1,2077 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atur.in — Mockup High-Fidelity & Alur Sistem (Subbab 3.3 Laporan)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --p50: #eef2ff; --p100: #e0e7ff; --p200: #c7d2fe; --p500: #6366f1; --p600: #4f46e5; --p700: #4338ca; --p900: #312e81;
+      --s50: #f0fdf4; --s100: #dcfce7; --s600: #16a34a; --s700: #15803d;
+      --w50: #fff7ed; --w100: #ffedd5; --w500: #f97316; --w600: #ea580c;
+      --d50: #fef2f2; --d600: #dc2626;
+      --pin: #e11d48;
+      --g50: #f9fafb; --g100: #f3f4f6; --g200: #e5e7eb; --g300: #d1d5db; --g400: #9ca3af; --g500: #6b7280; --g600: #4b5563; --g700: #374151; --g800: #1f2937; --g900: #111827;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #e5e7eb;
+      color: var(--g900);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 36px;
+      -webkit-font-smoothing: antialiased;
+    }
+    body.single-mode {
+      padding: 0;
+      background: #ffffff;
+      gap: 0;
+      display: block;
+    }
+    .slide {
+      width: 1600px;
+      height: 1000px;
+      background: #f8fafc;
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.14);
+      position: relative;
+      border: 1px solid #e2e8f0;
+    }
+    body.single-mode .slide {
+      border-radius: 0;
+      box-shadow: none;
+      border: none;
+    }
+    /* Slide Header */
+    .slide-header {
+      height: 82px;
+      padding: 0 36px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--g200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .sh-left { display: flex; align-items: center; gap: 16px; }
+    .sh-fig {
+      background: var(--p50);
+      color: var(--p700);
+      border: 1px solid var(--p200);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      padding: 6px 12px;
+      border-radius: 8px;
+      text-transform: uppercase;
+    }
+    .sh-title { font-size: 21px; font-weight: 800; color: var(--g900); letter-spacing: -0.02em; }
+    .sh-sub { font-size: 13px; color: var(--g500); margin-top: 2px; }
+    .sh-right { display: flex; align-items: center; gap: 12px; }
+    .route-pill {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--g100);
+      color: var(--g700);
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--g200);
+    }
+    .brand-chip {
+      display: flex; align-items: center; gap: 8px;
+      font-weight: 800; font-size: 15px; color: var(--g900);
+    }
+    .brand-dot {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: var(--p600); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800;
+    }
+
+    /* Slide Body */
+    .slide-body {
+      flex: 1;
+      padding: 24px 36px 26px;
+      display: grid;
+      grid-template-columns: 1fr 390px;
+      gap: 24px;
+      min-height: 0;
+    }
+    .slide-body.full {
+      grid-template-columns: 1fr;
+    }
+
+    /* Browser Frame */
+    .browser {
+      background: #ffffff;
+      border-radius: 14px;
+      border: 1px solid #cbd5e1;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+    .browser-bar {
+      height: 38px;
+      background: #f1f5f9;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .dots { display: flex; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.r { background: #f87171; }
+    .dot.y { background: #fbbf24; }
+    .dot.g { background: #4ade80; }
+    .url-bar {
+      flex: 1;
+      max-width: 520px;
+      height: 24px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 0 10px;
+      display: flex;
+      align-items: center;
+      font-size: 11.5px;
+      color: var(--g500);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .url-bar strong { color: var(--g800); font-weight: 600; }
+    .browser-content {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+      background: #ffffff;
+    }
+
+    /* Callout Pin */
+    .pin {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: var(--pin);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2.5px solid #ffffff;
+      box-shadow: 0 4px 12px rgba(225, 29, 72, 0.45);
+      z-index: 30;
+    }
+    .pin-inline {
+      display: inline-flex;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: var(--pin);
+      color: #ffffff;
+      font-size: 11.5px;
+      font-weight: 800;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Right Annotation Legend */
+    .legend-col {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 0;
+    }
+    .legend-card {
+      background: #ffffff;
+      border: 1px solid var(--g200);
+      border-radius: 14px;
+      padding: 18px 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+    }
+    .legend-title {
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--p700);
+      border-bottom: 1px solid var(--g100);
+      padding-bottom: 10px;
+    }
+    .legend-list {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .legend-item h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--g900);
+      line-height: 1.25;
+    }
+    .legend-item p {
+      font-size: 11.8px;
+      color: var(--g600);
+      line-height: 1.45;
+      margin-top: 2px;
+    }
+    .flow-box {
+      background: var(--p50);
+      border: 1px solid var(--p200);
+      border-radius: 12px;
+      padding: 13px 16px;
+    }
+    .flow-box-title {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--p700);
+      margin-bottom: 6px;
+    }
+    .flow-box p {
+      font-size: 12px;
+      color: var(--g800);
+      line-height: 1.45;
+    }
+    .flow-box strong { color: var(--p700); }
+
+    /* Shared UI primitives inside mockups */
+    .ui-nav {
+      height: 52px;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--g200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #ffffff;
+    }
+    .ui-logo { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 15px; color: var(--g900); }
+    .ui-logo-box { width: 26px; height: 26px; border-radius: 7px; background: var(--p600); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; }
+    .ui-links { display: flex; gap: 18px; font-size: 12px; font-weight: 500; color: var(--g600); }
+    .ui-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 7px 14px; border-radius: 9px; font-size: 12px; font-weight: 700;
+      border: none;
+    }
+    .ui-btn-p { background: var(--p600); color: #ffffff; }
+    .ui-btn-o { background: #ffffff; color: var(--g700); border: 1px solid var(--g200); }
+    .ui-btn-s { background: var(--s600); color: #ffffff; }
+    .ui-btn-soft { background: var(--p50); color: var(--p700); border: 1px solid var(--p200); }
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 9px; border-radius: 999px; font-size: 10.5px; font-weight: 700;
+    }
+    .b-p { background: var(--p50); color: var(--p700); border: 1px solid var(--p200); }
+    .b-s { background: var(--s50); color: var(--s700); border: 1px solid #bbf7d0; }
+    .b-w { background: var(--w50); color: var(--w600); border: 1px solid #fed7aa; }
+    .b-g { background: var(--g100); color: var(--g700); }
+    .b-purp { background: #f3e8ff; color: #7e22ce; }
+
+    /* Stepper */
+    .stepper {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 10px 16px; background: #fff; border: 1px solid var(--g200); border-radius: 12px;
+    }
+    .st-step { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: var(--g400); }
+    .st-step.done { color: var(--s600); }
+    .st-step.active { color: var(--p700); font-weight: 700; }
+    .st-num {
+      width: 20px; height: 20px; border-radius: 999px; font-size: 10.5px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--g100); color: var(--g500);
+    }
+    .st-step.done .st-num { background: var(--s100); color: var(--s700); }
+    .st-step.active .st-num { background: var(--p600); color: #fff; }
+    .st-line { width: 28px; height: 2px; background: var(--g200); }
+    .st-line.done { background: var(--s600); }
+
+    /* Form field */
+    .fld { margin-bottom: 10px; }
+    .fld-lbl { font-size: 11px; font-weight: 700; color: var(--g700); margin-bottom: 4px; display: block; }
+    .fld-lbl span { color: var(--d600); }
+    .fld-inp {
+      height: 34px; border: 1px solid var(--g300); border-radius: 8px;
+      padding: 0 11px; font-size: 12px; color: var(--g900); background: #fff;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    /* Kanban */
+    .kb-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .kb-col {
+      background: var(--g50); border: 1px solid var(--g200); border-radius: 11px;
+      padding: 10px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .kb-head { display: flex; align-items: center; justify-content: space-between; font-size: 11.5px; font-weight: 700; color: var(--g800); }
+    .kb-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+    .kb-card {
+      background: #fff; border: 1px solid var(--g200); border-radius: 8px; padding: 9px;
+      box-shadow: 0 1px 2px rgba(15,23,42,0.03);
+    }
+    .kb-card-t { font-size: 11px; font-weight: 700; color: var(--g900); line-height: 1.35; }
+    .kb-card-m { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; font-size: 10px; color: var(--g500); }
+
+    @media print {
+      body { background: #fff; padding: 0; gap: 0; }
+      .slide { page-break-after: always; box-shadow: none; border-radius: 0; border: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ======================================================================= -->
+<!-- SLIDE 00: DIAGRAM ALUR END-TO-END SISTEM ATUR.IN                        -->
+<!-- ======================================================================= -->
+<section class="slide" id="slide-00" data-file="00-diagram-alur-end-to-end.png">
+  <header class="slide-header">
+    <div class="sh-left">
+      <span class="sh-fig">Gambar 3.1</span>
+      <div>
+        <div class="sh-title">Arsitektur Alur Pengguna End-to-End Aplikasi Atur.in</div>
+        <div class="sh-sub">Pemetaan perjalanan pengguna dari Landing Page, Jalur Free Trial (3 Langkah), Jalur Berbayar (4 Langkah), Portal Masuk, Workspace, hingga Panel Admin</div>
+      </div>
+    </div>
+    <div class="sh-right">
+      <span class="route-pill">Flowchart Sistem</span>
+      <div class="brand-chip"><span class="brand-dot">A</span>Atur.in</div>
+    </div>
+  </header>
+
+  <div class="slide-body full" style="padding: 24px 36px 28px;">
+    <div style="background:#fff; border:1px solid var(--g200); border-radius:16px; padding:26px 30px; display:flex; flex-direction:column; justify-content:space-between; height:100%; box-shadow:0 6px 20px rgba(15,23,42,0.05);">
+
+      <!-- Row 1: Primary Acquisition & Checkout Flow -->
+      <div>
+        <div style="font-size:12px; font-weight:800; color:var(--p700); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:14px;">
+          A. Alur Akuisisi, Pemilihan Paket, &amp; Aktivasi Workspace (Calon Pelanggan / Ketua Tim)
+        </div>
+        <div style="display:grid; grid-template-columns: 235px 44px 255px 44px 275px 44px 255px 44px 1fr; align-items:center;">
+          <!-- Node 1 -->
+          <div style="background:var(--p50); border:2px solid var(--p600); border-radius:13px; padding:14px 15px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span class="badge b-p">Langkah 1</span>
+              <span style="font-size:10.5px; font-family:monospace; color:var(--p700); font-weight:700;">/</span>
+            </div>
+            <div style="font-size:14px; font-weight:800; color:var(--g900);">Landing Page</div>
+            <p style="font-size:11.5px; color:var(--g600); margin-top:4px; line-height:1.4;">Hero, preview Kanban, studi masalah, 4 paket harga (Bulanan / Semester -20%), FAQ &amp; WhatsApp.</p>
+          </div>
+          <div style="text-align:center; font-size:22px; font-weight:800; color:var(--p600);">→</div>
+
+          <!-- Node 2 -->
+          <div style="background:#fff; border:1.5px solid var(--p200); border-radius:13px; padding:14px 15px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span class="badge b-p">Langkah 2</span>
+              <span style="font-size:10.5px; font-family:monospace; color:var(--g500);">/checkout</span>
+            </div>
+            <div style="font-size:14px; font-weight:800; color:var(--g900);">Form Info Singkat Tim</div>
+            <p style="font-size:11.5px; color:var(--g600); margin-top:4px; line-height:1.4;">Cukup 5 field wajib (Nama, Email, WA, Nama Tim, Kebutuhan) + accordion opsional &amp; tombol Isi Cepat.</p>
+          </div>
+          <div style="text-align:center; font-size:22px; font-weight:800; color:var(--p600);">→</div>
+
+          <!-- Node 3: Branching -->
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <div style="background:var(--s50); border:1.5px solid var(--s600); border-radius:11px; padding:10px 13px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:11.5px; font-weight:800; color:var(--s700);">Jalur A: Free Trial 7 Hari (Rp 0)</span>
+                <span class="badge b-s">Notion Guest</span>
+              </div>
+              <p style="font-size:11px; color:var(--g600); margin-top:3px;">Akses <strong>Notion Guest (Anti-Duplicate)</strong> 7 hari; langsung ke Konfirmasi &amp; Lacak Link Notion.</p>
+            </div>
+            <div style="background:var(--w50); border:1.5px solid var(--w500); border-radius:11px; padding:10px 13px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:11.5px; font-weight:800; color:var(--w600);">Jalur B: Paket Berbayar</span>
+                <span class="badge b-w">4 Langkah</span>
+              </div>
+              <p style="font-size:11px; color:var(--g600); margin-top:3px;">Masuk ke <code>/checkout/pembayaran/:id</code> (QRIS, VA, E-Wallet + Timer + Simulasi 1-Klik).</p>
+            </div>
+          </div>
+          <div style="text-align:center; font-size:22px; font-weight:800; color:var(--p600);">→</div>
+
+          <!-- Node 4 -->
+          <div style="background:#fff; border:1.5px solid var(--g200); border-radius:13px; padding:14px 15px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span class="badge b-s">Langkah 3b/4</span>
+              <span style="font-size:10.5px; font-family:monospace; color:var(--g500);">/checkout/selesai</span>
+            </div>
+            <div style="font-size:14px; font-weight:800; color:var(--g900);">Konfirmasi &amp; Invoice</div>
+            <p style="font-size:11.5px; color:var(--g600); margin-top:4px; line-height:1.4;">Nomor referensi <code>DWA-2026-XXXX</code>, cetak Invoice PDF resmi, timeline langkah berikutnya, &amp; CTA Workspace.</p>
+          </div>
+          <div style="text-align:center; font-size:22px; font-weight:800; color:var(--s600);">→</div>
+
+          <!-- Node 5: Destination -->
+          <div style="background:var(--p600); color:#fff; border-radius:13px; padding:15px 16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:999px; font-size:10.5px; font-weight:700;">Serah Terima</span>
+              <span style="font-size:10.5px; font-family:monospace; opacity:0.9;">Notion + Drive</span>
+            </div>
+            <div style="font-size:15px; font-weight:800;">Workspace Notion Tim</div>
+            <p style="font-size:11.5px; opacity:0.92; margin-top:4px; line-height:1.4;">Guest Trial 7 Hari (Anti-Duplicate) → Full Ownership Duplicate saat lunas. 0% beban DB server.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div style="height:1px; background:var(--g200); margin: 4px 0;"></div>
+
+      <!-- Row 2: Portal Masuk & Workspace Scope -->
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px;">
+        <div style="background:var(--g50); border:1px solid var(--g200); border-radius:14px; padding:18px 20px;">
+          <div style="font-size:12px; font-weight:800; color:var(--p700); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:12px;">
+            B. Pemisahan Jalur UX: Lihat Demo (/demo) vs Lacak Pesanan (/lacak-pesanan)
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 28px 1fr; align-items:center; gap:6px;">
+            <div style="background:#fff; border:1px solid var(--g200); border-radius:11px; padding:12px 14px;">
+              <div style="font-size:13px; font-weight:800; color:var(--g900);">Lihat Demo (/demo)</div>
+              <p style="font-size:11.3px; color:var(--g600); margin-top:4px; line-height:1.45;">
+                Simulasi pratinjau interaktif <strong>100% client-side (browser only)</strong> agar calon klien merasakan struktur Notion tanpa membebani server/database.
+              </p>
+            </div>
+            <div style="text-align:center; font-size:18px; font-weight:800; color:var(--g400);">|</div>
+            <div style="background:#fff; border:1px solid var(--g200); border-radius:11px; padding:12px 14px;">
+              <div style="font-size:13px; font-weight:800; color:var(--g900);">Lacak Pesanan (/lacak-pesanan)</div>
+              <p style="font-size:11.3px; color:var(--g600); margin-top:4px; line-height:1.45;">
+                Fokus 100% untuk klien yang sudah memesan: cek cepat pakai <strong>Nomor Referensi</strong> atau login email untuk memantau progres &amp; membuka <strong>Link Notion</strong>.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:var(--g50); border:1px solid var(--g200); border-radius:14px; padding:18px 20px;">
+          <div style="font-size:12px; font-weight:800; color:var(--p700); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:12px;">
+            C. Hierarki 3 Lingkup Kerja di Dalam Workspace (/workspace/:orderId)
+          </div>
+          <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;">
+            <div style="background:#fff; border:1px solid var(--p200); border-radius:10px; padding:11px 12px;">
+              <span class="badge b-p" style="margin-bottom:6px;">1 Organisasi</span>
+              <div style="font-size:12.5px; font-weight:800; color:var(--g900);">Master Board</div>
+              <p style="font-size:11px; color:var(--g600); margin-top:3px; line-height:1.4;">Pantau progres gabungan seluruh divisi, SOP bersama, &amp; kelola akses email tim.</p>
+            </div>
+            <div style="background:#fff; border:1px solid var(--p200); border-radius:10px; padding:11px 12px;">
+              <span class="badge b-purp" style="margin-bottom:6px;">Per Divisi</span>
+              <div style="font-size:12.5px; font-weight:800; color:var(--g900);">Ruang Divisi</div>
+              <p style="font-size:11px; color:var(--g600); margin-top:3px; line-height:1.4;">Papan Kanban terisolasi khusus divisi (Riset, Acara, Humas, Logistik) + tambah divisi baru.</p>
+            </div>
+            <div style="background:#fff; border:1px solid var(--p200); border-radius:10px; padding:11px 12px;">
+              <span class="badge b-s" style="margin-bottom:6px;">Individu</span>
+              <div style="font-size:12.5px; font-weight:800; color:var(--g900);">Meja Kerja Saya</div>
+              <p style="font-size:11px; color:var(--g600); margin-top:3px; line-height:1.4;">Daftar tugas khusus milik anggota aktif, checklist harian, &amp; catatan kerja pribadi.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 3: Status Machine & Admin Backoffice -->
+      <div style="display:grid; grid-template-columns: 1.35fr 1fr; gap:24px;">
+        <div style="background:#fff; border:1px solid var(--g200); border-radius:14px; padding:16px 20px;">
+          <div style="font-size:12px; font-weight:800; color:var(--g800); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:12px;">
+            D. Siklus Status Pesanan (Order Status Machine — packages/shared/statusMachine.js)
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:6px;">
+            <div style="flex:1; background:var(--w50); border:1px solid #fed7aa; border-radius:9px; padding:9px 10px; text-align:center;">
+              <div style="font-size:11px; font-weight:800; color:var(--w600);">1. Menunggu Bayar</div>
+              <div style="font-size:10px; color:var(--g500); margin-top:2px;">Tagihan aktif &amp; timer</div>
+            </div>
+            <span style="color:var(--g400); font-weight:800;">→</span>
+            <div style="flex:1; background:var(--p50); border:1px solid var(--p200); border-radius:9px; padding:9px 10px; text-align:center;">
+              <div style="font-size:11px; font-weight:800; color:var(--p700);">2. Dibayar</div>
+              <div style="font-size:10px; color:var(--g500); margin-top:2px;">QRIS/VA terkonfirmasi</div>
+            </div>
+            <span style="color:var(--g400); font-weight:800;">→</span>
+            <div style="flex:1; background:var(--p50); border:1px solid var(--p200); border-radius:9px; padding:9px 10px; text-align:center;">
+              <div style="font-size:11px; font-weight:800; color:var(--p700);">3. Diverifikasi</div>
+              <div style="font-size:10px; color:var(--g500); margin-top:2px;">Validasi oleh Admin</div>
+            </div>
+            <span style="color:var(--g400); font-weight:800;">→</span>
+            <div style="flex:1; background:#f3e8ff; border:1px solid #d8b4fe; border-radius:9px; padding:9px 10px; text-align:center;">
+              <div style="font-size:11px; font-weight:800; color:#7e22ce;">4. Proses Setup</div>
+              <div style="font-size:10px; color:var(--g500); margin-top:2px;">Arsitek bangun sistem</div>
+            </div>
+            <span style="color:var(--g400); font-weight:800;">→</span>
+            <div style="flex:1; background:var(--s50); border:1px solid #bbf7d0; border-radius:9px; padding:9px 10px; text-align:center;">
+              <div style="font-size:11px; font-weight:800; color:var(--s700);">5. Selesai</div>
+              <div style="font-size:10px; color:var(--g500); margin-top:2px;">Serah terima penuh</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:#0f172a; color:#fff; border-radius:14px; padding:16px 20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:12px; font-weight:800; color:#a5b4fc; text-transform:uppercase; letter-spacing:0.06em;">E. Panel Admin Backoffice</span>
+            <span style="font-size:10.5px; font-family:monospace; color:#94a3b8;">/admin/* (JWT Protected)</span>
+          </div>
+          <p style="font-size:11.8px; color:#cbd5e1; line-height:1.5;">
+            Terdiri dari <strong>Dashboard KPI (8 metrik)</strong>, <strong>Manajemen Pesanan &amp; Update Status</strong>, <strong>Daftar Pengguna</strong>, dan <strong>Manajemen Leads</strong>. Setiap perubahan status oleh Admin langsung tersinkronisasi ke halaman Lacak Pesanan klien.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================================= -->
+<!-- SLIDE 01: LANDING PAGE — HERO & PRICING                                 -->
+<!-- ======================================================================= -->
+<section class="slide" id="slide-01" data-file="01-landing-hero-pricing.png">
+  <header class="slide-header">
+    <div class="sh-left">
+      <span class="sh-fig">Gambar 3.2</span>
+      <div>
+        <div class="sh-title">Mockup Halaman Beranda (Landing Page &amp; Pilihan Paket Harga)</div>
+        <div class="sh-sub">Pintu masuk utama pengenalan nilai produk, pratinjau Kanban, dan seleksi 4 paket layanan Atur.in</div>
+      </div>
+    </div>
+    <div class="sh-right">
+      <span class="route-pill">GET /</span>
+      <div class="brand-chip"><span class="brand-dot">A</span>Atur.in</div>
+    </div>
+  </header>
+
+  <div class="slide-body">
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+        <div class="url-bar">https://<strong>atur.in</strong>/</div>
+      </div>
+      <div class="browser-content" style="display:flex; flex-direction:column;">
+        <!-- Navbar -->
+        <div class="ui-nav" style="position:relative;">
+          <div class="ui-logo"><span class="ui-logo-box">A</span>Atur.in</div>
+          <div class="ui-links">
+            <span>Masalah</span><span>Solusi</span><span>Cara Kerja</span><span style="color:var(--p600);font-weight:700;">Harga</span><span>FAQ</span>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <span class="ui-btn ui-btn-o">Lihat Demo</span>
+            <span class="ui-btn ui-btn-o">Lacak Pesanan</span>
+            <span class="ui-btn ui-btn-p">Mulai Gratis 7 Hari</span>
+          </div>
+          <span class="pin" style="top:13px; right:362px;">1</span>
+        </div>
+
+        <!-- Hero Section -->
+        <div style="padding:22px 26px 18px; background:linear-gradient(180deg, #eef2ff 0%, #ffffff 100%); border-bottom:1px solid var(--g100); display:grid; grid-template-columns: 1.05fr 1fr; gap:20px; align-items:center; position:relative;">
+          <div>
+            <span class="badge b-p" style="margin-bottom:8px;">Digital Workspace Architect untuk Mahasiswa &amp; Organisasi</span>
+            <h2 style="font-size:24px; font-weight:800; line-height:1.18; letter-spacing:-0.02em; color:var(--g900);">
+              Berhenti Atur Tugas Kelompok Lewat Chat yang Tenggelam.
+            </h2>
+            <p style="font-size:12px; color:var(--g600); line-height:1.5; margin-top:8px;">
+              Kami rancang ruang kerja digital terstruktur lengkap dengan papan Kanban, pembagian divisi, dan deadline tracker dalam 24 jam.
+            </p>
+            <div style="display:flex; gap:10px; margin-top:14px; position:relative;">
+              <span class="ui-btn ui-btn-p" style="padding:9px 16px;">Mulai Free Trial 7 Hari →</span>
+              <span class="ui-btn ui-btn-o" style="padding:9px 14px;">Coba Demo Interaktif</span>
+              <span class="pin" style="top:-10px; left:150px;">2</span>
+            </div>
+          </div>
+
+          <!-- Kanban Hero Preview -->
+          <div style="background:#fff; border:1px solid var(--g200); border-radius:12px; padding:12px; box-shadow:0 8px 24px rgba(79,70,229,0.08); position:relative;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span style="font-size:11px; font-weight:800; color:var(--g800);">Preview: Workspace Skripsi &amp; Riset</span>
+              <span class="badge b-s">Live Sync</span>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px;">
+              <div style="background:var(--g50); border-radius:8px; padding:8px;">
+                <div style="font-size:10px; font-weight:700; color:var(--g500); margin-bottom:6px;">RENCANA (2)</div>
+                <div style="background:#fff; border:1px solid var(--g200); border-radius:6px; padding:6px; font-size:10px; font-weight:600; margin-bottom:5px;">Susun Bab 2 Literatur</div>
+                <div style="background:#fff; border:1px solid var(--g200); border-radius:6px; padding:6px; font-size:10px; font-weight:600;">Kuesioner SUS</div>
+              </div>
+              <div style="background:var(--p50); border-radius:8px; padding:8px;">
+                <div style="font-size:10px; font-weight:700; color:var(--p700); margin-bottom:6px;">DIKERJAKAN (2)</div>
+                <div style="background:#fff; border:1px solid var(--p200); border-radius:6px; padding:6px; font-size:10px; font-weight:600; margin-bottom:5px;">Desain Prototype UI</div>
+                <div style="background:#fff; border:1px solid var(--p200); border-radius:6px; padding:6px; font-size:10px; font-weight:600;">Integrasi API</div>
+              </div>
+              <div style="background:var(--s50); border-radius:8px; padding:8px;">
+                <div style="font-size:10px; font-weight:700; color:var(--s700); margin-bottom:6px;">SELESAI (3)</div>
+                <div style="background:#fff; border:1px solid #bbf7d0; border-radius:6px; padding:6px; font-size:10px; font-weight:600; margin-bottom:5px;">Proposal Disetujui</div>
+                <div style="background:#fff; border:1px solid #bbf7d0; border-radius:6px; padding:6px; font-size:10px; font-weight:600;">Pembagian Divisi</div>
+              </div>
+            </div>
+            <span class="pin" style="top:-10px; right:10px;">3</span>
+          </div>
+        </div>
+
+        <!-- Pricing Section -->
+        <div style="padding:18px 26px; flex:1; background:#fff; position:relative;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+            <div>
+              <div style="font-size:15px; font-weight:800; color:var(--g900);">Pilih Paket Sesuai Kebutuhan Tim</div>
+              <div style="font-size:11.5px; color:var(--g500);">Transparan, ramah kantong mahasiswa, dan bisa dicoba gratis 7 hari.</div>
+            </div>
+            <div style="display:inline-flex; background:var(--g100); padding:3px; border-radius:9px; font-size:11px; font-weight:700; position:relative;">
+              <span style="background:#fff; color:var(--p700); padding:5px 12px; border-radius:7px; box-shadow:0 1px 2px rgba(0,0,0,0.06);">Bulanan</span>
+              <span style="color:var(--g600); padding:5px 12px;">Semesteran <strong style="color:var(--s600);">-20%</strong></span>
+              <span class="pin" style="top:-12px; right:-10px;">4</span>
+            </div>
+          </div>
+
+          <!-- 4 Pricing Cards -->
+          <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; position:relative;">
+            <!-- Card 1 -->
+            <div style="border:1px solid var(--g200); border-radius:12px; padding:13px; display:flex; flex-direction:column; justify-content:space-between;">
+              <div>
+                <div style="font-size:10.5px; font-weight:700; color:var(--g500);">Mandiri</div>
+                <div style="font-size:13.5px; font-weight:800; color:var(--g900); margin-top:2px;">Template Siap Pakai</div>
+                <div style="font-size:18px; font-weight:800; color:var(--g900); margin-top:8px;">Rp 10.000<span style="font-size:10.5px; font-weight:500; color:var(--g500);"> /bln</span></div>
+                <ul style="font-size:10.5px; color:var(--g600); margin-top:8px; list-style:none; line-height:1.65;">
+                  <li>✓ Template Notion &amp; Trello</li>
+                  <li>✓ Video tutorial mandiri</li>
+                  <li>✓ Deadline tracker standar</li>
+                </ul>
+              </div>
+              <div class="ui-btn ui-btn-o" style="width:100%; margin-top:12px; font-size:11px;">Pilih Template</div>
+            </div>
+
+            <!-- Card 2 (Popular + Trial) -->
+            <div style="border:2px solid var(--p600); background:var(--p50); border-radius:12px; padding:13px; display:flex; flex-direction:column; justify-content:space-between; position:relative;">
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span class="badge b-p" style="background:var(--p600); color:#fff; border:none;">Paling Populer</span>
+                  <span class="badge b-s">Trial 7 Hari</span>
+                </div>
+                <div style="font-size:13.5px; font-weight:800; color:var(--g900); margin-top:6px;">Setup Custom</div>
+                <div style="font-size:18px; font-weight:800; color:var(--p700); margin-top:4px;">Rp 25.000<span style="font-size:10.5px; font-weight:500; color:var(--g500);"> /bln</span></div>
+                <div style="font-size:10px; color:var(--p700); font-weight:600;">Patungan ~Rp5.000/anak</div>
+                <ul style="font-size:10.5px; color:var(--g700); margin-top:6px; list-style:none; line-height:1.6;">
+                  <li>✓ Gratis uji coba 7 hari (Rp 0)</li>
+                  <li>✓ Workspace sesuai silabus</li>
+                  <li>✓ 1x Live Onboarding + WA</li>
+                </ul>
+              </div>
+              <div class="ui-btn ui-btn-p" style="width:100%; margin-top:10px; font-size:11px;">Mulai Free Trial 7 Hari</div>
+              <span class="pin" style="top:-12px; left:-10px;">5</span>
+            </div>
+
+            <!-- Card 3 -->
+            <div style="border:1px solid var(--g200); border-radius:12px; padding:13px; display:flex; flex-direction:column; justify-content:space-between;">
+              <div>
+                <div style="font-size:10.5px; font-weight:700; color:var(--g500);">Event &amp; UKM</div>
+                <div style="font-size:13.5px; font-weight:800; color:var(--g900); margin-top:2px;">Kepanitiaan &amp; Org.</div>
+                <div style="font-size:18px; font-weight:800; color:var(--g900); margin-top:8px;">Rp 100.000<span style="font-size:10.5px; font-weight:500; color:var(--g500);"> /bln</span></div>
+                <ul style="font-size:10.5px; color:var(--g600); margin-top:8px; list-style:none; line-height:1.65;">
+                  <li>✓ Multi-divisi terstruktur</li>
+                  <li>✓ Master timeline Gantt</li>
+                  <li>✓ VIP setup 24 jam selesai</li>
+                </ul>
+              </div>
+              <div class="ui-btn ui-btn-o" style="width:100%; margin-top:12px; font-size:11px;">Konsultasi Acara</div>
+            </div>
+
+            <!-- Card 4 -->
+            <div style="border:1px solid var(--g200); border-radius:12px; padding:13px; display:flex; flex-direction:column; justify-content:space-between;">
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:10.5px; font-weight:700; color:var(--g500);">B2B Setup</span>
+                  <span class="badge b-g">Pro</span>
+                </div>
+                <div style="font-size:13.5px; font-weight:800; color:var(--g900); margin-top:2px;">Paket Organisasi Pro</div>
+                <div style="font-size:18px; font-weight:800; color:var(--g900); margin-top:8px;">Rp 499.000<span style="font-size:10.5px; font-weight:500; color:var(--g500);"> /bln</span></div>
+                <ul style="font-size:10.5px; color:var(--g600); margin-top:8px; list-style:none; line-height:1.65;">
+                  <li>✓ Notion + Google Drive</li>
+                  <li>✓ Role-based security</li>
+                  <li>✓ Onboarding 60 Menit</li>
+                </ul>
+              </div>
+              <div class="ui-btn ui-btn-o" style="width:100%; margin-top:12px; font-size:11px;">Pesan Paket Pro</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <aside class="legend-col">
+      <div class="legend-card">
+        <div class="legend-title">Keterangan Fitur Utama</div>
+        <div class="legend-list">
+            <div class="legend-item">
+            <span class="pin-inline">1</span>
+            <div>
+              <h4>Navigasi Terpisah &amp; Anti-Bingung</h4>
+              <p>Memisahkan dengan tegas tombol <strong>Lihat Demo</strong> (<code>/demo</code>), <strong>Lacak Pesanan</strong> (<code>/lacak-pesanan</code>), dan CTA utama <strong>Mulai Gratis 7 Hari</strong>.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">2</span>
+            <div>
+              <h4>Hero Value Proposition &amp; Dual CTA</h4>
+              <p>Menyampaikan solusi inti secara ringkas dengan dua pilihan aksi: langsung mulai Free Trial atau mencoba Demo Interaktif tanpa mendaftar.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">3</span>
+            <div>
+              <h4>Pratinjau Papan Kanban Interaktif</h4>
+              <p>Memberikan gambaran visual langsung struktur kerja kolaboratif (Rencana, Dikerjakan, Selesai) sebelum pengguna melakukan pemesanan.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">4</span>
+            <div>
+              <h4>Toggle Siklus Langganan</h4>
+              <p>Memungkinkan pengguna membandingkan tarif <strong>Bulanan</strong> vs <strong>Semesteran (6 bulan, hemat 20%)</strong> secara dinamis.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">5</span>
+            <div>
+              <h4>4 Paket Harga &amp; Highlight Populer</h4>
+              <p>Paket <em>Setup Custom</em> (Rp 25.000/bln) ditandai sebagai pilihan utama dengan lencana <strong>Free Trial 7 Hari (Rp 0)</strong> dan estimasi patungan per anggota.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flow-box">
+        <div class="flow-box-title">Alur Transisi Halaman</div>
+        <p>Klik paket → <strong>Checkout (/checkout)</strong>. Klik <em>Lihat Demo</em> → <strong>Simulasi Client-Side (/demo)</strong>. Klik <em>Lacak Pesanan</em> → <strong>Portal Lacak (/lacak-pesanan)</strong>.</p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ======================================================================= -->
+<!-- SLIDE 02: CHECKOUT — INFO SINGKAT TIM                                   -->
+<!-- ======================================================================= -->
+<section class="slide" id="slide-02" data-file="02-checkout-info-tim.png">
+  <header class="slide-header">
+    <div class="sh-left">
+      <span class="sh-fig">Gambar 3.3</span>
+      <div>
+        <div class="sh-title">Mockup Halaman Checkout — Pengisian Info Singkat Tim</div>
+        <div class="sh-sub">Penerapan prinsip Minimum Path to Value (MPTV): maksimal 5 field wajib, stepper adaptif, dan pengisian cepat</div>
+      </div>
+    </div>
+    <div class="sh-right">
+      <span class="route-pill">GET /checkout?paket=custom&amp;trial=1</span>
+      <div class="brand-chip"><span class="brand-dot">A</span>Atur.in</div>
+    </div>
+  </header>
+
+  <div class="slide-body">
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+        <div class="url-bar">https://<strong>atur.in</strong>/checkout?paket=custom&amp;cycle=monthly&amp;trial=1</div>
+      </div>
+      <div class="browser-content" style="background:var(--g50); padding:18px 28px; display:flex; flex-direction:column; gap:14px;">
+        <!-- Stepper -->
+        <div class="stepper" style="position:relative;">
+          <div class="st-step done"><span class="st-num">✓</span>1. Pilih Paket</div>
+          <div class="st-line done"></div>
+          <div class="st-step active"><span class="st-num">2</span>2. Info Tim</div>
+          <div class="st-line"></div>
+          <div class="st-step"><span class="st-num">3</span>3. Workspace Aktif</div>
+          <span class="badge b-s" style="margin-left:14px;">Mode Free Trial (Tanpa Langkah Bayar)</span>
+          <span class="pin" style="top:-8px; right:12px;">1</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1.25fr 0.85fr; gap:18px; flex:1;">
+          <!-- Left: Form Card -->
+          <div style="background:#fff; border:1px solid var(--g200); border-radius:14px; padding:18px 20px; position:relative;">
+            <div style="background:var(--p50); border:1px solid var(--p100); border-radius:11px; padding:11px 14px; display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; position:relative;">
+              <div>
+                <div style="font-size:10.5px; font-weight:700; color:var(--p600);">Langkah 2 dari 3</div>
+                <div style="font-size:15px; font-weight:800; color:var(--g900);">Info Singkat Tim Kamu</div>
+              </div>
+              <span class="ui-btn ui-btn-soft" style="font-size:11px; padding:6px 11px;">Isi Cepat (Data Contoh)</span>
+              <span class="pin" style="top:-10px; right:-8px;">2</span>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+              <div class="fld">
+                <label class="fld-lbl">1. Nama Lengkap <span>*</span></label>
+                <div class="fld-inp">Budi Pratama</div>
+              </div>
+              <div class="fld">
+                <label class="fld-lbl">2. Email Aktif <span>*</span></label>
+                <div class="fld-inp">budi.pratama@kampus.ac.id</div>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+              <div class="fld">
+                <label class="fld-lbl">3. No. WhatsApp <span>*</span></label>
+                <div class="fld-inp"><span style="color:var(--g400); margin-right:6px;">+62</span><span style="flex:1;">812-9845-1230</span></div>
+              </div>
+              <div class="fld">
+                <label class="fld-lbl">4. Nama Kelompok / Organisasi <span>*</span></label>
+                <div class="fld-inp">Kelompok Capstone Sistem Informasi</div>
+              </div>
+            </div>
+
+            <div class="fld" style="position:relative;">
+              <label class="fld-lbl">5. Jenis Kebutuhan <span>*</span></label>
+              <div style="display:flex; gap:8px;">
+                <span class="badge b-p" style="padding:6px 12px; background:var(--p600); color:#fff;">Tugas Kelompok / Skripsi</span>
+                <span class="badge b-g" style="padding:6px 12px;">Kepanitiaan Event</span>
+                <span class="badge b-g" style="padding:6px 12px;">Organisasi / UKM</span>
+              </div>
+              <span class="pin" style="top:-6px; right:0;">3</span>
+            </div>
+
+            <!-- Accordion Optional -->
+            <div style="border:1px dashed var(--g300); background:var(--g50); border-radius:10px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; margin-top:10px; position:relative;">
+              <div>
+                <div style="font-size:12px; font-weight:700; color:var(--g800);">Detail tambahan (opsional)</div>
+                <div style="font-size:10.5px; color:var(--g500);">Jumlah anggota detail, deskripsi proyek, &amp; unggah dokumen silabus (PDF/DOCX)</div>
+              </div>
+              <span style="font-size:12px; font-weight:700; color:var(--p600);">Buka ▾</span>
+              <span class="pin" style="top:-10px; right:64px;">4</span>
+            </div>
+
+            <div style="margin-top:14px;">
+              <div class="ui-btn ui-btn-p" style="width:100%; height:40px; font-size:13px;">Aktifkan Free Trial 7 Hari &amp; Buka Workspace →</div>
+            </div>
+          </div>
+
+          <!-- Right: Selected Plan Summary -->
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            <div style="background:#fff; border:1px solid var(--p200); border-radius:14px; padding:18px; position:relative;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="badge b-p">Paket Terpilih</span>
+                <span style="font-size:11px; color:var(--p600); font-weight:700;">Ubah Paket</span>
+              </div>
+              <div style="font-size:16px; font-weight:800; color:var(--g900); margin-top:8px;">Paket Lengkap: Setup Custom</div>
+              <div style="font-size:11.5px; color:var(--g500); margin-top:2px;">Siklus Bulanan · Termasuk Free Trial 7 Hari</div>
+
+              <div style="border-top:1px solid var(--g100); margin:12px 0; padding-top:10px; display:flex; flex-direction:column; gap:7px; font-size:12px;">
+                <div style="display:flex; justify-content:space-between;"><span style="color:var(--g500);">Harga Normal</span><span style="font-weight:600;">Rp 25.000 / bln</span></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:var(--g500);">Promo Free Trial 7 Hari</span><span style="font-weight:700; color:var(--s600);">- Rp 25.000</span></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:var(--g500);">PPN (11%)</span><span style="font-weight:600;">Rp 0 (Termasuk)</span></div>
+                <div style="display:flex; justify-content:space-between; border-top:1px solid var(--g200); padding-top:8px; margin-top:4px;">
+                  <span style="font-weight:800; color:var(--g900);">Tagihan Hari Ini</span>
+                  <span style="font-size:16px; font-weight:800; color:var(--p700);">Rp 0</span>
+                </div>
+              </div>
+
+              <div style="background:var(--s50); border:1px solid #bbf7d0; border-radius:9px; padding:9px 11px; font-size:11px; color:var(--s700); line-height:1.45;">
+                <strong>Notion Guest Access (Anti-Duplicate):</strong> Selama 7 hari tim dapat edit penuh di ruang host Atur.in. Hak <em>Full Duplicate</em> dibuka saat lanjut berlangganan.
+              </div>
+              <span class="pin" style="top:-10px; right:-8px;">5</span>
+            </div>
+
+            <div style="background:#fff; border:1px solid var(--g200); border-radius:14px; padding:14px 16px; font-size:11.5px; color:var(--g600); line-height:1.5;">
+              <div style="font-weight:800; color:var(--g900); margin-bottom:4px;">Jaminan Layanan Atur.in</div>
+              <div>✓ Auto-save draft formulir otomatis</div>
+              <div>✓ Validasi nomor WhatsApp &amp; anti duplikasi trial</div>
+              <div>✓ Kerahasiaan data dilindungi SLA &amp; NDA</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <aside class="legend-col">
+      <div class="legend-card">
+        <div class="legend-title">Keterangan Fitur Utama</div>
+        <div class="legend-list">
+          <div class="legend-item">
+            <span class="pin-inline">1</span>
+            <div>
+              <h4>Stepper Adaptif (3 vs 4 Langkah)</h4>
+              <p>Otomatis menyesuaikan alur: <strong>3 langkah</strong> untuk Free Trial (tanpa halaman bayar) dan <strong>4 langkah</strong> untuk paket berbayar.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">2</span>
+            <div>
+              <h4>Tombol Isi Cepat (Data Contoh)</h4>
+              <p>Memudahkan pengujian prototype dan responden testing (SUS) mengisi formulir secara instan hanya dengan 1 klik.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">3</span>
+            <div>
+              <h4>5 Field Wajib Inti (Prinsip MPTV)</h4>
+              <p>Hanya meminta data esensial (Nama, Email, WhatsApp, Nama Tim, Jenis Kebutuhan) dengan validasi real-time &amp; penyimpanan draf otomatis.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">4</span>
+            <div>
+              <h4>Accordion Detail Opsional</h4>
+              <p>Menerapkan <em>Progressive Disclosure</em>: field jumlah anggota, catatan tambahan, dan unggah file silabus disembunyikan agar layar tetap tenang.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">5</span>
+            <div>
+              <h4>Ringkasan Paket &amp; Rincian Biaya</h4>
+              <p>Menampilkan kalkulasi transparan tagihan hari ini (<strong>Rp 0</strong> untuk Trial) beserta detail siklus langganan.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flow-box">
+        <div class="flow-box-title">Alur Transisi Halaman</div>
+        <p>Jika <strong>Free Trial</strong> → langsung ke <strong>Konfirmasi Selesai (/checkout/selesai/:id)</strong>. Jika <strong>Berbayar</strong> → ke <strong>Pembayaran (/checkout/pembayaran/:id)</strong>.</p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ======================================================================= -->
+<!-- SLIDE 03: PEMBAYARAN & HALAMAN KONFIRMASI SELESAI                       -->
+<!-- ======================================================================= -->
+<section class="slide" id="slide-03" data-file="03-pembayaran-dan-selesai.png">
+  <header class="slide-header">
+    <div class="sh-left">
+      <span class="sh-fig">Gambar 3.4</span>
+      <div>
+        <div class="sh-title">Mockup Halaman Pembayaran &amp; Konfirmasi Pesanan Selesai</div>
+        <div class="sh-sub">Dukungan multi-metode pembayaran (QRIS, Virtual Account, E-Wallet), timer batas bayar, simulasi 1-klik, dan cetak Invoice PDF</div>
+      </div>
+    </div>
+    <div class="sh-right">
+      <span class="route-pill">/checkout/pembayaran/:id &amp; /selesai/:id</span>
+      <div class="brand-chip"><span class="brand-dot">A</span>Atur.in</div>
+    </div>
+  </header>
+
+  <div class="slide-body">
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+      <!-- Left Browser: Payment Page -->
+      <div class="browser">
+        <div class="browser-bar">
+          <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+          <div class="url-bar"><strong>atur.in</strong>/checkout/pembayaran/DWA-2026-0014</div>
+        </div>
+        <div class="browser-content" style="background:var(--g50); padding:14px 16px; display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; position:relative;">
+            <div>
+              <div style="font-size:10px; font-weight:700; color:var(--p600);">LANGKAH 3 DARI 4</div>
+              <div style="font-size:15px; font-weight:800;">Selesaikan Pembayaran</div>
+              <div style="font-size:11px; color:var(--g500);">No. Ref: <strong style="color:var(--g800);">DWA-2026-0014</strong></div>
+            </div>
+            <div style="background:var(--w50); border:1px solid #fed7aa; color:var(--w600); padding:6px 10px; border-radius:9px; font-size:11px; font-weight:800;">
+              Batas: 14:42
+            </div>
+            <span class="pin" style="top:-8px; right:-6px;">1</span>
+          </div>
+
+          <!-- Method Picker -->
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; position:relative;">
+            <div style="background:var(--p50); border:2px solid var(--p600); border-radius:10px; padding:8px; text-align:center;">
+              <div style="font-size:11.5px; font-weight:800; color:var(--p700);">QRIS Instan</div>
+              <div style="font-size:9.5px; color:var(--g500);">Semua E-Wallet</div>
+            </div>
+            <div style="background:#fff; border:1px solid var(--g200); border-radius:10px; padding:8px; text-align:center;">
+              <div style="font-size:11.5px; font-weight:700; color:var(--g700);">Virtual Account</div>
+              <div style="font-size:9.5px; color:var(--g500);">BCA / Mandiri / BRI</div>
+            </div>
+            <div style="background:#fff; border:1px solid var(--g200); border-radius:10px; padding:8px; text-align:center;">
+              <div style="font-size:11.5px; font-weight:700; color:var(--g700);">E-Wallet</div>
+              <div style="font-size:9.5px; color:var(--g500);">GoPay / OVO / DANA</div>
+            </div>
+            <span class="pin" style="top:-10px; left:-8px;">2</span>
+          </div>
+
+          <!-- QRIS Box -->
+          <div style="background:#fff; border:1px solid var(--g200); border-radius:12px; padding:12px; display:flex; align-items:center; gap:14px;">
+            <div style="width:104px; height:104px; background:#111827; border-radius:8px; padding:8px; display:grid; grid-template-columns:repeat(5,1fr); gap:3px; flex-shrink:0;">
+              <div style="background:#fff;"></div><div style="background:#fff;"></div><div style="background:#111827;"></div><div style="background:#fff;"></div><div style="background:#fff;"></div>
+              <div style="background:#fff;"></div><div style="background:#111827;"></div><div style="background:#fff;"></div><div style="background:#111827;"></div><div style="background:#fff;"></div>
+              <div style="background:#111827;"></div><div style="background:#fff;"></div><div style="background:#fff;"></div><div style="background:#fff;"></div><div style="background:#111827;"></div>
+              <div style="background:#fff;"></div><div style="background:#111827;"></div><div style="background:#111827;"></div><div style="background:#fff;"></div><div style="background:#fff;"></div>
+              <div style="background:#fff;"></div><div style="background:#fff;"></div><div style="background:#111827;"></div><div style="background:#fff;"></div><div style="background:#111827;"></div>
+            </div>
+            <div style="font-size:11px; color:var(--g600); line-height:1.5;">
+              <div style="font-weight:800; color:var(--g900); font-size:12.5px;">Scan QRIS Atur.in</div>
+              <div>Total Tagihan: <strong style="color:var(--p700); font-size:14px;">Rp 100.000</strong></div>
+              <div style="margin-top:4px;">Polling status otomatis setiap 3 detik setelah pembayaran diterima.</div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div style="background:#fff; border:1px solid var(--g200); border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:8px; position:relative; margin-top:auto;">
+            <div class="ui-btn ui-btn-p" style="width:100%; height:36px;">Saya Sudah Bayar (Cek Status)</div>
+            <div style="background:var(--s50); border:1px solid #86efac; color:var(--s700); border-radius:9px; padding:8px; text-align:center; font-size:11px; font-weight:800;">
+              ✓ Mode Prototype: Simulasikan Bayar Lunas (1-Klik)
+            </div>
+            <div style="text-align:center; font-size:10.5px; color:var(--s600); font-weight:600;">Butuh bantuan? Chat Arsitek via WhatsApp</div>
+            <span class="pin" style="top:42px; right:-8px;">3</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Browser: Done / Invoice Page -->
+      <div class="browser">
+        <div class="browser-bar">
+          <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+          <div class="url-bar"><strong>atur.in</strong>/checkout/selesai/DWA-2026-0014</div>
+        </div>
+        <div class="browser-content" style="background:var(--g50); padding:14px 16px; display:flex; flex-direction:column; gap:10px;">
+          <div style="text-align:center; padding:6px 0;">
+            <div style="width:44px; height:44px; border-radius:999px; background:var(--p600); color:#fff; font-size:20px; font-weight:800; display:flex; align-items:center; justify-content:center; margin:0 auto 6px;">✓</div>
+            <span class="badge b-s">Konfirmasi Checkout Otomatis</span>
+            <div style="font-size:16px; font-weight:800; color:var(--g900); margin-top:4px;">Pesanan Berhasil Diterima!</div>
+          </div>
+
+          <!-- Receipt Card -->
+          <div style="background:#fff; border:1px solid var(--g200); border-radius:12px; padding:12px 14px; position:relative;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--g100); padding-bottom:8px; margin-bottom:8px;">
+              <div>
+                <div style="font-size:10px; color:var(--g400);">Nomor Referensi Pesanan</div>
+                <div style="font-size:14px; font-weight:800; color:var(--p700);">DWA-2026-0014</div>
+              </div>
+              <span class="ui-btn ui-btn-o" style="padding:4px 9px; font-size:10.5px;">Salin</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:5px; font-size:11px;">
+              <div style="display:flex; justify-content:space-between;"><span style="color:var(--g500);">Paket Terpilih</span><strong>Kepanitiaan &amp; Organisasi</strong></div>
+              <div style="display:flex; justify-content:space-between;"><span style="color:var(--g500);">Metode</span><strong>QRIS Otomatis</strong></div>
+              <div style="display:flex; justify-content:space-between;"><span style="color:var(--g500);">Total Dibayar</span><strong style="color:var(--p700);">Rp 100.000</strong></div>
+            </div>
+            <span class="pin" style="top:-8px; right:-6px;">4</span>
+          </div>
+
+          <!-- Workspace Access Card -->
+          <div style="background:var(--p50); border:1px solid var(--p200); border-radius:12px; padding:12px 14px; position:relative;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div style="font-size:12.5px; font-weight:800; color:var(--g900);">Akses Workspace Notion Tim</div>
+              <span class="badge b-s" style="font-size:9.5px;">Full Duplicate</span>
+            </div>
+            <div style="font-size:10.5px; color:var(--g600); margin:3px 0 9px;">Tautan Notion &amp; Google Drive otomatis aktif di sini setelah disiapkan arsitek (maks. 24 jam).</div>
+            <div class="ui-btn ui-btn-p" style="width:100%; height:34px;">Buka Workspace di Notion ↗</div>
+            <span class="pin" style="top:-8px; right:-6px;">5</span>
+          </div>
+
+          <!-- Invoice & Track -->
+          <div style="display:flex; flex-direction:column; gap:7px; margin-top:auto;">
+            <div style="background:#fff; border:1px solid var(--g200); border-radius:10px; padding:9px 12px; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-size:11.5px; font-weight:700; color:var(--g800);">Unduh Bukti Invoice Resmi</div>
+                <div style="font-size:10px; color:var(--g400);">Format cetak PDF lengkap rincian PPN</div>
+              </div>
+              <span class="badge b-p">Cetak PDF</span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div class="ui-btn ui-btn-soft" style="font-size:10.5px;">Lihat Status Pesanan</div>
+              <div class="ui-btn ui-btn-s" style="font-size:10.5px;">Chat WhatsApp</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <aside class="legend-col">
+      <div class="legend-card">
+        <div class="legend-title">Keterangan Fitur Utama</div>
+        <div class="legend-list">
+          <div class="legend-item">
+            <span class="pin-inline">1</span>
+            <div>
+              <h4>Countdown Timer Batas Bayar</h4>
+              <p>Menghitung mundur masa berlaku tagihan. Jika habis, sistem menampilkan status <em>Kedaluwarsa</em> dengan tombol perbarui tagihan.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">2</span>
+            <div>
+              <h4>Pemilih 3 Metode Pembayaran</h4>
+              <p>Mendukung <strong>QRIS Instan</strong>, <strong>Virtual Account</strong> (bank nasional), dan <strong>E-Wallet</strong> dengan pembuatan tagihan dinamis.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">3</span>
+            <div>
+              <h4>Polling Otomatis &amp; Simulasi 1-Klik</h4>
+              <p>Memeriksa status pembayaran tiap 3 detik. Pada mode prototype, tombol <strong>Simulasikan Bayar Lunas</strong> langsung melunasi pesanan.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">4</span>
+            <div>
+              <h4>Kartu Bukti Transaksi &amp; Invoice PDF</h4>
+              <p>Menampilkan nomor referensi unik (<code>DWA-2026-XXXX</code>) yang dapat disalin serta fitur cetak Invoice resmi ke PDF.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">5</span>
+            <div>
+              <h4>Akses Langsung ke Workspace &amp; Pelacakan</h4>
+              <p>Menghubungkan pengguna langsung ke papan kerja tim atau memantau progres pengerjaan pada halaman Status Pesanan.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flow-box">
+        <div class="flow-box-title">Alur Transisi Halaman</div>
+        <p>Setelah pembayaran terkonfirmasi lunas → sistem mengarahkan ke <strong>Workspace Aktif (/workspace/:id?welcome=1)</strong> atau <strong>Halaman Selesai (/checkout/selesai/:id)</strong>.</p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ======================================================================= -->
+<!-- SLIDE 04: PORTAL MASUK (MODE DEMO PROTOTYPE & AKUN EMAIL)               -->
+<!-- ======================================================================= -->
+<section class="slide" id="slide-04" data-file="04-portal-masuk-demo-akun.png">
+  <header class="slide-header">
+    <div class="sh-left">
+      <span class="sh-fig">Gambar 3.5</span>
+      <div>
+        <div class="sh-title">Mockup Portal Masuk — Mode Demo Prototype &amp; Akun Email</div>
+        <div class="sh-sub">Akses dua jalur: uji coba instan 2 skenario × 3 persona tanpa daftar, atau masuk menggunakan email untuk membuka divisi terhubung</div>
+      </div>
+    </div>
+    <div class="sh-right">
+      <span class="route-pill">GET /lacak-pesanan</span>
+      <div class="brand-chip"><span class="brand-dot">A</span>Atur.in</div>
+    </div>
+  </header>
+
+  <div class="slide-body">
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+        <div class="url-bar">https://<strong>atur.in</strong>/lacak-pesanan</div>
+      </div>
+      <div class="browser-content" style="background:var(--g50); padding:18px 24px; display:grid; grid-template-columns: 1.15fr 0.85fr; gap:20px;">
+        <!-- Left: Mode Demo Prototype -->
+        <div style="background:#fff; border:1px solid var(--g200); border-radius:14px; padding:18px; display:flex; flex-direction:column; gap:12px; position:relative;">
+          <div>
+            <div style="font-size:17px; font-weight:800; color:var(--g900);">Coba Workspace Langsung</div>
+            <div style="font-size:11.5px; color:var(--g500); margin-top:2px;">Pilih peran contoh untuk mencoba tampilan Organisasi, Divisi, atau Meja Kerja Individu.</div>
+          </div>
+
+          <!-- Top 2-Mode Switcher -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; background:var(--g100); padding:4px; border-radius:10px; position:relative;">
+            <div style="background:#fff; color:var(--p700); text-align:center; padding:7px; border-radius:7px; font-size:11.5px; font-weight:800; box-shadow:0 1px 2px rgba(0,0,0,0.06);">Mode Demo Prototype</div>
+            <div style="color:var(--g600); text-align:center; padding:7px; font-size:11.5px; font-weight:600;">Masuk / Daftar Akun</div>
+            <span class="pin" style="top:-10px; right:-8px;">1</span>
+          </div>
+
+          <!-- Scenario Switcher -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:var(--g100); padding:4px; border-radius:10px; position:relative;">
+            <div style="background:#fff; padding:7px 10px; border-radius:7px; border:1px solid var(--p200);">
+              <div style="font-size:11.5px; font-weight:800; color:var(--p700);">Kelompok Kuliah &amp; Riset</div>
+              <div style="font-size:10px; color:var(--g400);">Skripsi &amp; Tugas Besar</div>
+            </div>
+            <div style="padding:7px 10px;">
+              <div style="font-size:11.5px; font-weight:700; color:var(--g700);">Kepanitiaan &amp; Organisasi</div>
+              <div style="font-size:10px; color:var(--g400);">Event Kampus &amp; UKM</div>
+            </div>
+            <span class="pin" style="top:-10px; left:-8px;">2</span>
+          </div>
+
+          <!-- 3 Persona Cards -->
+          <div style="display:flex; flex-direction:column; gap:9px; position:relative;">
+            <div style="border:1.5px solid var(--p200); background:var(--p50); border-radius:11px; padding:11px 13px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-size:12.5px; font-weight:800; color:var(--g900);">Budi Pratama</div>
+                  <div style="font-size:10.5px; color:var(--g600);">Ketua Kelompok / Project Lead</div>
+                </div>
+                <span class="badge b-p">Lingkup 1 Organisasi</span>
+              </div>
+              <div style="font-size:11px; color:var(--p700); font-weight:700; margin-top:6px;">Masuk sebagai Ketua →</div>
+            </div>
+
+            <div style="border:1px solid var(--g200); background:#fff; border-radius:11px; padding:11px 13px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-size:12.5px; font-weight:800; color:var(--g900);">Citra Maharani</div>
+                  <div style="font-size:10.5px; color:var(--g600);">Divisi Riset &amp; Data</div>
+                </div>
+                <span class="badge b-purp">Lingkup Divisi Riset</span>
+              </div>
+              <div style="font-size:11px; color:var(--p600); font-weight:700; margin-top:6px;">Masuk ke Divisi Riset →</div>
+            </div>
+
+            <div style="border:1px solid var(--g200); background:#fff; border-radius:11px; padding:11px 13px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-size:12.5px; font-weight:800; color:var(--g900);">Andi Wijaya</div>
+                  <div style="font-size:10.5px; color:var(--g600);">Divisi Penulisan &amp; Sistem</div>
+                </div>
+                <span class="badge b-s">Meja Kerja Individu</span>
+              </div>
+              <div style="font-size:11px; color:var(--p600); font-weight:700; margin-top:6px;">Masuk ke Meja Kerja Individu →</div>
+            </div>
+            <span class="pin" style="top:44px; right:-10px;">3</span>
+          </div>
+        </div>
+
+        <!-- Right: Account Tab Preview (Logged In + Login Form) -->
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div style="background:#fff; border:1px solid var(--g200); border-radius:14px; padding:16px; position:relative;">
+            <div style="font-size:11px; font-weight:800; color:var(--p700); text-transform:uppercase; margin-bottom:8px;">Tab 2: Masuk / Daftar Akun Email</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; background:var(--g100); padding:3px; border-radius:8px; margin-bottom:10px; font-size:11px; font-weight:700;">
+              <div style="background:#fff; text-align:center; padding:5px; border-radius:6px; color:var(--g900);">Masuk Akun</div>
+              <div style="text-align:center; padding:5px; color:var(--g500);">Daftar Akun Baru</div>
+            </div>
+            <div class="fld">
+              <label class="fld-lbl">Email akun <span>*</span></label>
+              <div class="fld-inp">citra@kampus.ac.id</div>
+            </div>
+            <div class="fld">
+              <label class="fld-lbl">Kata sandi <span>*</span></label>
+              <div class="fld-inp">••••••••••••</div>
+            </div>
+            <div class="ui-btn ui-btn-p" style="width:100%; height:35px; margin-top:4px;">Masuk &amp; Buka Workspace Saya →</div>
+            <span class="pin" style="top:-10px; right:-8px;">4</span>
+          </div>
+
+          <!-- Logged-in Order & Division Card -->
+          <div style="background:#fff; border:1px solid var(--p200); border-radius:14px; padding:16px; flex:1; position:relative;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <div style="font-size:12px; font-weight:800; color:var(--g900);">Tampilan Setelah Login Akun</div>
+              <span class="badge b-s">Terhubung Divisi</span>
+            </div>
+            <div style="background:var(--g50); border:1px solid var(--g200); border-radius:10px; padding:12px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <strong style="font-size:12.5px;">AI Research Hub &amp; Skripsi</strong>
+                <span class="badge b-s">Selesai</span>
+              </div>
+              <div style="font-size:10.5px; color:var(--g500); margin-top:2px;">DWA-2026-0001 · Trial 7 hari</div>
+              <div style="background:#fff; border:1px solid var(--g200); border-radius:8px; padding:7px 10px; margin-top:9px; display:flex; justify-content:space-between; font-size:11px;">
+                <span>Divisi: <strong>Riset &amp; Data</strong></span>
+                <span class="badge b-p">Anggota</span>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:7px; margin-top:10px;">
+                <div class="ui-btn ui-btn-p" style="font-size:10.5px;">Buka Divisi Saya</div>
+                <div class="ui-btn ui-btn-o" style="font-size:10.5px;">Meja Kerja Saya</div>
+              </div>
+            </div>
+            <span class="pin" style="bottom:12px; right:-8px;">5</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <aside class="legend-col">
+      <div class="legend-card">
+        <div class="legend-title">Keterangan Fitur Utama</div>
+        <div class="legend-list">
+          <div class="legend-item">
+            <span class="pin-inline">1</span>
+            <div>
+              <h4>Switcher 2 Mode Portal</h4>
+              <p>Memisahkan <strong>Mode Demo Prototype</strong> (tanpa login) dengan <strong>Masuk / Daftar Akun Email</strong> agar pengguna tidak kebingungan (<em>Hick's Law</em>).</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">2</span>
+            <div>
+              <h4>Pemilih 2 Skenario Kasus Nyata</h4>
+              <p>Menyediakan simulasi siap pakai untuk <em>Kelompok Kuliah &amp; Riset</em> serta <em>Kepanitiaan Event Kampus &amp; UKM</em>.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">3</span>
+            <div>
+              <h4>3 Kartu Persona Berbasis Lingkup</h4>
+              <p>Setiap kartu langsung membuka Workspace dengan parameter <code>?member=</code> dan <code>?scope=</code> (1 Organisasi, Divisi, atau Individu).</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">4</span>
+            <div>
+              <h4>Autentikasi Akun Email (JWT)</h4>
+              <p>Anggota tim dapat mendaftar/masuk dengan email yang telah diundang ketua tim di dalam Workspace.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">5</span>
+            <div>
+              <h4>Deteksi Otomatis Divisi &amp; Pintasan</h4>
+              <p>Menampilkan daftar workspace terhubung, peran anggota, serta tombol langsung ke <em>Buka Divisi Saya</em> atau <em>Meja Kerja Saya</em>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flow-box">
+        <div class="flow-box-title">Alur Transisi Halaman</div>
+        <p>Klik kartu persona / tombol divisi → langsung masuk ke <strong>Workspace (/workspace/:id)</strong> sesuai lingkup peran, atau lihat detail di <strong>Lacak Status Pesanan (/lacak-pesanan/:id)</strong>.</p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ======================================================================= -->
+<!-- SLIDE 05: HALAMAN LACAK STATUS PESANAN                                  -->
+<!-- ======================================================================= -->
+<section class="slide" id="slide-05" data-file="05-lacak-status-pesanan.png">
+  <header class="slide-header">
+    <div class="sh-left">
+      <span class="sh-fig">Gambar 3.6</span>
+      <div>
+        <div class="sh-title">Mockup Halaman Lacak Status Pesanan Real-Time</div>
+        <div class="sh-sub">Pemantauan progres pesanan berbasis Timeline 5 tahap, status Free Trial, log aktivitas, dan akses cepat Workspace</div>
+      </div>
+    </div>
+    <div class="sh-right">
+      <span class="route-pill">GET /lacak-pesanan/:orderId</span>
+      <div class="brand-chip"><span class="brand-dot">A</span>Atur.in</div>
+    </div>
+  </header>
+
+  <div class="slide-body">
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+        <div class="url-bar">https://<strong>atur.in</strong>/lacak-pesanan/DWA-2026-0001</div>
+      </div>
+      <div class="browser-content" style="background:var(--g50); padding:18px 28px; display:grid; grid-template-columns: 1fr 1fr; gap:18px;">
+        <!-- Left Column: Trial Banner + Order Summary -->
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <!-- Trial Banner -->
+          <div style="background:var(--p50); border:1.5px solid var(--p200); border-radius:14px; padding:15px; position:relative;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div style="font-size:13.5px; font-weight:800; color:var(--p900);">Free Trial 7 Hari Aktif</div>
+              <span class="badge b-p">Rp 0</span>
+            </div>
+            <p style="font-size:11.3px; color:var(--p700); margin-top:6px; line-height:1.45;">
+              Masa uji coba gratis berlaku hingga <strong>3 Desember 2026</strong>. Aktifkan langganan penuh (Rp 25.000/bln) kapan saja agar ruang kerja tetap aktif.
+            </p>
+            <div class="ui-btn ui-btn-p" style="width:100%; margin-top:10px; height:34px; font-size:11.5px;">Bayar &amp; Aktifkan Langganan Penuh (Rp 25.000)</div>
+            <span class="pin" style="top:-10px; right:-8px;">1</span>
+          </div>
+
+          <!-- Order Hero Card -->
+          <div style="background:#fff; border:1px solid var(--g200); border-radius:14px; padding:16px; position:relative;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <div>
+                <div style="font-size:10.5px; color:var(--g400);">Nomor Referensi Pesanan</div>
+                <div style="font-size:18px; font-weight:800; color:var(--p700);">DWA-2026-0001</div>
+              </div>
+              <div style="display:flex; gap:6px;">
+                <span class="ui-btn ui-btn-o" style="padding:4px 9px; font-size:10.5px;">Salin</span>
+                <span class="ui-btn ui-btn-o" style="padding:4px 9px; font-size:10.5px;">↻ Refresh</span>
+              </div>
+            </div>
+            <div style="display:flex; gap:6px; margin-top:10px;">
+              <span class="badge b-purp">● Proses Setup</span>
+              <span class="badge b-p">Free Trial 7 Hari</span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; font-size:11.5px;">
+              <div><div style="font-size:10px; color:var(--g400);">Paket</div><strong>Setup Custom</strong></div>
+              <div><div style="font-size:10px; color:var(--g400);">Pelanggan</div><strong>Budi Pratama</strong></div>
+              <div><div style="font-size:10px; color:var(--g400);">Tagihan Saat Ini</div><strong>Rp 0 (Trial 7 Hari)</strong></div>
+              <div><div style="font-size:10px; color:var(--g400);">Dibuat</div><strong>26 Nov 2026, 14:20 WIB</strong></div>
+            </div>
+            <span class="pin" style="top:-10px; left:-8px;">2</span>
+          </div>
+
+          <!-- Quick Action Buttons -->
+          <div style="display:flex; flex-direction:column; gap:8px; margin-top:auto; position:relative;">
+            <div style="background:#fff; border:1px solid var(--p200); border-radius:12px; padding:11px 13px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <span style="font-size:11.5px; font-weight:800; color:var(--g900);">Akses Workspace Notion</span>
+                <span class="badge b-p" style="font-size:9.5px;">Guest Trial · Anti-Duplicate</span>
+              </div>
+              <div class="ui-btn ui-btn-p" style="width:100%; height:35px; font-size:12px;">Buka Workspace di Notion ↗</div>
+            </div>
+            <div class="ui-btn ui-btn-s" style="width:100%; height:34px; font-size:11.5px;">Chat Arsitek via WhatsApp</div>
+            <span class="pin" style="top:-8px; right:-8px;">5</span>
+          </div>
+        </div>
+
+        <!-- Right Column: 5-Stage Timeline + Activity Log -->
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div style="background:#fff; border:1px solid var(--g200); border-radius:14px; padding:16px 18px; position:relative;">
+            <div style="font-size:14px; font-weight:800; color:var(--g900); margin-bottom:12px;">Progress Pesanan (Auto-Refresh 30 dtk)</div>
+            <div style="display:flex; flex-direction:column; gap:11px;">
+              <div style="display:flex; gap:10px; align-items:flex-start;">
+                <span style="width:20px; height:20px; border-radius:999px; background:var(--s600); color:#fff; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0;">✓</span>
+                <div><div style="font-size:12px; font-weight:700;">1. Menunggu Pembayaran</div><div style="font-size:10.5px; color:var(--g500);">Pesanan tercatat di sistem Atur.in.</div></div>
+              </div>
+              <div style="display:flex; gap:10px; align-items:flex-start;">
+                <span style="width:20px; height:20px; border-radius:999px; background:var(--s600); color:#fff; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0;">✓</span>
+                <div><div style="font-size:12px; font-weight:700;">2. Pembayaran Diterima / Trial Aktif</div><div style="font-size:10.5px; color:var(--g500);">Aktivasi otomatis terkonfirmasi.</div></div>
+              </div>
+              <div style="display:flex; gap:10px; align-items:flex-start;">
+                <span style="width:20px; height:20px; border-radius:999px; background:var(--s600); color:#fff; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0;">✓</span>
+                <div><div style="font-size:12px; font-weight:700;">3. Diverifikasi</div><div style="font-size:10.5px; color:var(--g500);">Tim arsitek telah meninjau kebutuhan tim.</div></div>
+              </div>
+              <div style="display:flex; gap:10px; align-items:flex-start;">
+                <span style="width:20px; height:20px; border-radius:999px; background:var(--p600); color:#fff; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0;">4</span>
+                <div><div style="font-size:12px; font-weight:800; color:var(--p700);">4. Proses Setup (Tahap Saat Ini)</div><div style="font-size:10.5px; color:var(--p600);">Arsitek sedang menyempurnakan struktur divisi &amp; SOP.</div></div>
+              </div>
+              <div style="display:flex; gap:10px; align-items:flex-start; opacity:0.5;">
+                <span style="width:20px; height:20px; border-radius:999px; background:var(--g200); color:var(--g600); font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0;">5</span>
+                <div><div style="font-size:12px; font-weight:700;">5. Selesai</div><div style="font-size:10.5px; color:var(--g500);">Workspace diserahterimakan penuh.</div></div>
+              </div>
+            </div>
+            <span class="pin" style="top:-10px; right:-8px;">3</span>
+          </div>
+
+          <div style="background:#fff; border:1px solid var(--g200); border-radius:14px; padding:14px 18px; flex:1; position:relative;">
+            <div style="font-size:13px; font-weight:800; color:var(--g900); margin-bottom:10px;">Riwayat Aktivitas</div>
+            <div style="display:flex; flex-direction:column; gap:8px; font-size:11px;">
+              <div style="display:flex; gap:8px;"><span style="color:var(--p600); font-weight:800;">●</span><div><strong>Proses Setup</strong> — Struktur 4 divisi &amp; template Kanban dibuat <span style="color:var(--g400);">(14:35 WIB)</span></div></div>
+              <div style="display:flex; gap:8px;"><span style="color:var(--p600); font-weight:800;">●</span><div><strong>Diverifikasi</strong> — Pesanan diverifikasi oleh Admin Arsitek <span style="color:var(--g400);">(14:25 WIB)</span></div></div>
+              <div style="display:flex; gap:8px;"><span style="color:var(--p600); font-weight:800;">●</span><div><strong>Trial Aktif</strong> — Workspace Free Trial 7 Hari aktif otomatis <span style="color:var(--g400);">(14:20 WIB)</span></div></div>
+            </div>
+            <span class="pin" style="top:-10px; right:-8px;">4</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <aside class="legend-col">
+      <div class="legend-card">
+        <div class="legend-title">Keterangan Fitur Utama</div>
+        <div class="legend-list">
+          <div class="legend-item">
+            <span class="pin-inline">1</span>
+            <div>
+              <h4>Banner Konversi Free Trial</h4>
+              <p>Menampilkan tanggal berakhirnya masa uji coba serta tombol pintas untuk upgrade langsung ke langganan penuh.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">2</span>
+            <div>
+              <h4>Ringkasan Referensi &amp; Refresh</h4>
+              <p>Menampilkan nomor referensi <code>DWA-2026-XXXX</code>, badge status terkini, serta tombol salin &amp; muat ulang manual.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">3</span>
+            <div>
+              <h4>Timeline 5 Tahap Real-Time</h4>
+              <p>Melacak status secara otomatis (<em>auto-refetch</em> setiap 30 detik) mengikuti mesin status resmi dari <em>Menunggu Bayar</em> hingga <em>Selesai</em>.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">4</span>
+            <div>
+              <h4>Log Riwayat Aktivitas (Audit Trail)</h4>
+              <p>Mencatat setiap perubahan status beserta catatan pengerjaan dari tim arsitek lengkap dengan stempel waktu WIB.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">5</span>
+            <div>
+              <h4>CTA Workspace &amp; Dukungan WhatsApp</h4>
+              <p>Pengguna dapat langsung membuka ruang kerja interaktif atau menghubungi arsitek dengan pesan referensi otomatis.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flow-box">
+        <div class="flow-box-title">Alur Transisi Halaman</div>
+        <p>Setiap update status dari <strong>Panel Admin (/admin/orders/:id)</strong> langsung tampil di halaman ini. Tombol utama mengarahkan ke <strong>Workspace (/workspace/:id)</strong>.</p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ======================================================================= -->
+<!-- SLIDE 06: WORKSPACE — MASTER BOARD (1 ORGANISASI) & RUANG DIVISI        -->
+<!-- ======================================================================= -->
+<section class="slide" id="slide-06" data-file="06-workspace-kanban-organisasi.png">
+  <header class="slide-header">
+    <div class="sh-left">
+      <span class="sh-fig">Gambar 3.7</span>
+      <div>
+        <div class="sh-title">Mockup Simulasi Interaktif (/demo) — Pratinjau Struktur Notion</div>
+        <div class="sh-sub">Berjalan 100% client-side di browser (0% beban server/database) untuk memberi pratinjau langsung bentuk workspace Notion Atur.in</div>
+      </div>
+    </div>
+    <div class="sh-right">
+      <span class="route-pill">GET /demo (Client-Side Sandbox)</span>
+      <div class="brand-chip"><span class="brand-dot">A</span>Atur.in</div>
+    </div>
+  </header>
+
+  <div class="slide-body">
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+        <div class="url-bar">https://<strong>atur.in</strong>/demo</div>
+      </div>
+      <div class="browser-content" style="display:grid; grid-template-columns: 230px 1fr; height:100%;">
+        <!-- Sidebar -->
+        <div style="background:var(--g50); border-right:1px solid var(--g200); padding:14px 12px; display:flex; flex-direction:column; gap:12px; position:relative;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div class="ui-logo" style="font-size:13.5px;"><span class="ui-logo-box" style="width:22px;height:22px;font-size:11px;">A</span>AI Research Hub</div>
+          </div>
+
+          <!-- Active Member Switcher -->
+          <div style="background:#fff; border:1px solid var(--g200); border-radius:9px; padding:8px 10px; position:relative;">
+            <div style="font-size:9.5px; color:var(--g400); font-weight:700; text-transform:uppercase;">Masuk Sebagai</div>
+            <div style="font-size:11.5px; font-weight:800; color:var(--g900); margin-top:2px;">Budi Pratama ▾</div>
+            <div style="font-size:10px; color:var(--p600);">Ketua Kelompok</div>
+            <span class="pin" style="top:-10px; right:-10px;">1</span>
+          </div>
+
+          <!-- Navigation Groups -->
+          <div style="display:flex; flex-direction:column; gap:3px; font-size:11.5px;">
+            <div style="font-size:9.5px; font-weight:800; color:var(--g400); text-transform:uppercase; padding:4px 8px;">Lingkup Kerja</div>
+            <div style="background:var(--p50); color:var(--p700); font-weight:800; padding:7px 10px; border-radius:8px; border:1px solid var(--p200);">● Semua Divisi (1 Org.)</div>
+            <div style="color:var(--g700); padding:6px 10px; border-radius:8px;">○ Meja Kerja Saya</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:3px; font-size:11.5px; position:relative;">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 8px;">
+              <span style="font-size:9.5px; font-weight:800; color:var(--g400); text-transform:uppercase;">Ruang Divisi</span>
+              <span style="font-size:11px; font-weight:800; color:var(--p600);">+ Tambah</span>
+            </div>
+            <div style="color:var(--g700); padding:5px 10px;">▸ Inti &amp; Koordinasi</div>
+            <div style="color:var(--g700); padding:5px 10px;">▸ Divisi Riset &amp; Data</div>
+            <div style="color:var(--g700); padding:5px 10px;">▸ Penulisan &amp; Sistem</div>
+            <div style="color:var(--g700); padding:5px 10px;">▸ Publikasi &amp; Sidang</div>
+            <span class="pin" style="top:14px; right:-10px;">2</span>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:3px; font-size:11.5px; margin-top:auto; border-top:1px solid var(--g200); padding-top:10px;">
+            <div style="font-size:9.5px; font-weight:800; color:var(--g400); text-transform:uppercase; padding:2px 8px;">Dokumen &amp; Tim</div>
+            <div style="color:var(--g700); padding:5px 10px;">▪ SOP &amp; Alur Kerja Tim</div>
+            <div style="color:var(--g700); padding:5px 10px;">▪ Tim, Akses Email &amp; Link</div>
+          </div>
+        </div>
+
+        <!-- Main Canvas -->
+        <div style="padding:16px 20px; display:flex; flex-direction:column; gap:12px; background:#fff;">
+          <!-- Header -->
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <h2 style="font-size:17px; font-weight:800; color:var(--g900);">Master Board — 1 Organisasi</h2>
+                <span class="badge b-p">4 Divisi Aktif</span>
+              </div>
+              <div style="font-size:11.5px; color:var(--g500); margin-top:2px;">Pantau seluruh progres tugas lintas divisi secara real-time (5 dari 10 tugas selesai · 50%)</div>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <span class="ui-btn ui-btn-o" style="font-size:11px;">↺ Reset Templat</span>
+              <span class="ui-btn ui-btn-p" style="font-size:11px;">+ Tugas Baru</span>
+            </div>
+          </div>
+
+          <!-- Guided First-Run Banner (Client-Side Sandbox Notice) -->
+          <div style="background:#312e81; color:#fff; border-radius:11px; padding:10px 14px; display:flex; align-items:center; justify-content:space-between; gap:12px; position:relative;">
+            <div style="font-size:11.3px;">
+              <strong>Simulasi Pratinjau Interaktif (Browser Only):</strong> Gambaran struktur kerja yang dibangun di <strong>Notion &amp; Google Drive</strong> tim kamu.
+            </div>
+            <span style="background:#fff; color:var(--p700); padding:5px 10px; border-radius:7px; font-size:10.5px; font-weight:800; flex-shrink:0;">Bangunkan di Notion →</span>
+            <span class="pin" style="top:-10px; right:148px;">3</span>
+          </div>
+
+          <!-- 4-Column Kanban -->
+          <div class="kb-grid" style="flex:1; position:relative;">
+            <!-- Col 1 -->
+            <div class="kb-col">
+              <div class="kb-head"><span><span class="kb-dot" style="background:var(--g400);"></span>Rencana</span><span class="badge b-g">2</span></div>
+              <div class="kb-card">
+                <div class="kb-card-t">Susun daftar pertanyaan wawancara dosen</div>
+                <div class="kb-card-m"><span class="badge b-p" style="font-size:9.5px; padding:2px 6px;">Riset</span><span>Citra</span></div>
+              </div>
+              <div class="kb-card">
+                <div class="kb-card-t">Siapkan slide presentasi progres pekan 4</div>
+                <div class="kb-card-m"><span class="badge b-g" style="font-size:9.5px; padding:2px 6px;">Publikasi</span><span>Dina</span></div>
+              </div>
+              <div style="border:1px dashed var(--g300); border-radius:8px; padding:7px 9px; font-size:10.5px; color:var(--g400); margin-top:auto;">+ Tambah tugas cepat...</div>
+            </div>
+
+            <!-- Col 2 -->
+            <div class="kb-col" style="background:var(--p50); border-color:var(--p200);">
+              <div class="kb-head"><span><span class="kb-dot" style="background:var(--p600);"></span>Dikerjakan</span><span class="badge b-p">2</span></div>
+              <div class="kb-card" style="border-color:var(--p200);">
+                <div class="kb-card-t">Analisis hasil kuesioner SUS 10 responden</div>
+                <div class="kb-card-m"><span class="badge b-p" style="font-size:9.5px; padding:2px 6px;">Riset</span><span>Citra</span></div>
+                <div style="margin-top:7px; text-align:right; font-size:10px; font-weight:700; color:var(--p600);">Pindah ke Review →</div>
+              </div>
+              <div class="kb-card">
+                <div class="kb-card-t">Integrasi modul autentikasi &amp; API workspace</div>
+                <div class="kb-card-m"><span class="badge b-purp" style="font-size:9.5px; padding:2px 6px;">Sistem</span><span>Andi</span></div>
+              </div>
+              <div style="border:1px dashed var(--p200); background:#fff; border-radius:8px; padding:7px 9px; font-size:10.5px; color:var(--g400); margin-top:auto;">+ Tambah tugas cepat...</div>
+            </div>
+
+            <!-- Col 3 -->
+            <div class="kb-col">
+              <div class="kb-head"><span><span class="kb-dot" style="background:var(--w500);"></span>Revisi &amp; review</span><span class="badge b-w">1</span></div>
+              <div class="kb-card">
+                <div class="kb-card-t">Draft Bab 3 Metodologi &amp; Hasil Mockup</div>
+                <div class="kb-card-m"><span class="badge b-purp" style="font-size:9.5px; padding:2px 6px;">Penulisan</span><span>Budi</span></div>
+                <div style="margin-top:7px; text-align:right; font-size:10px; font-weight:700; color:var(--s600);">Tandai Selesai →</div>
+              </div>
+              <div style="border:1px dashed var(--g300); border-radius:8px; padding:7px 9px; font-size:10.5px; color:var(--g400); margin-top:auto;">+ Tambah tugas cepat...</div>
+            </div>
+
+            <!-- Col 4 -->
+            <div class="kb-col" style="background:var(--s50); border-color:#bbf7d0;">
+              <div class="kb-head"><span><span class="kb-dot" style="background:var(--s600);"></span>Selesai</span><span class="badge b-s">2</span></div>
+              <div class="kb-card" style="border-color:#bbf7d0;">
+                <div class="kb-card-t" style="text-decoration:line-through; color:var(--g500);">Finalisasi pembagian 4 divisi &amp; jobdesk</div>
+                <div class="kb-card-m"><span class="badge b-s" style="font-size:9.5px; padding:2px 6px;">Inti</span><span>Budi</span></div>
+              </div>
+              <div class="kb-card" style="border-color:#bbf7d0;">
+                <div class="kb-card-t" style="text-decoration:line-through; color:var(--g500);">Setup repositori &amp; struktur folder Drive</div>
+                <div class="kb-card-m"><span class="badge b-s" style="font-size:9.5px; padding:2px 6px;">Sistem</span><span>Andi</span></div>
+              </div>
+              <div style="border:1px dashed #86efac; background:#fff; border-radius:8px; padding:7px 9px; font-size:10.5px; color:var(--g400); margin-top:auto;">+ Tambah tugas cepat...</div>
+            </div>
+            <span class="pin" style="top:-10px; left:375px;">4</span>
+            <span class="pin" style="bottom:36px; left:172px;">5</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <aside class="legend-col">
+      <div class="legend-card">
+        <div class="legend-title">Keterangan Fitur Utama</div>
+        <div class="legend-list">
+          <div class="legend-item">
+            <span class="pin-inline">1</span>
+            <div>
+              <h4>Switcher Profil Anggota (One Source)</h4>
+              <p>Kontrol identitas anggota diletakkan hanya di Sidebar agar bebas duplikasi (<em>One Source of Navigation</em>).</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">2</span>
+            <div>
+              <h4>Navigasi Lingkup &amp; Ruang Divisi</h4>
+              <p>Berpindah mulus antara <strong>Master Board (1 Organisasi)</strong>, <strong>Ruang per Divisi</strong>, <strong>Meja Kerja Pribadi</strong>, serta tombol tambah divisi baru.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">3</span>
+            <div>
+              <h4>Panduan Cepat (Endowed Progress)</h4>
+              <p>Langkah ke-1 otomatis tercentang saat pertama masuk; langkah 2 &amp; 3 tercentang otomatis ketika pengguna berinteraksi nyata di Kanban.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">4</span>
+            <div>
+              <h4>Papan Kanban 4 Kolom Interaktif</h4>
+              <p>Terdiri dari <em>Rencana</em>, <em>Dikerjakan</em>, <em>Revisi &amp; review</em>, dan <em>Selesai</em> dengan fitur drag-and-drop serta tombol pindah tahap cepat.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">5</span>
+            <div>
+              <h4>Quick-Add Task &amp; Auto-Save</h4>
+              <p>Menambah kartu tugas baru langsung di bawah kolom manapun dengan penyimpanan optimistis otomatis ke backend API.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flow-box">
+        <div class="flow-box-title">Alur Transisi Halaman</div>
+        <p>Pilih <strong>Meja Kerja Saya</strong> atau <strong>Tim, Akses Email &amp; Link</strong> di sidebar untuk masuk ke tampilan personal dan manajemen hak akses anggota.</p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ======================================================================= -->
+<!-- SLIDE 07: WORKSPACE — MEJA KERJA PRIBADI & MANAJEMEN TIM/AKSES EMAIL    -->
+<!-- ======================================================================= -->
+<section class="slide" id="slide-07" data-file="07-workspace-meja-pribadi-tim.png">
+  <header class="slide-header">
+    <div class="sh-left">
+      <span class="sh-fig">Gambar 3.8</span>
+      <div>
+        <div class="sh-title">Mockup Workspace — Meja Kerja Pribadi &amp; Manajemen Akses Tim</div>
+        <div class="sh-sub">Ruang fokus individu (tugas pribadi + checklist harian) serta pengelolaan undangan anggota berbasis email, divisi, dan tautan bersama</div>
+      </div>
+    </div>
+    <div class="sh-right">
+      <span class="route-pill">/workspace/:id?scope=personal &amp; resources</span>
+      <div class="brand-chip"><span class="brand-dot">A</span>Atur.in</div>
+    </div>
+  </header>
+
+  <div class="slide-body">
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+      <!-- Left Browser: Personal Desk -->
+      <div class="browser">
+        <div class="browser-bar">
+          <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+          <div class="url-bar"><strong>atur.in</strong>/workspace/DWA-2026-0001?scope=personal</div>
+        </div>
+        <div class="browser-content" style="background:var(--g50); padding:16px; display:flex; flex-direction:column; gap:12px;">
+          <div style="background:#fff; border:1px solid var(--g200); border-radius:12px; padding:14px; position:relative;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <span class="badge b-s">Lingkup Individu</span>
+                <div style="font-size:15px; font-weight:800; color:var(--g900); margin-top:4px;">Meja Kerja Andi Wijaya</div>
+                <div style="font-size:11px; color:var(--g500);">Divisi Penulisan &amp; Sistem · 3 tugas aktif milik sendiri</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:18px; font-weight:800; color:var(--p700);">67%</div>
+                <div style="font-size:10px; color:var(--g500);">Progres Pribadi</div>
+              </div>
+            </div>
+            <span class="pin" style="top:-8px; right:-6px;">1</span>
+          </div>
+
+          <!-- Personal Task List -->
+          <div style="background:#fff; border:1px solid var(--g200); border-radius:12px; padding:14px; position:relative;">
+            <div style="font-size:12.5px; font-weight:800; color:var(--g900); margin-bottom:9px;">Daftar Tugas Khusus Milik Saya</div>
+            <div style="display:flex; flex-direction:column; gap:7px; font-size:11px;">
+              <div style="border:1px solid var(--p200); background:var(--p50); border-radius:8px; padding:9px 11px; display:flex; justify-content:space-between; align-items:center;">
+                <div><strong>Integrasi modul autentikasi API</strong><div style="font-size:10px; color:var(--g500);">Status: Dikerjakan</div></div>
+                <span class="badge b-p">Review →</span>
+              </div>
+              <div style="border:1px solid var(--g200); border-radius:8px; padding:9px 11px; display:flex; justify-content:space-between; align-items:center;">
+                <div><strong>Rapikan dokumentasi endpoint REST</strong><div style="font-size:10px; color:var(--g500);">Status: Rencana</div></div>
+                <span class="badge b-g">Kerjakan →</span>
+              </div>
+              <div style="border:1px solid #bbf7d0; background:var(--s50); border-radius:8px; padding:9px 11px; display:flex; justify-content:space-between; align-items:center;">
+                <div style="text-decoration:line-through; color:var(--g500);">Setup repositori &amp; folder Drive</div>
+                <span class="badge b-s">✓ Selesai</span>
+              </div>
+            </div>
+            <span class="pin" style="top:-8px; right:-6px;">2</span>
+          </div>
+
+          <!-- Personal Checklist & Notes -->
+          <div style="background:#fff; border:1px solid var(--g200); border-radius:12px; padding:14px; flex:1; position:relative;">
+            <div style="font-size:12.5px; font-weight:800; color:var(--g900); margin-bottom:8px;">Checklist Harian &amp; Catatan Pribadi</div>
+            <div style="display:flex; flex-direction:column; gap:6px; font-size:11px; color:var(--g700);">
+              <div>☑ Sinkronisasi token JWT dengan Citra</div>
+              <div>☐ Siapkan screenshot hasil testing untuk Bab 3</div>
+              <div>☐ Konfirmasi jadwal bimbingan dosen</div>
+            </div>
+            <div style="margin-top:10px; background:var(--g50); border:1px solid var(--g200); border-radius:8px; padding:8px 10px; font-size:10.5px; color:var(--g500);">
+              + Tambah checklist harian pribadi...
+            </div>
+            <span class="pin" style="bottom:12px; right:-6px;">3</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Browser: Team, Email Access & Shared Links -->
+      <div class="browser">
+        <div class="browser-bar">
+          <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+          <div class="url-bar"><strong>atur.in</strong>/workspace/DWA-2026-0001#tim-akses</div>
+        </div>
+        <div class="browser-content" style="background:var(--g50); padding:16px; display:flex; flex-direction:column; gap:12px;">
+          <!-- Invite Member Card -->
+          <div style="background:#fff; border:1px solid var(--p200); border-radius:12px; padding:14px; position:relative;">
+            <div style="font-size:13px; font-weight:800; color:var(--g900); margin-bottom:8px;">Undang Anggota &amp; Beri Akses Email Divisi</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div class="fld-inp" style="height:30px; font-size:11px; color:var(--g500);">Nama: Dina Kartika</div>
+              <div class="fld-inp" style="height:30px; font-size:11px; color:var(--g500);">dina@kampus.ac.id</div>
+              <div class="fld-inp" style="height:30px; font-size:11px;">Divisi Publikasi ▾</div>
+              <div class="ui-btn ui-btn-p" style="height:30px; font-size:11px;">+ Tambah Akses</div>
+            </div>
+            <span class="pin" style="top:-8px; right:-6px;">4</span>
+          </div>
+
+          <!-- Member List -->
+          <div style="background:#fff; border:1px solid var(--g200); border-radius:12px; padding:14px;">
+            <div style="font-size:12.5px; font-weight:800; color:var(--g900); margin-bottom:8px;">Daftar Anggota &amp; Pembagian Divisi (3)</div>
+            <div style="display:flex; flex-direction:column; gap:7px; font-size:11px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:6px; border-bottom:1px solid var(--g100);">
+                <div><strong>Budi Pratama</strong><div style="font-size:10px; color:var(--g400);">budi@kampus.ac.id</div></div>
+                <span class="badge b-p">Ketua · Inti</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:6px; border-bottom:1px solid var(--g100);">
+                <div><strong>Citra Maharani</strong><div style="font-size:10px; color:var(--g400);">citra@kampus.ac.id</div></div>
+                <span class="badge b-purp">Divisi Riset</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div><strong>Andi Wijaya</strong><div style="font-size:10px; color:var(--g400);">andi@kampus.ac.id</div></div>
+                <span class="badge b-s">Divisi Sistem</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Shared Links -->
+          <div style="background:#fff; border:1px solid var(--g200); border-radius:12px; padding:14px; flex:1; position:relative;">
+            <div style="font-size:12.5px; font-weight:800; color:var(--g900); margin-bottom:8px;">Tautan Bersama (Drive, Calendar, Meet)</div>
+            <div style="display:flex; flex-direction:column; gap:7px; font-size:11px;">
+              <div style="background:var(--g50); border:1px solid var(--g200); border-radius:8px; padding:8px 10px; display:flex; justify-content:space-between;">
+                <strong>Folder Google Drive Skripsi</strong><span style="color:var(--p600); font-weight:700;">Buka ↗</span>
+              </div>
+              <div style="background:var(--g50); border:1px solid var(--g200); border-radius:8px; padding:8px 10px; display:flex; justify-content:space-between;">
+                <strong>Google Calendar Jadwal Bimbingan</strong><span style="color:var(--p600); font-weight:700;">Buka ↗</span>
+              </div>
+            </div>
+            <span class="pin" style="bottom:12px; right:-6px;">5</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <aside class="legend-col">
+      <div class="legend-card">
+        <div class="legend-title">Keterangan Fitur Utama</div>
+        <div class="legend-list">
+          <div class="legend-item">
+            <span class="pin-inline">1</span>
+            <div>
+              <h4>Header Meja Kerja Personal</h4>
+              <p>Menyaring seluruh data workspace agar hanya menampilkan beban kerja dan persentase penyelesaian milik anggota aktif.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">2</span>
+            <div>
+              <h4>Filter Tugas Terisolasi per Anggota</h4>
+              <p>Anggota dapat fokus mengeksekusi tugas miliknya sendiri tanpa terganggu tugas divisi lain, lengkap dengan tombol pembaruan status.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">3</span>
+            <div>
+              <h4>Checklist Harian &amp; Catatan Pribadi</h4>
+              <p>Ruang catatan lokal khusus individu untuk daftar pengingat harian yang tersimpan otomatis ke profil anggota.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">4</span>
+            <div>
+              <h4>Manajemen Undangan &amp; Hak Akses Email</h4>
+              <p>Ketua tim dapat menambahkan anggota baru beserta email dan divisinya; email tersebut otomatis terhubung saat anggota login di Portal.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">5</span>
+            <div>
+              <h4>Direktori Tautan Bersama</h4>
+              <p>Menyatukan tautan Google Drive, Calendar, dan rapat online agar tidak tenggelam di grup chat.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flow-box">
+        <div class="flow-box-title">Alur Kolaborasi Lintas Peran</div>
+        <p>Email yang didaftarkan ketua tim pada fitur <strong>(4)</strong> langsung dikenali saat anggota masuk melalui <strong>Portal Masuk (/lacak-pesanan)</strong>.</p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ======================================================================= -->
+<!-- SLIDE 08: PANEL ADMIN — DASHBOARD KPI & MANAJEMEN PESANAN               -->
+<!-- ======================================================================= -->
+<section class="slide" id="slide-08" data-file="08-admin-dashboard-orders.png">
+  <header class="slide-header">
+    <div class="sh-left">
+      <span class="sh-fig">Gambar 3.9</span>
+      <div>
+        <div class="sh-title">Mockup Panel Admin — Dashboard KPI &amp; Manajemen Pesanan</div>
+        <div class="sh-sub">Pusat kendali internal Atur.in (dilindungi JWT AdminGuard) untuk memantau metrik bisnis, memverifikasi pesanan, dan memperbarui status setup</div>
+      </div>
+    </div>
+    <div class="sh-right">
+      <span class="route-pill">GET /admin/dashboard &amp; /admin/orders</span>
+      <div class="brand-chip"><span class="brand-dot">A</span>Atur.in</div>
+    </div>
+  </header>
+
+  <div class="slide-body">
+    <div class="browser">
+      <div class="browser-bar">
+        <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+        <div class="url-bar">https://<strong>atur.in</strong>/admin/dashboard</div>
+      </div>
+      <div class="browser-content" style="display:grid; grid-template-columns: 205px 1fr; height:100%;">
+        <!-- Admin Sidebar -->
+        <div style="background:#0f172a; color:#e2e8f0; padding:16px 14px; display:flex; flex-direction:column; gap:6px; position:relative;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
+            <span class="ui-logo-box">A</span>
+            <div>
+              <div style="font-size:13.5px; font-weight:800; color:#fff;">Atur.in Admin</div>
+              <div style="font-size:10px; color:#94a3b8;">Backoffice Panel</div>
+            </div>
+          </div>
+          <div style="background:var(--p600); color:#fff; padding:8px 11px; border-radius:8px; font-size:12px; font-weight:700;">● Dashboard</div>
+          <div style="color:#cbd5e1; padding:8px 11px; border-radius:8px; font-size:12px;">○ Pesanan (Orders)</div>
+          <div style="color:#cbd5e1; padding:8px 11px; border-radius:8px; font-size:12px;">○ Pengguna (Users)</div>
+          <div style="color:#cbd5e1; padding:8px 11px; border-radius:8px; font-size:12px;">○ Leads Masuk</div>
+          <div style="margin-top:auto; border-top:1px solid #1e293b; padding-top:12px; font-size:11px; color:#94a3b8;">
+            <div style="color:#fff; font-weight:700;">Admin Arsitek</div>
+            <div>admin@atur.in</div>
+          </div>
+          <span class="pin" style="top:92px; right:-10px;">1</span>
+        </div>
+
+        <!-- Main Admin Area -->
+        <div style="background:var(--g50); padding:18px 22px; display:flex; flex-direction:column; gap:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <h2 style="font-size:18px; font-weight:800; color:var(--g900);">Dashboard Operasional</h2>
+              <div style="font-size:11.5px; color:var(--g500);">Ringkasan aktivitas pesanan, pendapatan, dan status setup Atur.in</div>
+            </div>
+            <span class="badge b-s">● Auto-Refresh 30 dtk</span>
+          </div>
+
+          <!-- 8 KPI Cards (2 rows x 4) -->
+          <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; position:relative;">
+            <div style="background:#fff; border:1px solid var(--g200); border-radius:11px; padding:11px 13px;">
+              <div style="font-size:10.5px; color:var(--g500); font-weight:600;">Total Pesanan</div>
+              <div style="font-size:20px; font-weight:800; color:var(--g900); margin-top:3px;">24</div>
+            </div>
+            <div style="background:#fff; border:1px solid var(--g200); border-radius:11px; padding:11px 13px;">
+              <div style="font-size:10.5px; color:var(--g500); font-weight:600;">Total Revenue</div>
+              <div style="font-size:20px; font-weight:800; color:var(--s600); margin-top:3px;">Rp 1.845.000</div>
+            </div>
+            <div style="background:#fff; border:1px solid var(--g200); border-radius:11px; padding:11px 13px;">
+              <div style="font-size:10.5px; color:var(--g500); font-weight:600;">Free Trial Aktif</div>
+              <div style="font-size:20px; font-weight:800; color:var(--p700); margin-top:3px;">9</div>
+            </div>
+            <div style="background:#fff; border:1px solid var(--g200); border-radius:11px; padding:11px 13px;">
+              <div style="font-size:10.5px; color:var(--g500); font-weight:600;">Menunggu Bayar</div>
+              <div style="font-size:20px; font-weight:800; color:var(--w600); margin-top:3px;">3</div>
+            </div>
+            <div style="background:#fff; border:1px solid var(--g200); border-radius:11px; padding:11px 13px;">
+              <div style="font-size:10.5px; color:var(--g500); font-weight:600;">Proses Setup</div>
+              <div style="font-size:20px; font-weight:800; color:#7e22ce; margin-top:3px;">4</div>
+            </div>
+            <div style="background:#fff; border:1px solid var(--g200); border-radius:11px; padding:11px 13px;">
+              <div style="font-size:10.5px; color:var(--g500); font-weight:600;">Selesai</div>
+              <div style="font-size:20px; font-weight:800; color:var(--s700); margin-top:3px;">14</div>
+            </div>
+            <div style="background:#fff; border:1px solid var(--g200); border-radius:11px; padding:11px 13px;">
+              <div style="font-size:10.5px; color:var(--g500); font-weight:600;">Total Pengguna</div>
+              <div style="font-size:20px; font-weight:800; color:var(--g900); margin-top:3px;">42</div>
+            </div>
+            <div style="background:#fff; border:1px solid var(--g200); border-radius:11px; padding:11px 13px;">
+              <div style="font-size:10.5px; color:var(--g500); font-weight:600;">Leads Masuk</div>
+              <div style="font-size:20px; font-weight:800; color:var(--w600); margin-top:3px;">16</div>
+            </div>
+            <span class="pin" style="top:-10px; right:-8px;">2</span>
+          </div>
+
+          <!-- Recent Orders Table -->
+          <div style="background:#fff; border:1px solid var(--g200); border-radius:12px; overflow:hidden; flex:1; display:flex; flex-direction:column; position:relative;">
+            <div style="padding:12px 16px; border-bottom:1px solid var(--g100); display:flex; justify-content:space-between; align-items:center;">
+              <strong style="font-size:13px; color:var(--g900);">Pesanan Terbaru</strong>
+              <span style="font-size:11.5px; font-weight:700; color:var(--p600);">Lihat Semua Pesanan →</span>
+            </div>
+            <table style="width:100%; border-collapse:collapse; font-size:11.3px;">
+              <thead style="background:var(--g50); color:var(--g500); text-transform:uppercase; font-size:10px;">
+                <tr>
+                  <th style="padding:9px 14px; text-align:left;">Ref</th>
+                  <th style="padding:9px 10px; text-align:left;">Pelanggan</th>
+                  <th style="padding:9px 10px; text-align:left;">Paket</th>
+                  <th style="padding:9px 10px; text-align:left;">Total</th>
+                  <th style="padding:9px 10px; text-align:left;">Status</th>
+                  <th style="padding:9px 14px; text-align:right;">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-top:1px solid var(--g100);">
+                  <td style="padding:10px 14px; font-family:monospace; font-weight:700; color:var(--p700);">DWA-2026-0014</td>
+                  <td style="padding:10px;"><strong>Raka Aditya</strong><div style="font-size:10px; color:var(--g400);">raka@bem.ac.id</div></td>
+                  <td style="padding:10px;">Kepanitiaan &amp; Org.</td>
+                  <td style="padding:10px; font-weight:700;">Rp 100.000</td>
+                  <td style="padding:10px;"><span class="badge b-p">Dibayar</span></td>
+                  <td style="padding:10px 14px; text-align:right;"><span class="ui-btn ui-btn-soft" style="padding:4px 9px; font-size:10px;">Verifikasi</span></td>
+                </tr>
+                <tr style="border-top:1px solid var(--g100);">
+                  <td style="padding:10px 14px; font-family:monospace; font-weight:700; color:var(--p700);">DWA-2026-0013</td>
+                  <td style="padding:10px;"><strong>Noya Pratama</strong><div style="font-size:10px; color:var(--g400);">noya@kampus.ac.id</div></td>
+                  <td style="padding:10px;">Setup Custom (Trial)</td>
+                  <td style="padding:10px; font-weight:700;">Rp 0</td>
+                  <td style="padding:10px;"><span class="badge b-purp">Proses Setup</span></td>
+                  <td style="padding:10px 14px; text-align:right;"><span class="ui-btn ui-btn-soft" style="padding:4px 9px; font-size:10px;">Kelola</span></td>
+                </tr>
+                <tr style="border-top:1px solid var(--g100);">
+                  <td style="padding:10px 14px; font-family:monospace; font-weight:700; color:var(--p700);">DWA-2026-0001</td>
+                  <td style="padding:10px;"><strong>Budi Pratama</strong><div style="font-size:10px; color:var(--g400);">budi@kampus.ac.id</div></td>
+                  <td style="padding:10px;">Setup Custom</td>
+                  <td style="padding:10px; font-weight:700;">Rp 25.000</td>
+                  <td style="padding:10px;"><span class="badge b-s">Selesai</span></td>
+                  <td style="padding:10px 14px; text-align:right;"><span class="ui-btn ui-btn-o" style="padding:4px 9px; font-size:10px;">Detail</span></td>
+                </tr>
+              </tbody>
+            </table>
+            <span class="pin" style="top:10px; left:156px;">3</span>
+            <span class="pin" style="top:90px; right:6px;">4</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <aside class="legend-col">
+      <div class="legend-card">
+        <div class="legend-title">Keterangan Fitur Utama</div>
+        <div class="legend-list">
+          <div class="legend-item">
+            <span class="pin-inline">1</span>
+            <div>
+              <h4>Navigasi Backoffice Terproteksi</h4>
+              <p>Dilindungi <code>AdminGuard</code> (JWT role Admin) untuk mengakses modul Dashboard, Orders, Users, dan Leads.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">2</span>
+            <div>
+              <h4>8 Kartu Metrik KPI Real-Time</h4>
+              <p>Memantau Total Pesanan, Revenue, Free Trial Aktif, Menunggu Bayar, Proses Setup, Selesai, Jumlah Pengguna, dan Leads Masuk.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">3</span>
+            <div>
+              <h4>Tabel Pemantauan Pesanan Terbaru</h4>
+              <p>Menampilkan nomor referensi, identitas pelanggan, paket terpilih, nilai tagihan, dan badge status terkini.</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">4</span>
+            <div>
+              <h4>Kontrol Verifikasi &amp; Update Status</h4>
+              <p>Admin dapat membuka detail pesanan (<code>/admin/orders/:id</code>) untuk memperbarui tahap ke <em>Diverifikasi</em>, <em>Proses Setup</em>, atau <em>Selesai</em> beserta catatan log.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flow-box">
+        <div class="flow-box-title">Sinkronisasi dengan Sisi Klien</div>
+        <p>Setiap perubahan status yang disimpan oleh Admin otomatis memperbarui <strong>Timeline 5 Tahap</strong> dan <strong>Riwayat Aktivitas</strong> di halaman Lacak Pesanan pengguna.</p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<script>
+  (function () {
+    const params = new URLSearchParams(window.location.search);
+    const target = params.get('slide');
+    if (target) {
+      document.body.classList.add('single-mode');
+      document.querySelectorAll('.slide').forEach((el) => {
+        if (el.id !== 'slide-' + target) {
+          el.style.display = 'none';
+        }
+      });
+    }
+  })();
+</script>
+</body>
+</html>

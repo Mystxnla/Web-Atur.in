@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { adminApi } from '../../services/api/auth.js';
 import { formatRupiah, formatTanggalWIB } from '../../lib/format.js';
 import { toDisplayRef } from '../../lib/orderRef.js';
@@ -9,7 +9,7 @@ import Badge from '../../components/ui/Badge.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Skeleton from '../../components/ui/Skeleton.jsx';
 import { toast } from 'sonner';
-import { ArrowLeft, CheckCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle, ExternalLink, Link2 } from 'lucide-react';
 
 const STATUS_OPTIONS = [
   { value: ORDER_STATUSES.MENUNGGU_PEMBAYARAN, label: 'Menunggu Pembayaran' },
@@ -34,10 +34,29 @@ export default function OrderDetailPage() {
   const qc = useQueryClient();
   const [newStatus, setNewStatus] = useState('');
   const [catatan, setCatatan] = useState('');
+  const [notionUrl, setNotionUrl] = useState('');
+  const [driveUrl, setDriveUrl] = useState('');
+  const [accessType, setAccessType] = useState('guest_trial');
 
   const { data: order, isLoading } = useQuery({
     queryKey: ['admin', 'order', id],
     queryFn: () => adminApi.orderDetail(id),
+  });
+
+  useEffect(() => {
+    if (!order) return;
+    setNotionUrl(order.notionUrl ?? order.notion_url ?? '');
+    setDriveUrl(order.driveUrl ?? order.drive_url ?? '');
+    setAccessType(order.accessType ?? order.access_type ?? (order.is_trial ? 'guest_trial' : 'full_owner'));
+  }, [order?.id]);
+
+  const deliveryMutation = useMutation({
+    mutationFn: () => adminApi.updateDelivery(id, { notionUrl, driveUrl, accessType }),
+    onSuccess: () => {
+      toast.success('Link serah terima Notion & Drive berhasil disimpan.');
+      qc.invalidateQueries(['admin', 'order', id]);
+    },
+    onError: (err) => toast.error(err.message),
   });
 
   const mutation = useMutation({
@@ -130,6 +149,73 @@ export default function OrderDetailPage() {
               </div>
             ))}
           </dl>
+        </div>
+      </div>
+
+      {/* Workspace Delivery Links (Notion & Drive) */}
+      <div className="bg-white rounded-2xl border border-primary-100 p-5 space-y-4">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Link2 size={16} className="text-primary-600" aria-hidden />
+            <h2 className="font-bold text-gray-800 text-sm uppercase tracking-wide">
+              Serah Terima Link Workspace (Notion &amp; Drive)
+            </h2>
+          </div>
+          {order.notionUrl && (
+            <a
+              href={order.notionUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-primary-600 hover:underline"
+            >
+              Cek Link Notion
+              <ExternalLink size={12} aria-hidden />
+            </a>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">Link Notion Workspace</label>
+            <input
+              type="url"
+              placeholder="https://www.notion.so/..."
+              value={notionUrl}
+              onChange={(e) => setNotionUrl(e.target.value)}
+              className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">Link Google Drive (Opsional)</label>
+            <input
+              type="url"
+              placeholder="https://drive.google.com/..."
+              value={driveUrl}
+              onChange={(e) => setDriveUrl(e.target.value)}
+              className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-end">
+          <div className="flex-1">
+            <label className="block text-xs font-semibold text-gray-600 mb-1">Tipe Hak Akses Notion</label>
+            <select
+              value={accessType}
+              onChange={(e) => setAccessType(e.target.value)}
+              className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+            >
+              <option value="guest_trial">Akses Guest Free Trial 7 Hari (Anti-Duplicate)</option>
+              <option value="full_owner">Hak Milik Penuh — Lunas (Bisa Duplicate)</option>
+            </select>
+          </div>
+          <Button
+            onClick={() => deliveryMutation.mutate()}
+            loading={deliveryMutation.isPending}
+          >
+            <CheckCircle size={15} aria-hidden />
+            Simpan &amp; Kirim ke Klien
+          </Button>
         </div>
       </div>
 

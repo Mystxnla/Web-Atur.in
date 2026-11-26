@@ -15,7 +15,7 @@ import { toDisplayRef } from '../../lib/orderRef.js';
 import { waSupportLink } from '../../lib/wa.js';
 import { SITE } from '../../config/site.js';
 import { useCheckoutStore } from '../../stores/checkoutStore.js';
-import { MessageCircle, Home, Download, ShieldCheck, Sparkles, CreditCard, FolderKanban } from 'lucide-react';
+import { MessageCircle, Home, Download, ShieldCheck, Sparkles, CreditCard, ExternalLink, PlayCircle } from 'lucide-react';
 
 export default function DonePage() {
   const { orderId } = useParams();
@@ -218,26 +218,59 @@ export default function DonePage() {
         <Timeline steps={NEXT_STEPS} currentIndex={0} />
       </div>
 
-      {/* Brand-Consistent Workspace Access Card */}
+      {/* Notion Workspace Delivery Card */}
       <div className="bg-primary-50 border border-primary-100 rounded-2xl p-5 space-y-3">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="text-base font-semibold text-gray-900">
-              Ruang kerja {order?.customer?.namaKelompok ?? order?.group_name ?? 'tim kamu'} siap digunakan
-            </h2>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-base font-semibold text-gray-900">
+                Akses Workspace Notion {order?.customer?.namaKelompok ?? order?.group_name ?? 'tim kamu'}
+              </h2>
+              <Badge variant={order?.accessType === 'full_owner' ? 'success' : 'primary'}>
+                {order?.accessType === 'full_owner'
+                  ? 'Hak Milik Penuh (Bisa Duplicate)'
+                  : 'Akses Guest Trial 7 Hari (Anti-Duplicate)'}
+              </Badge>
+            </div>
             <p className="text-xs text-gray-600 mt-1 leading-relaxed">
-              Buka papan tugas Kanban, kertas kerja SOP, dan daftar periksa kolaborasi tim langsung di browser.
+              {order?.notionUrl
+                ? 'Workspace Notion tim kamu sudah siap! Klik tombol di bawah untuk langsung membukanya.'
+                : 'Tim arsitek sedang membangun struktur workspace Notion kamu (maks. 24 jam). Undangan akses akan dikirim ke email/WhatsApp dan otomatis tampil di halaman Lacak Pesanan.'}
             </p>
           </div>
-          <span className="text-xs font-mono text-primary-700 font-medium flex-shrink-0">{displayRef}</span>
         </div>
-        <Link
-          to={`/workspace/${order?.id ?? orderId}`}
-          className="flex items-center justify-center gap-2 w-full h-10 bg-primary-600 text-white font-semibold rounded-xl text-sm hover:bg-primary-700 transition-colors"
-        >
-          <FolderKanban size={16} strokeWidth={1.5} aria-hidden />
-          Buka ruang kerja tim
-        </Link>
+        {order?.notionUrl ? (
+          <div className="flex flex-col sm:flex-row gap-2">
+            <a
+              href={order.notionUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 flex items-center justify-center gap-2 h-10 bg-primary-600 text-white font-semibold rounded-xl text-sm hover:bg-primary-700 transition-colors"
+            >
+              <ExternalLink size={15} aria-hidden />
+              Buka Workspace di Notion
+            </a>
+            {order?.driveUrl && (
+              <a
+                href={order.driveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 px-4 h-10 bg-white border border-primary-200 text-primary-700 font-semibold rounded-xl text-sm hover:bg-primary-50 transition-colors"
+              >
+                <ExternalLink size={15} aria-hidden />
+                Google Drive
+              </a>
+            )}
+          </div>
+        ) : (
+          <Link
+            to="/demo"
+            className="flex items-center justify-center gap-2 w-full h-10 bg-white border border-primary-200 text-primary-700 font-semibold rounded-xl text-sm hover:bg-primary-100/50 transition-colors"
+          >
+            <PlayCircle size={16} strokeWidth={1.5} aria-hidden />
+            Lihat Simulasi Interaktif Sambil Menunggu
+          </Link>
+        )}
       </div>
 
       {/* Track order shortcut */}

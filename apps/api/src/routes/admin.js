@@ -134,6 +134,60 @@ router.patch('/orders/:id/status', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+// ─── Update workspace delivery links (Notion & Google Drive) ──────────────────
+router.patch('/orders/:id/delivery', async (req, res, next) => {
+  try {
+    const { notionUrl, driveUrl, accessType } = req.body;
+    const allowedAccess = ['guest_trial', 'full_owner'];
+    const safeAccess = allowedAccess.includes(accessType) ? accessType : 'guest_trial';
+
+    const { rows } = await pool.query('SELECT * FROM orders WHERE id = $1', [req.params.id]);
+    const order = rows[0];
+    if (!order) return res.status(404).json({ error: 'Pesanan tidak ditemukan.' });
+
+    const cleanNotion = typeof notionUrl === 'string' && notionUrl.trim() ? notionUrl.trim() : null;
+    const cleanDrive = typeof driveUrl === 'string' && driveUrl.trim() ? driveUrl.trim() : null;
+
+    if (cleanNotion && !/^https?:\/\//i.test(cleanNotion)) {
+      return res.status(400).json({ error: 'Link Notion harus diawali https://' });
+    }
+    if (cleanDrive && !/^https?:\/\//i.test(cleanDrive)) {
+      return res.status(400).json({ error: 'Link Google Drive harus diawali https://' });
+    }
+
+    const now = new Date().toISOString();
+    await pool.query(
+      'UPDATE orders SET notion_url = $1, drive_url = $2, access_type = $3, updated_at = $4 WHERE id = $5',
+      [cleanNotion, cleanDrive, safeAccess, now, order.id]
+    );
+
+    const accessLabel =
+      safeAccess === 'full_owner'
+        ? 'Hak Milik Penuh (Bisa Duplicate)'
+        : 'Akses Guest Free Trial 7 Hari (Anti-Duplicate)';
+
+    await pool.query(
+      `INSERT INTO order_logs (id, order_id, status, note, changed_by, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [
+        nanoid(),
+        order.id,
+        order.status,
+        `Link workspace diperbarui (${accessLabel}).`,
+        req.user.email,
+        now,
+      ]
+    );
+
+    res.json({
+      success: true,
+      notionUrl: cleanNotion,
+      driveUrl: cleanDrive,
+      accessType: safeAccess,
+    });
+  } catch (err) { next(err); }
+});
+
 // ─── Users list ───────────────────────────────────────────────────────────────
 router.get('/users', async (req, res, next) => {
   try {

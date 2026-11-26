@@ -27,15 +27,15 @@ export default function HeroSection() {
 
           <div className="flex flex-col sm:flex-row gap-3 mb-6">
             <Button size="lg" onClick={() => document.getElementById('harga')?.scrollIntoView({ behavior: 'smooth' })}>
-              Mulai Setup Workspace
+              Mulai Gratis 7 Hari
             </Button>
-            <Button size="lg" variant="outline" onClick={() => navigate('/lacak-pesanan')}>
-              Coba Prototype Workspace
+            <Button size="lg" variant="outline" onClick={() => navigate('/demo')}>
+              Lihat Simulasi Interaktif
             </Button>
           </div>
 
           <p className="text-sm text-gray-400">
-            Setup beres 24 sampai 48 jam <span className="mx-1">|</span> Bimbingan sampai paham
+            Dibangun di Notion &amp; Google Drive <span className="mx-1">|</span> Setup beres 24 jam <span className="mx-1">|</span> Bebas risiko dengan Notion Guest Trial
           </p>
         </div>
 

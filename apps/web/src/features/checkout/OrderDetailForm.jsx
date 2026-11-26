@@ -79,8 +79,8 @@ export default function OrderDetailForm() {
       sessionStorage.setItem(`dwa.access.${result.id}`, result.accessToken);
 
       if (result.isTrial) {
-        toast.success('Ruang kerja Free Trial 7 Hari siap! Membuka ruang kerja...');
-        navigate(`/workspace/${result.id}?welcome=1`);
+        toast.success('Free Trial 7 Hari berhasil diajukan! Membuka halaman konfirmasi...');
+        navigate(`/checkout/selesai/${result.id}`);
       } else {
         navigate(`/checkout/pembayaran/${result.id}`);
       }
@@ -129,6 +129,15 @@ export default function OrderDetailForm() {
 
       {/* Selected Plan Summary on top so user sees what they're activating */}
       <SelectedPlanCard packageId={packageId} />
+
+      {effectiveTrial && (
+        <div className="bg-primary-50/70 border border-primary-200 rounded-2xl p-4 text-xs text-primary-900 leading-relaxed space-y-1">
+          <div className="font-bold text-primary-800">Mekanisme Free Trial 7 Hari (Notion Guest Access)</div>
+          <p className="text-primary-700">
+            Selama 7 hari, seluruh anggota tim mendapat akses <strong>Notion Guest (Can Edit)</strong> di ruang host Atur.in dengan proteksi <strong>Anti-Duplicate</strong>. Setelah lanjut berlangganan, hak <strong>Full Duplicate</strong> ke akun Notion tim langsung dibuka.
+          </p>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         {/* Single Clean Core Form Card (5 Essential Fields Only) */}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, User } from 'lucide-react';
+import { Menu, X, Search, PlayCircle } from 'lucide-react';
 import Logo from '../ui/Logo.jsx';
 import { cn } from '../../lib/cn.js';
 
@@ -47,18 +47,24 @@ export default function Navbar() {
 
         <div className="flex items-center gap-3">
           <Link
-            to="/lacak-pesanan"
-            className="hidden md:flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-primary-600"
-            aria-label="Coba prototype workspace"
+            to="/demo"
+            className="hidden md:flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors"
           >
-            <User size={16} aria-hidden />
-            <span>Coba Workspace</span>
+            <PlayCircle size={16} aria-hidden />
+            <span>Lihat Demo</span>
+          </Link>
+          <Link
+            to="/lacak-pesanan"
+            className="hidden md:flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors"
+          >
+            <Search size={15} aria-hidden />
+            <span>Lacak Pesanan</span>
           </Link>
           <a
             href="#harga"
             className="hidden md:inline-flex px-4 py-2 bg-primary-600 text-white text-sm font-semibold rounded-lg hover:bg-primary-700 transition-colors"
           >
-            Pesan Sekarang
+            Mulai Gratis 7 Hari
           </a>
 
           {/* Mobile hamburger */}
@@ -87,18 +93,25 @@ export default function Navbar() {
             </a>
           ))}
           <Link
+            to="/demo"
+            onClick={() => setMenuOpen(false)}
+            className="py-2 text-base font-medium text-gray-700 hover:text-primary-600"
+          >
+            Lihat Demo Interaktif
+          </Link>
+          <Link
             to="/lacak-pesanan"
             onClick={() => setMenuOpen(false)}
-            className="py-2 text-base font-medium text-gray-700"
+            className="py-2 text-base font-medium text-gray-700 hover:text-primary-600"
           >
-            Coba Workspace &amp; Lacak Pesanan
+            Lacak Pesanan
           </Link>
           <a
             href="#harga"
             onClick={() => setMenuOpen(false)}
             className="mt-2 w-full text-center px-4 py-3 bg-primary-600 text-white font-semibold rounded-lg"
           >
-            Pesan Sekarang
+            Mulai Gratis 7 Hari
           </a>
         </div>
       )}
