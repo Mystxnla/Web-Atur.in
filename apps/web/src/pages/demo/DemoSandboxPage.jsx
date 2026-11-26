@@ -20,7 +20,7 @@ import Badge from '../../components/ui/Badge.jsx';
 import Button from '../../components/ui/Button.jsx';
 import { cn } from '../../lib/cn.js';
 
-const STORAGE_KEY = 'aturin.demo.sandbox.v2';
+const STORAGE_KEY = 'aturin.demo.sandbox.v3';
 
 const COLUMNS = [
   { id: 'todo', label: 'Rencana', dot: 'bg-gray-400', next: 'in_progress', nextLabel: 'Kerjakan' },
@@ -71,6 +71,10 @@ const INITIAL_SCENARIOS = {
         note: 'Mohon Koor Acara & Koor Humas finalisasi kebutuhan dana bintang tamu sebelum Jumat pukul 18.00 WIB.',
         tag: 'Keputusan Rapat',
         resolved: false,
+        replies: [
+          { id: 'r1', author: 'Nadia Putri (Koor Acara)', text: 'Siap Kak, estimasi fee bintang tamu Rp 8 jt sudah kami masukkan di tabel RAB Notion.' },
+          { id: 'r2', author: 'Dimas Saputra (Koor Humas)', text: 'Dari 3 sponsor utama sudah aman Rp 12 jt, sisa 2 sponsor lagi kami kejar besok.' },
+        ],
       },
       {
         id: 'kf2',
@@ -79,6 +83,9 @@ const INITIAL_SCENARIOS = {
         note: 'Butuh tambahan 2 mic wireless untuk sesi talkshow — sudah koordinasi dengan Koor Logistik.',
         tag: 'Eskalasi Lintas Divisi',
         resolved: true,
+        replies: [
+          { id: 'r3', author: 'Raka Aditya (Ketua Pelaksana)', text: 'Mantap, sudah disetujui dan masuk daftar checklist vendor Logistik.' },
+        ],
       },
     ],
     tasks: [
@@ -117,6 +124,9 @@ const INITIAL_SCENARIOS = {
         note: 'Pastikan hasil skor SUS dari Divisi Riset sudah sinkron dengan Bab 3 Divisi Penulisan maksimal Kamis malam.',
         tag: 'Keputusan Inti',
         resolved: false,
+        replies: [
+          { id: 'kr1', author: 'Citra Maharani (Koor Riset)', text: 'Rekap 10 responden sudah beres, nanti malam tabel grafik SUS aku unggah ke Notion.' },
+        ],
       },
     ],
     tasks: [
@@ -153,6 +163,7 @@ export default function DemoSandboxPage() {
   const [newCheckText, setNewCheckText] = useState('');
   const [newForumTopic, setNewForumTopic] = useState('');
   const [newForumNote, setNewForumNote] = useState('');
+  const [replyInputs, setReplyInputs] = useState({});
 
   useEffect(() => {
     try {
@@ -240,12 +251,37 @@ export default function DemoSandboxPage() {
           note: note || 'Agenda koordinasi lintas divisi.',
           tag: activeMember.level === 'ketua' ? 'Arahan Ketua' : 'Koordinasi Koor',
           resolved: false,
+          replies: [],
         },
         ...sc.koorForum,
       ],
     }));
     setNewForumTopic('');
     setNewForumNote('');
+  };
+
+  const handleAddForumReply = (postId) => {
+    const text = (replyInputs[postId] ?? '').trim();
+    if (!text) return;
+    updateCurrentScenario((sc) => ({
+      ...sc,
+      koorForum: sc.koorForum.map((f) =>
+        f.id === postId
+          ? {
+              ...f,
+              replies: [
+                ...(f.replies ?? []),
+                {
+                  id: `r-${Date.now()}`,
+                  author: `${activeMember.name} (${activeMember.role})`,
+                  text,
+                },
+              ],
+            }
+          : f
+      ),
+    }));
+    setReplyInputs((prev) => ({ ...prev, [postId]: '' }));
   };
 
   const handleToggleForumResolved = (id) => {
@@ -522,7 +558,7 @@ export default function DemoSandboxPage() {
                 </div>
               </div>
 
-              {/* Progress Cards per Division */}
+              {/* Progress Cards per Division — 100% Transparent */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {current.divisions.map((div) => {
                   const divTasks = current.tasks.filter((t) => t.divisionId === div.id);
@@ -532,7 +568,7 @@ export default function DemoSandboxPage() {
 
                   return (
                     <div key={div.id} className="bg-white rounded-2xl border border-gray-200 p-5 flex flex-col justify-between gap-4">
-                      <div className="space-y-2.5">
+                      <div className="space-y-3">
                         <div className="flex items-center justify-between gap-2">
                           <h2 className="text-sm font-bold text-gray-900">{div.name}</h2>
                           <Badge variant={pct >= 50 ? 'success' : 'primary'}>{pct}%</Badge>
@@ -541,19 +577,35 @@ export default function DemoSandboxPage() {
                           <div className="h-full bg-primary-600 rounded-full transition-all" style={{ width: `${pct}%` }} />
                         </div>
                         <p className="text-xs text-gray-600 leading-relaxed">{div.summary}</p>
-                        <div className="text-[11px] text-gray-400">
-                          {divDone} dari {divTasks.length} tugas utama selesai
+
+                        {/* Transparent Task Progress List */}
+                        <div className="pt-2 border-t border-gray-100 space-y-1.5">
+                          <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                            Paparan Tugas ({divDone}/{divTasks.length} selesai)
+                          </div>
+                          {divTasks.map((t) => {
+                            const col = COLUMNS.find((c) => c.id === t.status);
+                            return (
+                              <div key={t.id} className="flex items-start justify-between gap-2 text-[11px]">
+                                <span className={cn('text-gray-700 leading-snug', t.status === 'done' && 'line-through text-gray-400')}>
+                                  • {t.title}
+                                </span>
+                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 text-gray-600 font-medium flex-shrink-0">
+                                  {col?.label}
+                                </span>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
 
                       {allowed ? (
                         <Button size="sm" variant="outline" fullWidth onClick={() => setActiveScope(div.id)}>
-                          Buka Ruang {div.name} →
+                          Kelola Ruang {div.name} →
                         </Button>
                       ) : (
-                        <div className="flex items-center justify-center gap-1.5 py-2 rounded-xl bg-gray-50 border border-gray-200 text-[11px] font-medium text-gray-400">
-                          <Lock size={12} aria-hidden />
-                          Ruang Internal Terkunci
+                        <div className="text-center py-2 rounded-xl bg-primary-50/50 border border-primary-100 text-[11px] font-medium text-primary-700">
+                          Transparan · Mode Pantau Progres
                         </div>
                       )}
                     </div>
@@ -611,32 +663,63 @@ export default function DemoSandboxPage() {
                 </Button>
               </form>
 
-              {/* Forum Threads */}
+              {/* Forum Threads with Interactive Notion-style Comments */}
               <div className="space-y-3">
                 {current.koorForum.map((post) => (
-                  <div key={post.id} className="bg-white rounded-2xl border border-gray-200 p-5 flex items-start justify-between gap-4">
-                    <div className="space-y-1.5">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <Badge variant={post.resolved ? 'success' : 'purple'}>{post.tag}</Badge>
-                        <span className="text-[11px] text-gray-400">{post.author}</span>
+                  <div key={post.id} className="bg-white rounded-2xl border border-gray-200 p-5 space-y-3.5">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Badge variant={post.resolved ? 'success' : 'purple'}>{post.tag}</Badge>
+                          <span className="text-[11px] text-gray-400">{post.author}</span>
+                        </div>
+                        <h3 className={cn('text-sm font-bold text-gray-900', post.resolved && 'line-through text-gray-400')}>
+                          {post.topic}
+                        </h3>
+                        <p className="text-xs text-gray-600 leading-relaxed">{post.note}</p>
                       </div>
-                      <h3 className={cn('text-sm font-bold text-gray-900', post.resolved && 'line-through text-gray-400')}>
-                        {post.topic}
-                      </h3>
-                      <p className="text-xs text-gray-600 leading-relaxed">{post.note}</p>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleForumResolved(post.id)}
+                        className={cn(
+                          'px-3 py-1.5 rounded-xl text-xs font-semibold flex-shrink-0 border transition-colors',
+                          post.resolved
+                            ? 'bg-success-50 text-success-700 border-success-200'
+                            : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-primary-50 hover:text-primary-700'
+                        )}
+                      >
+                        {post.resolved ? '✓ Selesai Dibahas' : 'Tandai Selesai'}
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => handleToggleForumResolved(post.id)}
-                      className={cn(
-                        'px-3 py-1.5 rounded-xl text-xs font-semibold flex-shrink-0 border transition-colors',
-                        post.resolved
-                          ? 'bg-success-50 text-success-700 border-success-200'
-                          : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-primary-50 hover:text-primary-700'
+
+                    {/* Replies / Comments Thread */}
+                    <div className="pt-3 border-t border-gray-100 space-y-2">
+                      {(post.replies ?? []).length > 0 && (
+                        <div className="space-y-2">
+                          {post.replies.map((rep) => (
+                            <div key={rep.id} className="rounded-xl bg-gray-50 border border-gray-100 px-3.5 py-2.5 text-xs">
+                              <div className="font-semibold text-gray-800 text-[11px]">{rep.author}</div>
+                              <p className="text-gray-600 mt-0.5 leading-relaxed">{rep.text}</p>
+                            </div>
+                          ))}
+                        </div>
                       )}
-                    >
-                      {post.resolved ? '✓ Selesai Dibahas' : 'Tandai Selesai'}
-                    </button>
+                      <div className="flex gap-2 pt-1">
+                        <input
+                          type="text"
+                          value={replyInputs[post.id] ?? ''}
+                          onChange={(e) => setReplyInputs((p) => ({ ...p, [post.id]: e.target.value }))}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleAddForumReply(post.id);
+                          }}
+                          placeholder={`Balas diskusi sebagai ${activeMember.name}...`}
+                          className="flex-1 px-3 py-2 text-xs rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        />
+                        <Button type="button" size="sm" variant="outline" onClick={() => handleAddForumReply(post.id)}>
+                          Balas
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
