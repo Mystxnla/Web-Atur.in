@@ -145,6 +145,14 @@ Halaman Simulasi Interaktif (`GET /demo`) berjalan **100% client-side di browser
 ![Gambar 3.7 Mockup Simulasi Interaktif Pratinjau Struktur Notion](./png/06-workspace-kanban-organisasi.png)
 *Gambar 3.7 Mock Up Simulasi Interaktif (/demo) — Pratinjau Struktur Workspace Notion*
 
+**Matriks Hak Akses Hierarki 3 Tingkat (*Role-Based Access Control / RBAC*) yang diterapkan pada Struktur Workspace Notion:**
+
+| Peran (*Role*) | Ruang Utama (Paparan Progres Tiap Divisi) | Forum Koor Only (Rapat Lintas Koor) | Ruang Divisi Sendiri (Kanban) | Ruang Divisi Lain |
+| :--- | :---: | :---: | :---: | :---: |
+| **Ketua Pelaksana / Ketua Kelompok** | Akses Penuh | Akses Penuh | Semua Divisi | Akses Penuh |
+| **Koordinator Divisi (Koor)** | Akses Penuh | **Akses Penuh (Eksklusif)** | Akses Penuh | Terkunci |
+| **Anggota Divisi** | Lihat Paparan (*Read-Only*) | Terkunci | Akses Penuh | Terkunci |
+
 **Penjelasan Fitur (sesuai nomor anotasi pada Gambar 3.7):**
 
 | No | Elemen / Fitur | Penjelasan Fungsi |
