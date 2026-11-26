@@ -9,7 +9,7 @@ import Badge from '../../components/ui/Badge.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Skeleton from '../../components/ui/Skeleton.jsx';
 import { toast } from 'sonner';
-import { ArrowLeft, CheckCircle, ExternalLink, Link2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle, ExternalLink, Link2, MessageCircle, Mail } from 'lucide-react';
 
 const STATUS_OPTIONS = [
   { value: ORDER_STATUSES.MENUNGGU_PEMBAYARAN, label: 'Menunggu Pembayaran' },
@@ -217,6 +217,42 @@ export default function OrderDetailPage() {
             Simpan &amp; Kirim ke Klien
           </Button>
         </div>
+
+        {/* 1-Click Auto Notification to Client (WhatsApp & Email) */}
+        {(() => {
+          const displayRef = toDisplayRef(order.ref_number);
+          const trackUrl = `${window.location.origin}/lacak-pesanan/${order.ref_number ?? order.id}`;
+          const isGuest = accessType === 'guest_trial';
+          const cleanWa = String(order.whatsapp ?? '').replace(/\D/g, '').replace(/^0/, '');
+          const waNumber = cleanWa.startsWith('62') ? cleanWa : `62${cleanWa}`;
+          const messageBody = isGuest
+            ? `Halo ${order.name}! Workspace Notion untuk *${order.group_name}* (${displayRef}) sudah selesai disiapkan.\n\nUndangan *Notion Guest Free Trial 7 Hari (Can Edit, Anti-Duplicate)* telah kami kirim ke email ${order.email}. Silakan cek inbox email atau akses kapan saja lewat halaman Lacak Pesanan:\n${trackUrl}\n\nJika sudah cocok, kamu bisa upgrade ke Hak Milik Penuh (Full Duplicate) kapan saja di halaman tersebut. Terima kasih — Tim Atur.in`
+            : `Halo ${order.name}! Workspace Notion untuk *${order.group_name}* (${displayRef}) sudah selesai dengan *Hak Milik Penuh (Bisa Duplicate)*.\n\nSilakan buka tautan Notion & Google Drive tim kamu melalui halaman Lacak Pesanan resmi:\n${trackUrl}\n\nJika butuh bantuan onboarding, balas chat ini ya. Terima kasih — Tim Atur.in`;
+          const waHref = `https://wa.me/${waNumber}?text=${encodeURIComponent(messageBody)}`;
+          const mailSubject = `[Atur.in] Workspace Notion ${order.group_name} Siap (${displayRef})`;
+          const mailHref = `mailto:${order.email}?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(messageBody.replace(/\*/g, ''))}`;
+
+          return (
+            <div className="pt-3 border-t border-gray-100 flex flex-col sm:flex-row gap-2.5">
+              <a
+                href={waHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-success-600 text-white text-xs font-semibold hover:bg-success-700 transition-colors"
+              >
+                <MessageCircle size={15} aria-hidden />
+                Kirim Notifikasi Selesai ke WA Klien
+              </a>
+              <a
+                href={mailHref}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-gray-700 text-xs font-semibold hover:bg-gray-100 transition-colors"
+              >
+                <Mail size={15} aria-hidden />
+                Buka Draft Email
+              </a>
+            </div>
+          );
+        })()}
       </div>
 
       {/* Update status */}

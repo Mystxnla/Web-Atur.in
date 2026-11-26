@@ -202,6 +202,12 @@ export default function OrderStatusPage() {
           </Badge>
         </div>
 
+        {order.accessType !== 'full_owner' && (
+          <div className="rounded-xl bg-primary-50/70 border border-primary-100 px-3.5 py-2.5 text-xs text-primary-800 leading-relaxed">
+            Pastikan masuk Notion menggunakan email terdaftar (<strong>{customer?.email ?? order.email ?? '-'}</strong>). Undangan <strong>Notion Guest</strong> juga dikirim ke inbox email tersebut.
+          </div>
+        )}
+
         {order.notionUrl ? (
           <div className="flex flex-col sm:flex-row gap-2">
             <a

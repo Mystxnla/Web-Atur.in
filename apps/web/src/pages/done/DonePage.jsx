@@ -239,6 +239,12 @@ export default function DonePage() {
             </p>
           </div>
         </div>
+        {order?.accessType !== 'full_owner' && (
+          <div className="rounded-xl bg-white/80 border border-primary-100 px-3.5 py-2.5 text-xs text-primary-800 leading-relaxed">
+            Pastikan masuk Notion menggunakan email terdaftar (<strong>{order?.customer?.email ?? order?.email ?? '-'}</strong>). Undangan <strong>Notion Guest</strong> juga dikirim ke inbox email tersebut.
+          </div>
+        )}
+
         {order?.notionUrl ? (
           <div className="flex flex-col sm:flex-row gap-2">
             <a
