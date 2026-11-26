@@ -11,10 +11,13 @@ Gambar 3.1 memetakan alur sistem secara menyeluruh dari halaman Beranda hingga s
 
 ## 3.3.2 Halaman Beranda (*Landing Page* & Pilihan Paket Harga)
 
-![Gambar 3.2 Mockup Halaman Beranda dan Pilihan Paket Harga](./png/01-landing-hero-pricing.png)
-*Gambar 3.2 Mock Up Halaman Beranda (Landing Page) dan Pilihan Paket Harga*
+![Gambar 3.2 Tampilan Hero Halaman Beranda Atur.in](./png/01-landing-hero-pricing.png)
+*Gambar 3.2 Tampilan Hero Halaman Beranda Atur.in*
 
-Halaman Beranda (`/`) memperkenalkan proposisi nilai Atur.in dengan navigasi terpisah yang jelas antara **Lihat Demo**, **Lacak Pesanan**, dan **Mulai Gratis 7 Hari**. Pengguna langsung melihat pratinjau papan Kanban serta empat pilihan paket (*Template Siap Pakai* Rp 10.000/bln, *Setup Custom* Rp 25.000/bln dengan **Free Trial 7 Hari**, *Kepanitiaan & Organisasi* Rp 100.000/bln, dan *Paket Organisasi Pro* Rp 499.000/bln) lengkap dengan *toggle* siklus Bulanan vs Semesteran (hemat 20%).
+![Gambar 3.3 Pilihan Paket Harga dan Toggle Siklus Langganan](./png/01b-landing-pricing.png)
+*Gambar 3.3 Pilihan Paket Harga dan Toggle Siklus Langganan*
+
+Halaman Beranda (`/`) memperkenalkan proposisi nilai Atur.in dengan navigasi terpisah yang jelas antara **Lihat Demo**, **Lacak Pesanan**, dan **Mulai Gratis 7 Hari**. Pengguna langsung melihat pratinjau papan Kanban serta pilihan paket (*Template Siap Pakai* Rp 10.000/bln, *Setup Custom* Rp 25.000/bln dengan **Free Trial 7 Hari via Notion Guest Access**, *Kepanitiaan & Organisasi* Rp 100.000/bln, dan *Paket Organisasi Pro* Rp 499.000/bln) lengkap dengan *toggle* siklus Bulanan vs Semesteran (hemat 20%).
 
 ## 3.3.3 Halaman Checkout — Info Singkat Tim
 
