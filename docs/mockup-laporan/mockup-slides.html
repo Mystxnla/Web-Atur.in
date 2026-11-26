@@ -1130,15 +1130,15 @@
 </section>
 
 <!-- ======================================================================= -->
-<!-- SLIDE 04: PORTAL MASUK (MODE DEMO PROTOTYPE & AKUN EMAIL)               -->
+<!-- SLIDE 04: HALAMAN LACAK PESANAN BERSIH (/lacak-pesanan)                 -->
 <!-- ======================================================================= -->
 <section class="slide" id="slide-04" data-file="04-portal-masuk-demo-akun.png">
   <header class="slide-header">
     <div class="sh-left">
       <span class="sh-fig">Gambar 3.5</span>
       <div>
-        <div class="sh-title">Mockup Portal Masuk — Mode Demo Prototype &amp; Akun Email</div>
-        <div class="sh-sub">Akses dua jalur: uji coba instan 2 skenario × 3 persona tanpa daftar, atau masuk menggunakan email untuk membuka divisi terhubung</div>
+        <div class="sh-title">Mockup Halaman Lacak Pesanan Bersih (/lacak-pesanan)</div>
+        <div class="sh-sub">Fokus tunggal untuk klien yang sudah memesan: cek cepat Nomor Referensi atau Login Akun Email (terpisah dari /demo)</div>
       </div>
     </div>
     <div class="sh-right">
@@ -1153,115 +1153,78 @@
         <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
         <div class="url-bar">https://<strong>atur.in</strong>/lacak-pesanan</div>
       </div>
-      <div class="browser-content" style="background:var(--g50); padding:18px 24px; display:grid; grid-template-columns: 1.15fr 0.85fr; gap:20px;">
-        <!-- Left: Mode Demo Prototype -->
-        <div style="background:#fff; border:1px solid var(--g200); border-radius:14px; padding:18px; display:flex; flex-direction:column; gap:12px; position:relative;">
+      <div class="browser-content" style="background:var(--g50); padding:20px 26px; display:grid; grid-template-columns: 1.05fr 0.95fr; gap:20px;">
+        <!-- Left: Direct Reference Search + Shortcut to /demo -->
+        <div style="display:flex; flex-direction:column; gap:14px;">
           <div>
-            <div style="font-size:17px; font-weight:800; color:var(--g900);">Coba Workspace Langsung</div>
-            <div style="font-size:11.5px; color:var(--g500); margin-top:2px;">Pilih peran contoh untuk mencoba tampilan Organisasi, Divisi, atau Meja Kerja Individu.</div>
+            <div style="font-size:18px; font-weight:800; color:var(--g900);">Lacak Pesanan &amp; Akses Notion</div>
+            <div style="font-size:11.5px; color:var(--g500); margin-top:3px;">Pantau progres setup workspace Notion tim kamu secara real-time dan ambil tautan aksesnya di sini.</div>
           </div>
 
-          <!-- Top 2-Mode Switcher -->
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; background:var(--g100); padding:4px; border-radius:10px; position:relative;">
-            <div style="background:#fff; color:var(--p700); text-align:center; padding:7px; border-radius:7px; font-size:11.5px; font-weight:800; box-shadow:0 1px 2px rgba(0,0,0,0.06);">Mode Demo Prototype</div>
-            <div style="color:var(--g600); text-align:center; padding:7px; font-size:11.5px; font-weight:600;">Masuk / Daftar Akun</div>
+          <!-- Primary Card: Reference Lookup -->
+          <div style="background:#fff; border:1.5px solid var(--p200); border-radius:14px; padding:18px; display:flex; flex-direction:column; gap:10px; position:relative;">
+            <div>
+              <div style="font-size:13.5px; font-weight:800; color:var(--g900);">Cek Cepat dengan Nomor Referensi</div>
+              <div style="font-size:11px; color:var(--g500); margin-top:2px;">Masukkan nomor referensi dari halaman konfirmasi atau WhatsApp.</div>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <div class="fld-inp" style="flex:1; height:38px; font-family:monospace; font-weight:700;">DWA-2026-0001</div>
+              <div class="ui-btn ui-btn-p" style="height:38px; padding:0 16px;">Lacak Status</div>
+            </div>
             <span class="pin" style="top:-10px; right:-8px;">1</span>
           </div>
 
-          <!-- Scenario Switcher -->
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:var(--g100); padding:4px; border-radius:10px; position:relative;">
-            <div style="background:#fff; padding:7px 10px; border-radius:7px; border:1px solid var(--p200);">
-              <div style="font-size:11.5px; font-weight:800; color:var(--p700);">Kelompok Kuliah &amp; Riset</div>
-              <div style="font-size:10px; color:var(--g400);">Skripsi &amp; Tugas Besar</div>
-            </div>
-            <div style="padding:7px 10px;">
-              <div style="font-size:11.5px; font-weight:700; color:var(--g700);">Kepanitiaan &amp; Organisasi</div>
-              <div style="font-size:10px; color:var(--g400);">Event Kampus &amp; UKM</div>
-            </div>
-            <span class="pin" style="top:-10px; left:-8px;">2</span>
-          </div>
-
-          <!-- 3 Persona Cards -->
-          <div style="display:flex; flex-direction:column; gap:9px; position:relative;">
-            <div style="border:1.5px solid var(--p200); background:var(--p50); border-radius:11px; padding:11px 13px;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div>
-                  <div style="font-size:12.5px; font-weight:800; color:var(--g900);">Budi Pratama</div>
-                  <div style="font-size:10.5px; color:var(--g600);">Ketua Kelompok / Project Lead</div>
-                </div>
-                <span class="badge b-p">Lingkup 1 Organisasi</span>
-              </div>
-              <div style="font-size:11px; color:var(--p700); font-weight:700; margin-top:6px;">Masuk sebagai Ketua →</div>
-            </div>
-
-            <div style="border:1px solid var(--g200); background:#fff; border-radius:11px; padding:11px 13px;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div>
-                  <div style="font-size:12.5px; font-weight:800; color:var(--g900);">Citra Maharani</div>
-                  <div style="font-size:10.5px; color:var(--g600);">Divisi Riset &amp; Data</div>
-                </div>
-                <span class="badge b-purp">Lingkup Divisi Riset</span>
-              </div>
-              <div style="font-size:11px; color:var(--p600); font-weight:700; margin-top:6px;">Masuk ke Divisi Riset →</div>
-            </div>
-
-            <div style="border:1px solid var(--g200); background:#fff; border-radius:11px; padding:11px 13px;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div>
-                  <div style="font-size:12.5px; font-weight:800; color:var(--g900);">Andi Wijaya</div>
-                  <div style="font-size:10.5px; color:var(--g600);">Divisi Penulisan &amp; Sistem</div>
-                </div>
-                <span class="badge b-s">Meja Kerja Individu</span>
-              </div>
-              <div style="font-size:11px; color:var(--p600); font-weight:700; margin-top:6px;">Masuk ke Meja Kerja Individu →</div>
-            </div>
-            <span class="pin" style="top:44px; right:-10px;">3</span>
-          </div>
-        </div>
-
-        <!-- Right: Account Tab Preview (Logged In + Login Form) -->
-        <div style="display:flex; flex-direction:column; gap:14px;">
-          <div style="background:#fff; border:1px solid var(--g200); border-radius:14px; padding:16px; position:relative;">
-            <div style="font-size:11px; font-weight:800; color:var(--p700); text-transform:uppercase; margin-bottom:8px;">Tab 2: Masuk / Daftar Akun Email</div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; background:var(--g100); padding:3px; border-radius:8px; margin-bottom:10px; font-size:11px; font-weight:700;">
-              <div style="background:#fff; text-align:center; padding:5px; border-radius:6px; color:var(--g900);">Masuk Akun</div>
-              <div style="text-align:center; padding:5px; color:var(--g500);">Daftar Akun Baru</div>
-            </div>
-            <div class="fld">
-              <label class="fld-lbl">Email akun <span>*</span></label>
-              <div class="fld-inp">citra@kampus.ac.id</div>
-            </div>
-            <div class="fld">
-              <label class="fld-lbl">Kata sandi <span>*</span></label>
-              <div class="fld-inp">••••••••••••</div>
-            </div>
-            <div class="ui-btn ui-btn-p" style="width:100%; height:35px; margin-top:4px;">Masuk &amp; Buka Workspace Saya →</div>
-            <span class="pin" style="top:-10px; right:-8px;">4</span>
-          </div>
-
-          <!-- Logged-in Order & Division Card -->
-          <div style="background:#fff; border:1px solid var(--p200); border-radius:14px; padding:16px; flex:1; position:relative;">
+          <!-- Logged-in Order List Preview -->
+          <div style="background:#fff; border:1px solid var(--g200); border-radius:14px; padding:16px; flex:1; position:relative;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-              <div style="font-size:12px; font-weight:800; color:var(--g900);">Tampilan Setelah Login Akun</div>
-              <span class="badge b-s">Terhubung Divisi</span>
+              <div style="font-size:12.5px; font-weight:800; color:var(--g900);">Riwayat Pesanan Terhubung Akun</div>
+              <span class="badge b-s">Aktif</span>
             </div>
             <div style="background:var(--g50); border:1px solid var(--g200); border-radius:10px; padding:12px;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
-                <strong style="font-size:12.5px;">AI Research Hub &amp; Skripsi</strong>
+                <strong style="font-size:12.5px;">Panitia Festival Kampus 2026</strong>
                 <span class="badge b-s">Selesai</span>
               </div>
-              <div style="font-size:10.5px; color:var(--g500); margin-top:2px;">DWA-2026-0001 · Trial 7 hari</div>
-              <div style="background:#fff; border:1px solid var(--g200); border-radius:8px; padding:7px 10px; margin-top:9px; display:flex; justify-content:space-between; font-size:11px;">
-                <span>Divisi: <strong>Riset &amp; Data</strong></span>
-                <span class="badge b-p">Anggota</span>
-              </div>
-              <div style="display:grid; grid-template-columns:1fr 1fr; gap:7px; margin-top:10px;">
-                <div class="ui-btn ui-btn-p" style="font-size:10.5px;">Buka Divisi Saya</div>
-                <div class="ui-btn ui-btn-o" style="font-size:10.5px;">Meja Kerja Saya</div>
+              <div style="font-size:10.5px; color:var(--g500); margin-top:2px;">DWA-2026-0001 · Free Trial 7 Hari</div>
+              <div style="display:flex; gap:8px; margin-top:10px;">
+                <div class="ui-btn ui-btn-p" style="flex:1; font-size:10.5px;">Lihat Status &amp; Link Notion →</div>
+                <div class="ui-btn ui-btn-soft" style="font-size:10.5px;">Notion ↗</div>
               </div>
             </div>
-            <span class="pin" style="bottom:12px; right:-8px;">5</span>
+            <span class="pin" style="top:-10px; right:-8px;">3</span>
           </div>
+
+          <!-- Shortcut to /demo -->
+          <div style="background:var(--p50); border:1px solid var(--p100); border-radius:12px; padding:12px 14px; display:flex; align-items:center; justify-content:space-between; gap:10px; position:relative;">
+            <div style="font-size:11px; color:var(--g700);">
+              <strong style="color:var(--g900);">Belum pesan dan ingin lihat contohnya?</strong>
+              <div>Coba simulasi struktur Notion langsung di browser.</div>
+            </div>
+            <span class="ui-btn ui-btn-o" style="font-size:10.5px; color:var(--p700); border-color:var(--p200); flex-shrink:0;">Lihat Demo</span>
+            <span class="pin" style="top:-10px; right:-8px;">4</span>
+          </div>
+        </div>
+
+        <!-- Right: Account Login Card -->
+        <div style="background:#fff; border:1px solid var(--g200); border-radius:14px; padding:20px; display:flex; flex-direction:column; gap:12px; position:relative; align-self:start;">
+          <div>
+            <div style="font-size:14px; font-weight:800; color:var(--g900);">Atau Masuk dengan Akun Email</div>
+            <div style="font-size:11px; color:var(--g500); margin-top:2px;">Untuk melihat seluruh riwayat pesanan yang pernah dibuat dengan email kamu.</div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; background:var(--g100); padding:4px; border-radius:9px; font-size:11.5px; font-weight:700;">
+            <div style="background:#fff; text-align:center; padding:6px; border-radius:7px; color:var(--g900);">Masuk Akun</div>
+            <div style="text-align:center; padding:6px; color:var(--g500);">Daftar Akun Baru</div>
+          </div>
+          <div class="fld">
+            <label class="fld-lbl">Email akun <span>*</span></label>
+            <div class="fld-inp">budi@kampus.ac.id</div>
+          </div>
+          <div class="fld">
+            <label class="fld-lbl">Kata sandi <span>*</span></label>
+            <div class="fld-inp">••••••••••••</div>
+          </div>
+          <div class="ui-btn ui-btn-p" style="width:100%; height:38px;">Masuk &amp; Lihat Pesanan →</div>
+          <span class="pin" style="top:-10px; right:-8px;">2</span>
         </div>
       </div>
     </div>
@@ -1274,43 +1237,36 @@
           <div class="legend-item">
             <span class="pin-inline">1</span>
             <div>
-              <h4>Switcher 2 Mode Portal</h4>
-              <p>Memisahkan <strong>Mode Demo Prototype</strong> (tanpa login) dengan <strong>Masuk / Daftar Akun Email</strong> agar pengguna tidak kebingungan (<em>Hick's Law</em>).</p>
+              <h4>Cek Cepat Nomor Referensi</h4>
+              <p>Klien langsung memasukkan kode <code>DWA-2026-XXXX</code> tanpa login untuk melihat status pesanan dan membuka Link Notion.</p>
             </div>
           </div>
           <div class="legend-item">
             <span class="pin-inline">2</span>
             <div>
-              <h4>Pemilih 2 Skenario Kasus Nyata</h4>
-              <p>Menyediakan simulasi siap pakai untuk <em>Kelompok Kuliah &amp; Riset</em> serta <em>Kepanitiaan Event Kampus &amp; UKM</em>.</p>
+              <h4>Masuk / Daftar Akun Email</h4>
+              <p>Autentikasi akun email (JWT) untuk melihat seluruh riwayat pesanan tim yang pernah dibuat.</p>
             </div>
           </div>
           <div class="legend-item">
             <span class="pin-inline">3</span>
             <div>
-              <h4>3 Kartu Persona Berbasis Lingkup</h4>
-              <p>Setiap kartu langsung membuka Workspace dengan parameter <code>?member=</code> dan <code>?scope=</code> (1 Organisasi, Divisi, atau Individu).</p>
+              <h4>Pintasan Status &amp; Link Notion</h4>
+              <p>Menampilkan status terkini pesanan disertai tombol langsung ke halaman Status Pesanan dan tautan Notion aktif.</p>
             </div>
           </div>
           <div class="legend-item">
             <span class="pin-inline">4</span>
             <div>
-              <h4>Autentikasi Akun Email (JWT)</h4>
-              <p>Anggota tim dapat mendaftar/masuk dengan email yang telah diundang ketua tim di dalam Workspace.</p>
-            </div>
-          </div>
-          <div class="legend-item">
-            <span class="pin-inline">5</span>
-            <div>
-              <h4>Deteksi Otomatis Divisi &amp; Pintasan</h4>
-              <p>Menampilkan daftar workspace terhubung, peran anggota, serta tombol langsung ke <em>Buka Divisi Saya</em> atau <em>Meja Kerja Saya</em>.</p>
+              <h4>Pemisahan Bersih dari Mode Demo</h4>
+              <p>Pengunjung yang belum memesan diarahkan lewat tautan ramah ke rute terpisah <code>/demo</code> agar halaman ini tidak membingungkan.</p>
             </div>
           </div>
         </div>
       </div>
       <div class="flow-box">
         <div class="flow-box-title">Alur Transisi Halaman</div>
-        <p>Klik kartu persona / tombol divisi → langsung masuk ke <strong>Workspace (/workspace/:id)</strong> sesuai lingkup peran, atau lihat detail di <strong>Lacak Status Pesanan (/lacak-pesanan/:id)</strong>.</p>
+        <p>Submit Nomor Referensi → <strong>Status Pesanan Real-Time (/lacak-pesanan/:id)</strong>. Klik <em>Lihat Demo</em> → <strong>Simulasi Client-Side (/demo)</strong>.</p>
       </div>
     </aside>
   </div>
@@ -1690,133 +1646,115 @@
 </section>
 
 <!-- ======================================================================= -->
-<!-- SLIDE 07: WORKSPACE — MEJA KERJA PRIBADI & MANAJEMEN TIM/AKSES EMAIL    -->
+<!-- SLIDE 07: FORUM KOOR ONLY (REPLY THREAD) & RUANG DIVISI / MEJA PRIBADI  -->
 <!-- ======================================================================= -->
 <section class="slide" id="slide-07" data-file="07-workspace-meja-pribadi-tim.png">
   <header class="slide-header">
     <div class="sh-left">
       <span class="sh-fig">Gambar 3.8</span>
       <div>
-        <div class="sh-title">Mockup Workspace — Meja Kerja Pribadi &amp; Manajemen Akses Tim</div>
-        <div class="sh-sub">Ruang fokus individu (tugas pribadi + checklist harian) serta pengelolaan undangan anggota berbasis email, divisi, dan tautan bersama</div>
+        <div class="sh-title">Mockup Forum Koor Only (Reply Thread) &amp; Meja Kerja Pribadi</div>
+        <div class="sh-sub">Diskusi strategis lintas koordinator bergaya Notion Comments (eksklusif Ketua &amp; Koor) serta ruang fokus tugas individu</div>
       </div>
     </div>
     <div class="sh-right">
-      <span class="route-pill">/workspace/:id?scope=personal &amp; resources</span>
+      <span class="route-pill">/demo (Forum Koor Only &amp; Meja Pribadi)</span>
       <div class="brand-chip"><span class="brand-dot">A</span>Atur.in</div>
     </div>
   </header>
 
   <div class="slide-body">
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
-      <!-- Left Browser: Personal Desk -->
+    <div style="display:grid; grid-template-columns: 1.15fr 0.85fr; gap:16px;">
+      <!-- Left Browser: Forum Koor Only -->
       <div class="browser">
         <div class="browser-bar">
           <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
-          <div class="url-bar"><strong>atur.in</strong>/workspace/DWA-2026-0001?scope=personal</div>
+          <div class="url-bar"><strong>atur.in</strong>/demo — Forum Koor Only</div>
         </div>
-        <div class="browser-content" style="background:var(--g50); padding:16px; display:flex; flex-direction:column; gap:12px;">
-          <div style="background:#fff; border:1px solid var(--g200); border-radius:12px; padding:14px; position:relative;">
+        <div class="browser-content" style="background:var(--g50); padding:15px; display:flex; flex-direction:column; gap:11px;">
+          <div style="background:#fff; border:1.5px solid #d8b4fe; border-radius:12px; padding:12px 14px; position:relative;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div>
-                <span class="badge b-s">Lingkup Individu</span>
-                <div style="font-size:15px; font-weight:800; color:var(--g900); margin-top:4px;">Meja Kerja Andi Wijaya</div>
-                <div style="font-size:11px; color:var(--g500);">Divisi Penulisan &amp; Sistem · 3 tugas aktif milik sendiri</div>
-              </div>
-              <div style="text-align:right;">
-                <div style="font-size:18px; font-weight:800; color:var(--p700);">67%</div>
-                <div style="font-size:10px; color:var(--g500);">Progres Pribadi</div>
-              </div>
+              <div style="font-size:14.5px; font-weight:800; color:var(--g900);">Forum Koor Only</div>
+              <span class="badge b-purp">Khusus Ketua &amp; Koordinator</span>
             </div>
+            <div style="font-size:10.5px; color:var(--g500); margin-top:2px;">Diskusi strategis lintas divisi &amp; keputusan rapat BPH/Koor (terkunci 🔒 bagi Anggota biasa).</div>
             <span class="pin" style="top:-8px; right:-6px;">1</span>
           </div>
 
-          <!-- Personal Task List -->
-          <div style="background:#fff; border:1px solid var(--g200); border-radius:12px; padding:14px; position:relative;">
-            <div style="font-size:12.5px; font-weight:800; color:var(--g900); margin-bottom:9px;">Daftar Tugas Khusus Milik Saya</div>
-            <div style="display:flex; flex-direction:column; gap:7px; font-size:11px;">
-              <div style="border:1px solid var(--p200); background:var(--p50); border-radius:8px; padding:9px 11px; display:flex; justify-content:space-between; align-items:center;">
-                <div><strong>Integrasi modul autentikasi API</strong><div style="font-size:10px; color:var(--g500);">Status: Dikerjakan</div></div>
-                <span class="badge b-p">Review →</span>
-              </div>
-              <div style="border:1px solid var(--g200); border-radius:8px; padding:9px 11px; display:flex; justify-content:space-between; align-items:center;">
-                <div><strong>Rapikan dokumentasi endpoint REST</strong><div style="font-size:10px; color:var(--g500);">Status: Rencana</div></div>
-                <span class="badge b-g">Kerjakan →</span>
-              </div>
-              <div style="border:1px solid #bbf7d0; background:var(--s50); border-radius:8px; padding:9px 11px; display:flex; justify-content:space-between; align-items:center;">
-                <div style="text-decoration:line-through; color:var(--g500);">Setup repositori &amp; folder Drive</div>
-                <span class="badge b-s">✓ Selesai</span>
-              </div>
-            </div>
+          <!-- Add Topic Form -->
+          <div style="background:#fff; border:1px solid var(--g200); border-radius:12px; padding:11px 13px; display:flex; gap:8px; align-items:center; position:relative;">
+            <div class="fld-inp" style="flex:1; height:30px; font-size:10.5px; color:var(--g400);">+ Tambah topik rapat / eskalasi lintas divisi...</div>
+            <span class="ui-btn ui-btn-p" style="height:30px; font-size:10.5px;">Posting</span>
             <span class="pin" style="top:-8px; right:-6px;">2</span>
           </div>
 
-          <!-- Personal Checklist & Notes -->
-          <div style="background:#fff; border:1px solid var(--g200); border-radius:12px; padding:14px; flex:1; position:relative;">
-            <div style="font-size:12.5px; font-weight:800; color:var(--g900); margin-bottom:8px;">Checklist Harian &amp; Catatan Pribadi</div>
-            <div style="display:flex; flex-direction:column; gap:6px; font-size:11px; color:var(--g700);">
-              <div>☑ Sinkronisasi token JWT dengan Citra</div>
-              <div>☐ Siapkan screenshot hasil testing untuk Bab 3</div>
-              <div>☐ Konfirmasi jadwal bimbingan dosen</div>
+          <!-- Thread with Notion-Style Replies -->
+          <div style="background:#fff; border:1px solid var(--g200); border-radius:12px; padding:13px 14px; flex:1; display:flex; flex-direction:column; gap:8px; position:relative;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <div>
+                <span class="badge b-purp" style="font-size:9.5px;">Keputusan Rapat</span>
+                <div style="font-size:12.5px; font-weight:800; color:var(--g900); margin-top:4px;">Sinkronisasi RAB Acara &amp; Dana Sponsor</div>
+                <div style="font-size:10.5px; color:var(--g600); margin-top:2px;">Mohon Koor Acara &amp; Humas finalisasi dana bintang tamu sebelum Jumat 18.00 WIB.</div>
+              </div>
+              <span class="badge b-g" style="font-size:9.5px;">Tandai Selesai</span>
             </div>
-            <div style="margin-top:10px; background:var(--g50); border:1px solid var(--g200); border-radius:8px; padding:8px 10px; font-size:10.5px; color:var(--g500);">
-              + Tambah checklist harian pribadi...
+
+            <div style="border-top:1px solid var(--g100); padding-top:8px; display:flex; flex-direction:column; gap:6px;">
+              <div style="background:var(--g50); border:1px solid var(--g100); border-radius:8px; padding:7px 10px; font-size:10.5px;">
+                <strong style="color:var(--g800);">Nadia Putri (Koor Acara)</strong>
+                <div style="color:var(--g600);">Siap Kak, estimasi fee Rp 8 jt sudah kami masukkan ke tabel RAB Notion.</div>
+              </div>
+              <div style="background:var(--g50); border:1px solid var(--g100); border-radius:8px; padding:7px 10px; font-size:10.5px;">
+                <strong style="color:var(--g800);">Dimas Saputra (Koor Humas)</strong>
+                <div style="color:var(--g600);">Dari 3 sponsor utama sudah aman Rp 12 jt, sisa 2 kami kejar besok.</div>
+              </div>
+              <div style="display:flex; gap:6px; margin-top:2px;">
+                <div class="fld-inp" style="flex:1; height:28px; font-size:10px; color:var(--g400);">Balas diskusi sebagai Raka Aditya...</div>
+                <span class="ui-btn ui-btn-o" style="height:28px; font-size:10px; padding:0 10px;">Balas</span>
+              </div>
             </div>
-            <span class="pin" style="bottom:12px; right:-6px;">3</span>
+            <span class="pin" style="bottom:10px; right:-6px;">3</span>
           </div>
         </div>
       </div>
 
-      <!-- Right Browser: Team, Email Access & Shared Links -->
+      <!-- Right Browser: Personal Desk + Access Denied Preview -->
       <div class="browser">
         <div class="browser-bar">
           <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
-          <div class="url-bar"><strong>atur.in</strong>/workspace/DWA-2026-0001#tim-akses</div>
+          <div class="url-bar"><strong>atur.in</strong>/demo — Meja Kerja &amp; Proteksi RBAC</div>
         </div>
-        <div class="browser-content" style="background:var(--g50); padding:16px; display:flex; flex-direction:column; gap:12px;">
-          <!-- Invite Member Card -->
-          <div style="background:#fff; border:1px solid var(--p200); border-radius:12px; padding:14px; position:relative;">
-            <div style="font-size:13px; font-weight:800; color:var(--g900); margin-bottom:8px;">Undang Anggota &amp; Beri Akses Email Divisi</div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-              <div class="fld-inp" style="height:30px; font-size:11px; color:var(--g500);">Nama: Dina Kartika</div>
-              <div class="fld-inp" style="height:30px; font-size:11px; color:var(--g500);">dina@kampus.ac.id</div>
-              <div class="fld-inp" style="height:30px; font-size:11px;">Divisi Publikasi ▾</div>
-              <div class="ui-btn ui-btn-p" style="height:30px; font-size:11px;">+ Tambah Akses</div>
+        <div class="browser-content" style="background:var(--g50); padding:15px; display:flex; flex-direction:column; gap:11px;">
+          <!-- Personal Desk -->
+          <div style="background:#fff; border:1px solid var(--g200); border-radius:12px; padding:13px 14px; position:relative;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <div>
+                <span class="badge b-s" style="font-size:9.5px;">Meja Kerja Pribadi</span>
+                <div style="font-size:13.5px; font-weight:800; color:var(--g900); margin-top:3px;">Sinta Dewi (Anggota Acara)</div>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px; font-size:10.5px;">
+              <div style="background:var(--p50); border:1px solid var(--p200); border-radius:8px; padding:7px 9px; display:flex; justify-content:space-between;">
+                <strong>Susun daftar pengisi acara</strong><span style="color:var(--p700); font-weight:700;">Kerjakan →</span>
+              </div>
+              <div style="background:var(--s50); border:1px solid #bbf7d0; border-radius:8px; padding:7px 9px; display:flex; justify-content:space-between;">
+                <span style="text-decoration:line-through; color:var(--g500);">Konfirmasi bintang tamu</span><span style="color:var(--s700); font-weight:700;">✓ Selesai</span>
+              </div>
+            </div>
+            <div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--g100); font-size:10.5px; color:var(--g600);">
+              <div>☑ Siapkan bahan paparan rapat pleno</div>
+              <div>☐ Follow-up jadwal gladi bersih</div>
             </div>
             <span class="pin" style="top:-8px; right:-6px;">4</span>
           </div>
 
-          <!-- Member List -->
-          <div style="background:#fff; border:1px solid var(--g200); border-radius:12px; padding:14px;">
-            <div style="font-size:12.5px; font-weight:800; color:var(--g900); margin-bottom:8px;">Daftar Anggota &amp; Pembagian Divisi (3)</div>
-            <div style="display:flex; flex-direction:column; gap:7px; font-size:11px;">
-              <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:6px; border-bottom:1px solid var(--g100);">
-                <div><strong>Budi Pratama</strong><div style="font-size:10px; color:var(--g400);">budi@kampus.ac.id</div></div>
-                <span class="badge b-p">Ketua · Inti</span>
-              </div>
-              <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:6px; border-bottom:1px solid var(--g100);">
-                <div><strong>Citra Maharani</strong><div style="font-size:10px; color:var(--g400);">citra@kampus.ac.id</div></div>
-                <span class="badge b-purp">Divisi Riset</span>
-              </div>
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div><strong>Andi Wijaya</strong><div style="font-size:10px; color:var(--g400);">andi@kampus.ac.id</div></div>
-                <span class="badge b-s">Divisi Sistem</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Shared Links -->
-          <div style="background:#fff; border:1px solid var(--g200); border-radius:12px; padding:14px; flex:1; position:relative;">
-            <div style="font-size:12.5px; font-weight:800; color:var(--g900); margin-bottom:8px;">Tautan Bersama (Drive, Calendar, Meet)</div>
-            <div style="display:flex; flex-direction:column; gap:7px; font-size:11px;">
-              <div style="background:var(--g50); border:1px solid var(--g200); border-radius:8px; padding:8px 10px; display:flex; justify-content:space-between;">
-                <strong>Folder Google Drive Skripsi</strong><span style="color:var(--p600); font-weight:700;">Buka ↗</span>
-              </div>
-              <div style="background:var(--g50); border:1px solid var(--g200); border-radius:8px; padding:8px 10px; display:flex; justify-content:space-between;">
-                <strong>Google Calendar Jadwal Bimbingan</strong><span style="color:var(--p600); font-weight:700;">Buka ↗</span>
-              </div>
-            </div>
-            <span class="pin" style="bottom:12px; right:-6px;">5</span>
+          <!-- RBAC Access Denied Screen for Anggota -->
+          <div style="background:#fff; border:1.5px dashed var(--g300); border-radius:12px; padding:16px; text-align:center; flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:7px; position:relative;">
+            <div style="width:36px; height:36px; border-radius:10px; background:var(--g100); display:flex; align-items:center; justify-content:center; font-size:16px;">🔒</div>
+            <div style="font-size:13px; font-weight:800; color:var(--g900);">Akses Terbatas (Forum Koor Only)</div>
+            <p style="font-size:10.5px; color:var(--g500); line-height:1.45;">Forum ini hanya dapat dibuka oleh <strong>Ketua Pelaksana</strong> dan <strong>Koordinator Divisi</strong>. Anggota tetap dapat memantau progres di Ruang Utama.</p>
+            <span class="ui-btn ui-btn-p" style="font-size:10px; margin-top:4px;">Kembali ke Ruang Utama</span>
+            <span class="pin" style="top:-8px; right:-6px;">5</span>
           </div>
         </div>
       </div>
@@ -1830,43 +1768,43 @@
           <div class="legend-item">
             <span class="pin-inline">1</span>
             <div>
-              <h4>Header Meja Kerja Personal</h4>
-              <p>Menyaring seluruh data workspace agar hanya menampilkan beban kerja dan persentase penyelesaian milik anggota aktif.</p>
+              <h4>Ruang Eksklusif Forum Koor Only</h4>
+              <p>Khusus Ketua &amp; Koordinator Divisi untuk rapat strategis lintas divisi tanpa mencampuri ruang anggota.</p>
             </div>
           </div>
           <div class="legend-item">
             <span class="pin-inline">2</span>
             <div>
-              <h4>Filter Tugas Terisolasi per Anggota</h4>
-              <p>Anggota dapat fokus mengeksekusi tugas miliknya sendiri tanpa terganggu tugas divisi lain, lengkap dengan tombol pembaruan status.</p>
+              <h4>Posting Agenda &amp; Eskalasi</h4>
+              <p>Membuat topik bahasan terstruktur per kategori agar keputusan rapat terdokumentasi permanen.</p>
             </div>
           </div>
           <div class="legend-item">
             <span class="pin-inline">3</span>
             <div>
-              <h4>Checklist Harian &amp; Catatan Pribadi</h4>
-              <p>Ruang catatan lokal khusus individu untuk daftar pengingat harian yang tersimpan otomatis ke profil anggota.</p>
+              <h4>Reply Thread (Ala Notion Comments)</h4>
+              <p>Ketua &amp; para Koor berdiskusi langsung di bawah topik sehingga tidak tenggelam di grup WhatsApp.</p>
             </div>
           </div>
           <div class="legend-item">
             <span class="pin-inline">4</span>
             <div>
-              <h4>Manajemen Undangan &amp; Hak Akses Email</h4>
-              <p>Ketua tim dapat menambahkan anggota baru beserta email dan divisinya; email tersebut otomatis terhubung saat anggota login di Portal.</p>
+              <h4>Meja Kerja &amp; Checklist Pribadi</h4>
+              <p>Fokus tugas milik anggota aktif disertai checklist harian personal yang tersimpan lokal.</p>
             </div>
           </div>
           <div class="legend-item">
             <span class="pin-inline">5</span>
             <div>
-              <h4>Direktori Tautan Bersama</h4>
-              <p>Menyatukan tautan Google Drive, Calendar, dan rapat online agar tidak tenggelam di grup chat.</p>
+              <h4>Layar Proteksi Akses (RBAC)</h4>
+              <p>Menolak akses Anggota ke Forum Koor Only atau ruang internal divisi lain dengan pintasan kembali ke Ruang Utama.</p>
             </div>
           </div>
         </div>
       </div>
       <div class="flow-box">
-        <div class="flow-box-title">Alur Kolaborasi Lintas Peran</div>
-        <p>Email yang didaftarkan ketua tim pada fitur <strong>(4)</strong> langsung dikenali saat anggota masuk melalui <strong>Portal Masuk (/lacak-pesanan)</strong>.</p>
+        <div class="flow-box-title">Peran Notion vs WhatsApp</div>
+        <p><strong>Notion (Forum Koor)</strong> = diskusi serius terkelompok per topik &amp; arsip keputusan; <strong>WhatsApp</strong> = hanya ping/pengingat cepat.</p>
       </div>
     </aside>
   </div>
@@ -2009,7 +1947,25 @@
               </tbody>
             </table>
             <span class="pin" style="top:10px; left:156px;">3</span>
-            <span class="pin" style="top:90px; right:6px;">4</span>
+          </div>
+
+          <!-- Admin Delivery Card (Notion + Drive + Auto Notify WA/Email) -->
+          <div style="background:#fff; border:1.5px solid var(--p200); border-radius:12px; padding:13px 15px; display:flex; flex-direction:column; gap:9px; position:relative;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong style="font-size:12px; color:var(--g900); text-transform:uppercase;">Serah Terima Link Workspace (Notion &amp; Drive)</strong>
+              <span class="badge b-p" style="font-size:9.5px;">Akses Guest Trial 7 Hari (Anti-Duplicate) ▾</span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr auto; gap:8px;">
+              <div class="fld-inp" style="height:30px; font-size:10.5px; color:var(--g600);">https://notion.so/aturin/festival-2026</div>
+              <div class="fld-inp" style="height:30px; font-size:10.5px; color:var(--g600);">https://drive.google.com/drive/folders/...</div>
+              <span class="ui-btn ui-btn-p" style="height:30px; font-size:10.5px;">Simpan Link</span>
+            </div>
+            <div style="display:flex; gap:8px; padding-top:6px; border-top:1px solid var(--g100); position:relative;">
+              <span class="ui-btn ui-btn-s" style="flex:1; height:30px; font-size:10.5px;">Kirim Notifikasi Selesai ke WA Klien (1-Klik)</span>
+              <span class="ui-btn ui-btn-o" style="height:30px; font-size:10.5px;">Buka Draft Email</span>
+            </div>
+            <span class="pin" style="top:-10px; left:295px;">4</span>
+            <span class="pin" style="bottom:8px; right:-8px;">5</span>
           </div>
         </div>
       </div>
@@ -2031,21 +1987,28 @@
             <span class="pin-inline">2</span>
             <div>
               <h4>8 Kartu Metrik KPI Real-Time</h4>
-              <p>Memantau Total Pesanan, Revenue, Free Trial Aktif, Menunggu Bayar, Proses Setup, Selesai, Jumlah Pengguna, dan Leads Masuk.</p>
+              <p>Memantau Total Pesanan, Revenue, Free Trial Aktif, Menunggu Bayar, Proses Setup, Selesai, Pengguna, dan Leads.</p>
             </div>
           </div>
           <div class="legend-item">
             <span class="pin-inline">3</span>
             <div>
-              <h4>Tabel Pemantauan Pesanan Terbaru</h4>
-              <p>Menampilkan nomor referensi, identitas pelanggan, paket terpilih, nilai tagihan, dan badge status terkini.</p>
+              <h4>Tabel Pesanan &amp; Update Status</h4>
+              <p>Verifikasi pembayaran dan ubah status pengerjaan yang otomatis memperbarui Timeline 5 tahap klien.</p>
             </div>
           </div>
           <div class="legend-item">
             <span class="pin-inline">4</span>
             <div>
-              <h4>Kontrol Verifikasi &amp; Update Status</h4>
-              <p>Admin dapat membuka detail pesanan (<code>/admin/orders/:id</code>) untuk memperbarui tahap ke <em>Diverifikasi</em>, <em>Proses Setup</em>, atau <em>Selesai</em> beserta catatan log.</p>
+              <h4>Form Serah Terima Link Notion &amp; Drive</h4>
+              <p>Menempelkan tautan Notion/Drive dan memilih tipe akses (<em>Guest Trial Anti-Duplicate</em> vs <em>Hak Milik Penuh</em>).</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <span class="pin-inline">5</span>
+            <div>
+              <h4>Notifikasi 1-Klik WA &amp; Draft Email</h4>
+              <p>Membuka pesan template otomatis ke WA/Email klien berisi nomor referensi, status akses Notion, &amp; link Lacak Pesanan.</p>
             </div>
           </div>
         </div>

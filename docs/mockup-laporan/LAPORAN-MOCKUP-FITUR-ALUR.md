@@ -1,203 +1,176 @@
-# 3.3 Hasil Mock Up
+# 3.3 Hasil Mock Up & Penjelasan Fitur Sistem (Atur.in)
 
-Subbab ini menyajikan rancangan antarmuka (*high-fidelity mock up*) aplikasi web **Atur.in (Digital Workspace Architect)** beserta penjelasan fitur utama dan alur interaksi pengguna (*user flow*) secara menyeluruh. Perancangan antarmuka mengacu pada sistem desain yang konsisten — menggunakan tipografi *Plus Jakarta Sans*, palet warna utama Indigo (`#4f46e5`) dengan permukaan netral (`#ffffff` dan `#f9fafb`), serta 100% berbahasa Indonesia — dengan menerapkan prinsip *Minimum Path to Value* (MPTV), *Hick's Law*, *One Source of Navigation*, dan *Endowed Progress* agar pengguna dapat segera merasakan manfaat ruang kerja digital dengan hambatan minimal.
+Subbab ini menyajikan rancangan antarmuka (*high-fidelity mock up*), daftar fitur utama, serta alur interaksi pengguna (*user flow*) aplikasi web **Atur.in (Digital Workspace Architect)**. Seluruh perancangan berlandaskan identitas Atur.in sebagai **layanan perancangan ruang kerja digital berbasis Notion dan Google Drive**, dengan tiga keunggulan arsitektur utama:
+
+1. **Free Trial 7 Hari Anti-Jiplak (*Notion Guest Access*)**: Selama masa uji coba 7 hari (Rp 0), anggota tim diundang sebagai *Notion Guest (Can Edit)* di ruang *host* Atur.in dengan proteksi **Anti-Duplicate & Anti-Export**. Hak kepemilikan penuh (*Full Duplicate* ke akun Notion tim) dibuka setelah pembayaran.
+2. **Simulasi Interaktif 100% *Client-Side* (`/demo`)**: Pratinjau interaktif berjalan penuh di memori/browser (`localStorage`) tanpa menulis ke database server sehingga **0% risiko *overload* server/database**, sekaligus memperagakan hierarki hak akses **3 tingkat (RBAC)** dan **Forum Koor Only**.
+3. **Pemisahan Jalur UX yang Jernih (1 Halaman = 1 Tujuan)**: Memisahkan secara tegas menu **Lihat Demo (`/demo`)**, **Lacak Pesanan (`/lacak-pesanan`)**, **Checkout (`/checkout`)**, dan **Serah Terima Link Notion di Panel Admin (`/admin`)**.
+
+---
+
+## Ringkasan Matriks Fitur & Rute Aplikasi
+
+| No | Halaman / Modul | Rute | Peran Pengguna | Fitur Utama |
+| :-: | :--- | :--- | :--- | :--- |
+| 1 | **Beranda (*Landing Page*)** | `/` | Pengunjung | Hero, pratinjau Kanban, masalah & solusi, 4 paket harga (*Bulanan* vs *Semesteran -20%*), FAQ *Notion Guest Trial*, & kontak WA. |
+| 2 | **Checkout Info Tim** | `/checkout` | Pemesan / Ketua | Stepper adaptif (3 vs 4 langkah), 5 field wajib (*Minimum Path to Value*), accordion opsional, tombol *Isi Cepat*, & info *Notion Guest Access*. |
+| 3 | **Pembayaran Multi-Metode** | `/checkout/pembayaran/:id` | Pemesan | Pilihan QRIS Instan, Virtual Account, & E-Wallet; *countdown timer*; *polling* status tiap 3 detik; simulasi bayar 1-klik. |
+| 4 | **Konfirmasi Selesai & Invoice** | `/checkout/selesai/:id` | Pemesan | Nomor referensi unik (`DWA-2026-XXXX`), cetak **Invoice PDF resmi**, kartu akses **Workspace Notion & Drive**, & pintasan WA. |
+| 5 | **Lacak Pesanan (Portal Bersih)** | `/lacak-pesanan` | Klien | Fokus tunggal: pencarian cepat via **Nomor Referensi** atau **Login Akun Email** untuk melihat riwayat pesanan & Link Notion. |
+| 6 | **Status Pesanan *Real-Time*** | `/lacak-pesanan/:id` | Klien | Timeline 5 tahap (*auto-refresh* 30 detik), log aktivitas, banner upgrade Free Trial, & tombol **Buka Workspace di Notion**. |
+| 7 | **Simulasi Interaktif (`/demo`)** | `/demo` | Pengunjung / Dosen | Sandbox 100% *client-side* (2 skenario: Kepanitiaan & Kelompok), **Ruang Utama 100% transparan**, **RBAC 3 tingkat**, **Forum Koor Only + Reply Thread**, Kanban Divisi, & Meja Pribadi. |
+| 8 | **Panel Admin (*Backoffice*)** | `/admin/*` | Admin (JWT) | 8 kartu KPI *real-time*, manajemen & verifikasi pesanan, input **Link Notion & Drive + Tipe Akses**, serta tombol 1-klik **Notifikasi WA & Draft Email** ke klien. |
 
 ---
 
 ## 3.3.1 Arsitektur Alur Pengguna (*End-to-End User Flow*)
-
-Secara keseluruhan, alur penggunaan aplikasi Atur.in terbagi menjadi lima tahapan utama yang saling terintegrasi, mulai dari halaman pengenalan produk (*Landing Page*), proses pemesanan (*Checkout* dan Pembayaran), Portal Masuk & Pelacakan Pesanan, Ruang Kerja Kolaborasi (*Workspace*), hingga Panel Admin untuk pengelolaan operasional.
 
 ![Gambar 3.1 Arsitektur Alur Pengguna End-to-End Aplikasi Atur.in](./png/00-diagram-alur-end-to-end.png)
 *Gambar 3.1 Arsitektur Alur Pengguna End-to-End Aplikasi Atur.in*
 
 ```mermaid
 flowchart LR
-    A["1. Landing Page\n(Hero, Solusi, 4 Paket Harga)"] --> B["2. Checkout: Info Tim\n(5 Field Inti + Opsional)"]
-    B -->|Free Trial 7 Hari| F["6. Workspace Interaktif\n(Langsung Aktif)"]
-    B -->|Paket Berbayar| C["3. Pembayaran\n(QRIS / VA / E-Wallet)"]
-    C --> D["3b. Selesai & Invoice PDF"]
-    D --> F
-    A -->|Demo / Sudah Punya Akun| E["4. Portal Masuk\n(Mode Demo / Akun Email)"]
-    E --> G["5. Lacak Status Pesanan\n(Timeline 5 Tahap)"]
-    E --> F
-    G --> F
-    H["7. Panel Admin\n(KPI, Verifikasi, Update Status)"] -.->|Sinkronisasi Real-Time| G
+    A["Landing Page (/)"] -->|Coba Pratinjau| B["Lihat Demo (/demo)\nClient-Side 0% Beban DB"]
+    A -->|Pesan / Free Trial| C["Checkout (/checkout)\n5 Field Inti + Info Guest Trial"]
+    B -->|Cocok, Bangunkan di Notion| C
+    C -->|Free Trial 7 Hari Rp 0| E["Selesai (/checkout/selesai/:id)\nNo. Ref + Invoice PDF"]
+    C -->|Paket Berbayar| D["Pembayaran (/checkout/pembayaran/:id)\nQRIS / VA / E-Wallet"]
+    D --> E
+    A -->|Sudah Pesan| F["Lacak Pesanan (/lacak-pesanan)\nCek Ref / Login Email"]
+    E --> G["Status Pesanan (/lacak-pesanan/:id)\nTimeline 5 Tahap + Tombol Buka Notion"]
+    F --> G
+    H["Panel Admin (/admin/orders/:id)\nInput Link Notion/Drive + Notif WA/Email"] -.->|Aktifkan Link & Status| G
 ```
 
-Penjelasan alur utama pada **Gambar 3.1**:
-1. **Jalur Free Trial 7 Hari — Notion Guest Access (3 Langkah)**: Pengguna memilih paket *Setup Custom* dengan opsi uji coba gratis (Rp 0) di Landing Page → mengisi 5 data inti di halaman Checkout → masuk ke Halaman Konfirmasi Selesai & Lacak Pesanan. Selama 7 hari, tim diundang sebagai **Notion Guest (Can Edit)** di ruang *host* Atur.in dengan proteksi **Anti-Duplicate & Anti-Export** (sehingga aman dari penjiplakan). Apabila cocok dan melanjutkan langganan, hak **Full Duplicate** ke akun Notion tim langsung dibuka.
-2. **Jalur Paket Berbayar (4 Langkah)**: Pengguna memilih paket berbayar (*Template Siap Pakai*, *Setup Custom*, *Kepanitiaan & Organisasi*, atau *Paket Organisasi Pro*) → mengisi Info Tim → menyelesaikan pembayaran (QRIS, Virtual Account, atau E-Wallet) → menerima nomor referensi, bukti Invoice PDF, dan tautan akses **Workspace Notion & Google Drive** penuh.
-3. **Pemisahan Jalur UX (`Lihat Demo` vs `Lacak Pesanan`)**: Calon pengguna yang ingin mencoba sebelum memesan diarahkan ke **Simulasi Interaktif (`/demo`)** yang berjalan 100% *client-side* di browser (0% beban database/server), sedangkan klien yang sudah memesan mengakses **Lacak Pesanan (`/lacak-pesanan`)** untuk memantau progres dan mengambil Link Notion.
-4. **Sinkronisasi Panel Admin**: Tim internal Atur.in memverifikasi pembayaran, memperbarui status pengerjaan (*Menunggu Pembayaran → Dibayar → Diverifikasi → Proses Setup → Selesai*), serta menempelkan **Link Notion & Google Drive** (beserta tipe akses *Guest Trial* atau *Full Owner*) yang langsung aktif pada halaman Status Pesanan klien.
+**Penjelasan Alur Utama:**
+1. **Jalur Free Trial 7 Hari — Notion Guest Access (3 Langkah)**: Pengguna memilih paket *Setup Custom* (Rp 0) → mengisi 5 data inti di Checkout → masuk ke halaman Konfirmasi Selesai & Lacak Pesanan. Tim arsitek mengundang email pemesan sebagai **Notion Guest (Can Edit, Anti-Duplicate)** selama 7 hari. Jika cocok dan melunasi langganan, hak **Full Duplicate** langsung dibuka.
+2. **Jalur Paket Berbayar (4 Langkah)**: Pengguna memilih paket berbayar → mengisi Info Tim → menyelesaikan pembayaran (QRIS, VA, atau E-Wallet) → mendapatkan Invoice PDF dan akses **Workspace Notion & Google Drive** penuh.
+3. **Jalur Pratinjau (`/demo`) vs Pelacakan (`/lacak-pesanan`)**: Pengunjung yang belum memesan dapat mencoba simulasi interaktif 100% *client-side* di `/demo`, sedangkan klien yang sudah memesan mengakses `/lacak-pesanan` untuk memantau progres dan membuka Link Notion.
+4. **Alur Serah Terima Multi-Kanal (Admin → Klien)**: Admin menempelkan Link Notion/Drive dan memilih tipe akses di `/admin/orders/:id`, lalu menekan tombol 1-klik **Kirim Notifikasi Selesai ke WA Klien** atau **Buka Draft Email**. Klien menerima notifikasi cepat dan selalu dapat membuka tautan permanennya melalui halaman Lacak Pesanan.
 
 ---
 
 ## 3.3.2 Mock Up Halaman Beranda (*Landing Page* & Pilihan Paket Harga)
 
-Halaman Beranda (`GET /`) berfungsi sebagai pintu masuk utama untuk memperkenalkan proposisi nilai Atur.in, menampilkan permasalahan manajemen tugas kelompok yang sering tenggelam di grup chat, memperlihatkan pratinjau papan Kanban, serta menyajikan pilihan paket harga secara transparan.
-
 ![Gambar 3.2 Mockup Halaman Beranda dan Pilihan Paket Harga](./png/01-landing-hero-pricing.png)
 *Gambar 3.2 Mock Up Halaman Beranda (Landing Page) dan Pilihan Paket Harga Atur.in*
 
-**Penjelasan Fitur (sesuai nomor anotasi pada Gambar 3.2):**
-
 | No | Elemen / Fitur | Penjelasan Fungsi |
 | :-: | :--- | :--- |
-| **1** | **Navigasi Terpisah & Anti-Bingung** | Menyediakan tautan seksi halaman dan memisahkan dengan tegas tombol **Lihat Demo** (`/demo`), **Lacak Pesanan** (`/lacak-pesanan`), serta CTA utama **Mulai Gratis 7 Hari**. |
-| **2** | **Hero Value Proposition & Dual CTA** | Menyajikan kalimat nilai utama secara ringkas dengan dua jalur pilihan: langsung memulai **Free Trial 7 Hari** atau mencoba **Demo Interaktif** tanpa registrasi. |
-| **3** | **Pratinjau Papan Kanban Interaktif** | Menampilkan ilustrasi langsung struktur kerja (*Rencana*, *Dikerjakan*, *Selesai*) sehingga calon pengguna langsung memahami bentuk luaran ruang kerja sebelum memesan. |
-| **4** | **Toggle Siklus Langganan** | Memungkinkan pengguna beralih antara tarif **Bulanan** dan **Semesteran (6 bulan, hemat 20%)** dengan kalkulasi harga otomatis. |
-| **5** | **4 Kartu Paket Harga & Highlight Populer** | Menampilkan 4 opsi paket: *Template Siap Pakai* (Rp 10.000/bln), *Setup Custom* (Rp 25.000/bln, ditandai **Paling Populer** + **Free Trial 7 Hari** & estimasi patungan ~Rp 5.000/anak), *Kepanitiaan & Organisasi* (Rp 100.000/bln), dan *Paket Organisasi Pro* (Rp 499.000/bln). |
-
-**Alur Pengguna:** Pengguna meninjau solusi dan memilih salah satu paket harga, lalu sistem meneruskan parameter paket (`paket`, `cycle`, `trial`) secara otomatis ke **Halaman Checkout (`/checkout`)**. Jika pengguna menekan **Masuk / Demo**, sistem mengarahkan ke **Portal Masuk (`/lacak-pesanan`)**.
+| **1** | **Navigasi Terpisah & Anti-Bingung** | Memisahkan secara tegas tombol **Lihat Demo** (`/demo`), **Lacak Pesanan** (`/lacak-pesanan`), dan CTA utama **Mulai Gratis 7 Hari** (`#harga`). |
+| **2** | **Hero Value Proposition & Dual CTA** | Menyampaikan solusi inti migrasi koordinasi dari grup chat ke Notion/Drive dengan dua jalur aksi: **Mulai Gratis 7 Hari** atau **Lihat Simulasi Interaktif**. |
+| **3** | **Pratinjau Papan Kanban** | Memberi gambaran visual langsung struktur kerja kolaboratif (*Rencana*, *Dikerjakan*, *Selesai*) sebelum pengguna memesan. |
+| **4** | **Toggle Siklus Langganan** | Membandingkan tarif **Bulanan** dan **Semesteran (6 bulan, hemat 20%)** secara dinamis. |
+| **5** | **4 Kartu Paket Harga** | *Template Siap Pakai* (Rp 10.000/bln), *Setup Custom* (Rp 25.000/bln — **Paling Populer + Free Trial 7 Hari via Notion Guest Access**, patungan ~Rp 5.000/anak), *Kepanitiaan & Organisasi* (Rp 100.000/bln), dan *Paket Organisasi Pro* (Rp 499.000/bln). |
 
 ---
 
 ## 3.3.3 Mock Up Halaman Checkout — Pengisian Info Singkat Tim
 
-Halaman Checkout (`GET /checkout`) dirancang mengikuti prinsip *Minimum Path to Value* (MPTV) agar pengguna tidak terbebani formulir panjang sebelum merasakan manfaat produk.
-
 ![Gambar 3.3 Mockup Halaman Checkout Pengisian Info Singkat Tim](./png/02-checkout-info-tim.png)
 *Gambar 3.3 Mock Up Halaman Checkout — Pengisian Info Singkat Tim*
 
-**Penjelasan Fitur (sesuai nomor anotasi pada Gambar 3.3):**
-
 | No | Elemen / Fitur | Penjelasan Fungsi |
 | :-: | :--- | :--- |
-| **1** | **Stepper Adaptif (3 vs 4 Langkah)** | Menampilkan jumlah langkah secara akurat sesuai jenis pesanan: **3 langkah** untuk Free Trial (*Pilih Paket → Info Tim → Workspace Aktif*) dan **4 langkah** untuk paket berbayar (*dengan langkah Bayar*). |
-| **2** | **Tombol Isi Cepat (Data Contoh)** | Fitur pendukung pengujian prototype dan evaluasi pengguna (SUS) untuk mengisi seluruh kolom wajib secara otomatis dalam 1 klik. |
-| **3** | **5 Field Wajib Inti** | Hanya meminta 5 data esensial (Nama Lengkap, Email Aktif, No. WhatsApp berformat `+62`, Nama Kelompok/Organisasi, dan Jenis Kebutuhan) dilengkapi validasi format & *auto-save draft* otomatis. |
-| **4** | **Accordion Detail Opsional** | Menerapkan *Progressive Disclosure* dengan menyembunyikan input opsional (jumlah anggota detail, deskripsi kebutuhan, dan unggah dokumen silabus) agar formulir utama tetap ringkas. |
-| **5** | **Kartu Ringkasan Paket & Biaya** | Menampilkan rincian harga normal, potongan Free Trial (menjadi **Rp 0 hari ini**), informasi PPN, serta tombol ubah paket. |
-
-**Alur Pengguna:** Setelah formulir divalidasi dan dikirim, sistem membuat entri pesanan beserta nomor referensi unik. Untuk pesanan **Free Trial (Notion Guest Access)**, pengguna diarahkan ke **Halaman Konfirmasi Selesai (`/checkout/selesai/:id`)** untuk memantau pengiriman Link Notion; sedangkan untuk pesanan **Berbayar**, pengguna dilanjutkan ke **Halaman Pembayaran (`/checkout/pembayaran/:id`)**.
+| **1** | **Stepper Adaptif (3 vs 4 Langkah)** | Menampilkan **3 langkah** untuk Free Trial (*Pilih Paket → Info Tim → Workspace Aktif*) dan **4 langkah** untuk paket berbayar (*dengan langkah Bayar*). |
+| **2** | **Tombol Isi Cepat (Data Contoh)** | Memudahkan pengujian prototype dan demonstrasi UAS mengisi 5 field wajib secara instan dalam 1 klik. |
+| **3** | **5 Field Wajib Inti (*Minimum Path to Value*)** | Hanya meminta Nama Lengkap, Email Aktif, No. WhatsApp (`+62`), Nama Kelompok/Organisasi, dan Jenis Kebutuhan dengan validasi real-time & *auto-save draft*. |
+| **4** | **Accordion Detail Opsional** | Menyembunyikan input opsional (jumlah anggota detail, deskripsi kebutuhan, unggah dokumen silabus) agar layar tetap ringkas (*Progressive Disclosure*). |
+| **5** | **Ringkasan Paket & Info Notion Guest Access** | Menampilkan rincian biaya (**Rp 0 hari ini** untuk Trial) serta penjelasan transparan skema **Notion Guest Access (Anti-Duplicate) → Full Duplicate saat lunas**. |
 
 ---
 
 ## 3.3.4 Mock Up Halaman Pembayaran & Konfirmasi Pesanan Selesai
 
-Untuk pesanan paket berbayar (atau pengguna Free Trial yang melakukan aktivasi langganan penuh), sistem menyediakan halaman pembayaran multi-metode (`GET /checkout/pembayaran/:orderId`) dan halaman konfirmasi selesai (`GET /checkout/selesai/:orderId`).
-
 ![Gambar 3.4 Mockup Halaman Pembayaran dan Konfirmasi Pesanan Selesai](./png/03-pembayaran-dan-selesai.png)
 *Gambar 3.4 Mock Up Halaman Pembayaran (Kiri) dan Halaman Konfirmasi Selesai (Kanan)*
 
-**Penjelasan Fitur (sesuai nomor anotasi pada Gambar 3.4):**
-
 | No | Elemen / Fitur | Penjelasan Fungsi |
 | :-: | :--- | :--- |
-| **1** | **Countdown Timer Batas Pembayaran** | Menampilkan hitung mundur waktu aktif tagihan. Apabila waktu habis, sistem menampilkan status *Kedaluwarsa* beserta tombol pembaruan tagihan. |
-| **2** | **Pemilih 3 Metode Pembayaran** | Mendukung **QRIS Instan**, **Virtual Account** (bank nasional), dan **E-Wallet** (GoPay/OVO/DANA) yang menghasilkan instruksi bayar secara dinamis. |
-| **3** | **Polling Status & Simulasi Bayar 1-Klik** | Sistem memeriksa status transaksi ke server setiap 3 detik. Pada mode prototype, tersedia tombol **Simulasikan Bayar Lunas (1-Klik)** untuk keperluan demonstrasi dan pengujian alur. |
-| **4** | **Kartu Bukti Transaksi & Cetak Invoice PDF** | Menampilkan nomor referensi unik (`DWA-2026-XXXX`) dengan tombol salin, ringkasan transaksi, serta fitur **Unduh/Cetak Bukti Invoice Resmi (PDF)**. |
-| **5** | **Kartu Akses Workspace & Pintasan Pelacakan** | Menyediakan tombol utama **Buka Ruang Kerja Tim**, tautan **Lihat Status Pesanan**, dan tombol **Chat Arsitek via WhatsApp**. |
-
-**Alur Pengguna:** Setelah pembayaran terkonfirmasi lunas (baik melalui *polling* otomatis maupun tombol simulasi), sistem memperbarui status pesanan menjadi `Dibayar` dan mengarahkan pengguna langsung ke **Workspace Aktif** atau **Halaman Selesai**.
+| **1** | **Countdown Timer Batas Pembayaran** | Menghitung mundur masa berlaku tagihan. Jika waktu habis, muncul status *Kedaluwarsa* dengan tombol perbarui tagihan. |
+| **2** | **Pemilih 3 Metode Pembayaran** | Mendukung **QRIS Instan**, **Virtual Account** (bank nasional), dan **E-Wallet** (GoPay/OVO/DANA). |
+| **3** | **Polling Status & Simulasi Bayar 1-Klik** | Memeriksa status transaksi ke server tiap 3 detik; pada mode prototype tersedia tombol **Simulasikan Bayar Lunas (1-Klik)** untuk keperluan demonstrasi. |
+| **4** | **Bukti Transaksi & Cetak Invoice PDF** | Menampilkan nomor referensi unik (`DWA-2026-XXXX`) dengan tombol salin dan fitur cetak **Bukti Invoice Resmi (PDF)**. |
+| **5** | **Kartu Akses Workspace Notion Tim** | Menampilkan badge status akses (*Akses Guest Trial 7 Hari — Anti-Duplicate* vs *Hak Milik Penuh*), pengingat login dengan email terdaftar, dan tombol **Buka Workspace di Notion** (atau pintasan `/demo` sambil menunggu setup). |
 
 ---
 
-## 3.3.5 Mock Up Portal Masuk (*Mode Demo Prototype* & Akun Email)
+## 3.3.5 Mock Up Halaman Lacak Pesanan Bersih (`/lacak-pesanan`)
 
-Halaman Portal Masuk (`GET /lacak-pesanan`) menerapkan *Hick's Law* dengan membagi akses ke dalam dua tab utama yang jelas: **Mode Demo Prototype** bagi pengunjung yang ingin langsung mencoba tanpa mendaftar, dan **Masuk / Daftar Akun** bagi anggota tim yang telah memiliki akses email.
-
-![Gambar 3.5 Mockup Portal Masuk Mode Demo Prototype dan Akun Email](./png/04-portal-masuk-demo-akun.png)
-*Gambar 3.5 Mock Up Portal Masuk — Mode Demo Prototype (Kiri) dan Akun Email (Kanan)*
-
-**Penjelasan Fitur (sesuai nomor anotasi pada Gambar 3.5):**
+![Gambar 3.5 Mockup Halaman Lacak Pesanan Bersih](./png/04-portal-masuk-demo-akun.png)
+*Gambar 3.5 Mock Up Halaman Lacak Pesanan Bersih (/lacak-pesanan)*
 
 | No | Elemen / Fitur | Penjelasan Fungsi |
 | :-: | :--- | :--- |
-| **1** | **Switcher 2 Mode Portal** | Memisahkan secara tegas antara **Mode Demo Prototype** (coba instan) dan **Masuk / Daftar Akun** (autentikasi email). |
-| **2** | **Pemilih 2 Skenario Kasus Nyata** | Pengguna dapat memilih skenario **Kelompok Kuliah & Riset** (Skripsi/Tugas Besar) atau **Kepanitiaan & Organisasi** (Event Kampus/UKM). |
-| **3** | **3 Kartu Persona Berbasis Lingkup** | Setiap skenario menyediakan 3 peran siap klik: **Ketua** (membuka *Lingkup 1 Organisasi*), **Koordinator** (membuka *Lingkup Divisi*), dan **Anggota** (membuka *Meja Kerja Individu*). |
-| **4** | **Form Autentikasi Akun Email (JWT)** | Mendukung proses masuk (*login*) dan pendaftaran (*register*) menggunakan email yang telah didaftarkan ketua tim di dalam Workspace. |
-| **5** | **Deteksi Otomatis Divisi & Pintasan** | Setelah login berhasil, sistem menampilkan daftar workspace terhubung, nama divisi & jabatan anggota, serta tombol langsung **Buka Divisi Saya** dan **Meja Kerja Saya**. |
-
-**Alur Pengguna:** Klik salah satu kartu persona pada Mode Demo atau tombol workspace pada tab Akun akan langsung membuka **Workspace Interaktif (`/workspace/:id`)** pada lingkup kerja yang sesuai dengan peran pengguna.
+| **1** | **Pencarian Cepat Nomor Referensi** | Klien cukup memasukkan nomor referensi (mis. `DWA-2026-0001`) untuk langsung membuka halaman Status Pesanan & Link Notion tanpa perlu login. |
+| **2** | **Masuk / Daftar Akun Email** | Memungkinkan klien login dengan email untuk melihat seluruh daftar riwayat pesanan yang pernah dibuat. |
+| **3** | **Kartu Riwayat Pesanan & Pintasan Notion** | Menampilkan status terkini setiap pesanan, tombol **Lihat Status & Link Notion**, serta tombol buka langsung ke Notion apabila tautan sudah aktif. |
+| **4** | **Tautan Pintas ke Simulasi (`/demo`)** | Pengunjung yang belum memesan diarahkan dengan ramah ke halaman terpisah `/demo` agar tidak mencampuradukkan fungsi pelacakan dengan mode demo. |
 
 ---
 
 ## 3.3.6 Mock Up Halaman Lacak Status Pesanan (*Real-Time*)
 
-Halaman Lacak Status Pesanan (`GET /lacak-pesanan/:orderId`) memberikan transparansi penuh atas perkembangan pesanan dan pengerjaan *custom setup* oleh tim arsitek Atur.in.
-
 ![Gambar 3.6 Mockup Halaman Lacak Status Pesanan Real-Time](./png/05-lacak-status-pesanan.png)
-*Gambar 3.6 Mock Up Halaman Lacak Status Pesanan Real-Time*
-
-**Penjelasan Fitur (sesuai nomor anotasi pada Gambar 3.6):**
+*Gambar 3.6 Mock Up Halaman Lacak Status Pesanan Real-Time (/lacak-pesanan/:id)*
 
 | No | Elemen / Fitur | Penjelasan Fungsi |
 | :-: | :--- | :--- |
-| **1** | **Banner Masa Aktif Free Trial** | Menampilkan batas waktu berakhirnya uji coba gratis 7 hari serta tombol pintas **Bayar & Aktifkan Langganan Penuh**. |
-| **2** | **Kartu Ringkasan Referensi & Refresh** | Memuat nomor referensi pesanan, lencana status aktif, detail paket, tombol salin referensi, dan tombol muat ulang (*refresh*) manual. |
-| **3** | **Timeline 5 Tahap Status Pesanan** | Visualisasi progres otomatis (*auto-refresh* setiap 30 detik) mengikuti mesin status: `Menunggu Pembayaran → Pembayaran Diterima → Diverifikasi → Proses Setup → Selesai`. |
-| **4** | **Riwayat Aktivitas (*Audit Trail*)** | Menampilkan kronologi perubahan status beserta catatan pengerjaan dari tim arsitek lengkap dengan waktu (WIB). |
-| **5** | **CTA Workspace & Bantuan WhatsApp** | Memungkinkan pengguna langsung masuk ke Workspace atau menghubungi tim arsitek via WhatsApp dengan nomor referensi terisi otomatis. |
-
-**Alur Pengguna:** Halaman ini terhubung secara langsung dengan data backend; setiap pembaruan status yang dilakukan oleh Admin akan tampil otomatis di sini tanpa perlu memuat ulang halaman secara manual.
+| **1** | **Banner Masa Aktif Free Trial & Upgrade** | Menampilkan tanggal berakhirnya Free Trial 7 Hari serta tombol pintas **Bayar & Aktifkan Langganan Penuh** untuk membuka hak *Full Duplicate*. |
+| **2** | **Ringkasan Referensi & Refresh Manual** | Memuat nomor referensi `DWA-2026-XXXX`, lencana status aktif, detail paket, tombol salin, dan muat ulang manual. |
+| **3** | **Timeline 5 Tahap Real-Time** | Melacak progres otomatis (*auto-refresh* setiap 30 detik): `Menunggu Pembayaran → Pembayaran Diterima → Diverifikasi → Proses Setup → Selesai`. |
+| **4** | **Riwayat Aktivitas (*Audit Trail*)** | Mencatat kronologi pembaruan status dan pengiriman link workspace oleh Admin beserta stempel waktu WIB. |
+| **5** | **Kartu Akses Workspace Notion & Drive** | Pusat akses permanen berisi badge tipe akses, panduan login email terdaftar (untuk *Notion Guest*), tombol **Buka Workspace di Notion ↗**, tombol **Folder Google Drive**, dan bantuan WhatsApp. |
 
 ---
 
-## 3.3.7 Mock Up Simulasi Interaktif (`/demo`) — Pratinjau Struktur Notion
+## 3.3.7 Mock Up Simulasi Interaktif (`/demo`) — Hierarki 3 Tingkat (RBAC) & Ruang Utama Transparan
 
-Halaman Simulasi Interaktif (`GET /demo`) berjalan **100% client-side di browser** (menggunakan `localStorage` tanpa menulis ke database server) sehingga tidak menimbulkan risiko *overload* server. Tujuannya adalah memberikan pengalaman pratinjau langsung mengenai struktur kerja (Master Board, Ruang Divisi, dan Meja Kerja Pribadi) yang akan dibangun oleh arsitek Atur.in di **Notion & Google Drive** tim klien.
+Halaman `/demo` berjalan **100% *client-side* di browser** (`localStorage`, 0 request database) sehingga tidak menimbulkan beban server. Simulasi ini memperagakan arsitektur **Role-Based Access Control (RBAC) 3 tingkat** yang dibangun Atur.in di Notion:
 
-![Gambar 3.7 Mockup Simulasi Interaktif Pratinjau Struktur Notion](./png/06-workspace-kanban-organisasi.png)
-*Gambar 3.7 Mock Up Simulasi Interaktif (/demo) — Pratinjau Struktur Workspace Notion*
+| Peran (*Role*) | Ruang Utama (Paparan Progres Tiap Divisi) | Forum Koor Only (Diskusi Lintas Koor) | Ruang Divisi Sendiri (Kanban) | Ruang Divisi Lain (Edit Kanban) | Meja Kerja Pribadi |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Ketua Pelaksana / Ketua Kelompok** | **Transparan Penuh** + Kelola Semua | **Akses Penuh** | **Semua Divisi** | **Akses Penuh** | **Akses Penuh** |
+| **Koordinator Divisi (Koor)** | **Transparan Penuh** (Pantau Semua) | **Akses Penuh (Eksklusif)** | **Akses Penuh** | Terkunci (`🔒`) | **Akses Penuh** |
+| **Anggota Divisi** | **Transparan Penuh** (*Mode Pantau*) | Terkunci (`🔒`) | **Akses Penuh** | Terkunci (`🔒`) | **Akses Penuh** |
 
-**Matriks Hak Akses Hierarki 3 Tingkat (*Role-Based Access Control / RBAC*) yang diterapkan pada Struktur Workspace Notion:**
-
-| Peran (*Role*) | Ruang Utama (Paparan Progres Tiap Divisi) | Forum Koor Only (Rapat Lintas Koor) | Ruang Divisi Sendiri (Kanban) | Ruang Divisi Lain |
-| :--- | :---: | :---: | :---: | :---: |
-| **Ketua Pelaksana / Ketua Kelompok** | Akses Penuh | Akses Penuh | Semua Divisi | Akses Penuh |
-| **Koordinator Divisi (Koor)** | Akses Penuh | **Akses Penuh (Eksklusif)** | Akses Penuh | Terkunci |
-| **Anggota Divisi** | Lihat Paparan (*Read-Only*) | Terkunci | Akses Penuh | Terkunci |
-
-**Penjelasan Fitur (sesuai nomor anotasi pada Gambar 3.7):**
+![Gambar 3.7 Mockup Simulasi Interaktif Ruang Utama Transparan dan Sidebar RBAC](./png/06-workspace-kanban-organisasi.png)
+*Gambar 3.7 Mock Up Simulasi Interaktif (/demo) — Ruang Utama 100% Transparan & Sidebar RBAC 3 Tingkat*
 
 | No | Elemen / Fitur | Penjelasan Fungsi |
 | :-: | :--- | :--- |
-| **1** | **Switcher Profil Anggota (One Source)** | Kontrol pergantian identitas anggota diletakkan secara konsisten hanya di Sidebar untuk menghindari duplikasi tombol di area kanvas utama (*One Source of Navigation*). |
-| **2** | **Navigasi Lingkup Kerja & Ruang Divisi** | Memungkinkan perpindahan instan antara **Semua Divisi (1 Organisasi)**, **Meja Kerja Saya**, daftar **Ruang per Divisi** (disertai fitur *+ Tambah Divisi*), dokumen **SOP Bersama**, dan menu **Tim & Akses Email**. |
-| **3** | **Panduan Cepat 3 Langkah (*Endowed Progress*)** | Banner *dismissible* saat pengguna pertama kali masuk: langkah ke-1 otomatis tercentang (*Workspace siap digunakan*), sedangkan langkah 2 dan 3 tercentang otomatis saat pengguna memindahkan tugas Kanban dan berpindah lingkup kerja. |
-| **4** | **Papan Kanban 4 Kolom Interaktif** | Mengelompokkan tugas ke dalam 4 status: **Rencana**, **Dikerjakan**, **Revisi & review**, dan **Selesai**. Mendukung *drag-and-drop* kartu maupun tombol pindah tahap cepat. |
-| **5** | **Quick-Add Task & Penyimpanan Optimistis** | Pengguna dapat menambah tugas baru langsung dari kolom mana pun dengan penyimpanan otomatis (*optimistic update*) ke server API. |
-
-**Alur Pengguna:** Dari Master Board, ketua tim dapat memantau progres keseluruhan, sementara koordinator atau anggota dapat mengklik nama divisinya di Sidebar untuk melihat papan Kanban yang terfilter khusus bagi divisinya, atau memilih **Meja Kerja Saya**.
+| **1** | **Switcher Skenario & Simulasi Peran (RBAC)** | Pengguna/dosen dapat berganti skenario (*Kepanitiaan* vs *Kelompok*) dan peran (*Ketua → Koor → Anggota*) untuk menguji perubahan hak akses secara langsung. |
+| **2** | **Sidebar Navigasi Terproteksi** | Menampilkan **Ruang Utama**, **Forum Koor Only** (`Koor+` / `🔒`), **Meja Kerja Saya**, serta daftar **Ruang Divisi** dengan ikon gembok (`🔒`) pada ruang di luar wewenang peran aktif. |
+| **3** | **Banner Transparansi *Client-Side*** | Menegaskan bahwa simulasi berjalan lokal di browser sebagai pratinjau struktur Notion & Drive, lengkap dengan tombol CTA **Bangunkan di Notion (Gratis 7 Hari)**. |
+| **4** | **Kartu Paparan Progres 100% Transparan** | Setiap kartu divisi di Ruang Utama menampilkan *progress bar* %, ringkasan capaian, dan **rincian daftar tugas tiap divisi** secara terbuka tanpa label terkunci agar seluruh divisi saling mengetahui progres satu sama lain. |
+| **5** | **Akses Kelola vs Mode Pantau** | Divisi yang sesuai wewenang menampilkan tombol **Kelola Ruang Divisi →**, sedangkan divisi lain menampilkan label **Transparan · Mode Pantau Progres** agar integritas tugas tetap terjaga. |
 
 ---
 
-## 3.3.8 Mock Up Workspace — Meja Kerja Pribadi & Manajemen Akses Tim
+## 3.3.8 Mock Up Forum Koor Only (Reply Thread) & Ruang Divisi / Meja Pribadi
 
-Selain papan Kanban lintas divisi, Workspace Atur.in menyediakan tampilan **Meja Kerja Pribadi** (`scope=personal`) untuk fokus individu serta halaman **Tim, Akses Email & Tautan** untuk mengelola kolaborasi anggota.
-
-![Gambar 3.8 Mockup Workspace Meja Kerja Pribadi dan Manajemen Akses Tim](./png/07-workspace-meja-pribadi-tim.png)
-*Gambar 3.8 Mock Up Workspace — Meja Kerja Pribadi (Kiri) dan Manajemen Tim, Akses Email & Tautan (Kanan)*
-
-**Penjelasan Fitur (sesuai nomor anotasi pada Gambar 3.8):**
+![Gambar 3.8 Mockup Forum Koor Only dengan Reply Thread dan Ruang Kerja Divisi](./png/07-workspace-meja-pribadi-tim.png)
+*Gambar 3.8 Mock Up Forum Koor Only (Reply Thread ala Notion Comments) & Ruang Divisi / Meja Pribadi*
 
 | No | Elemen / Fitur | Penjelasan Fungsi |
 | :-: | :--- | :--- |
-| **1** | **Header & Indikator Progres Pribadi** | Menampilkan ringkasan nama anggota aktif, divisi asal, jumlah tugas aktif, serta persentase penyelesaian tugas individu. |
-| **2** | **Daftar Tugas Terisolasi per Anggota** | Menyaring seluruh kartu Kanban agar hanya menampilkan tugas yang ditugaskan kepada anggota tersebut, lengkap dengan tombol pembaruan status cepat. |
-| **3** | **Checklist Harian & Catatan Pribadi** | Ruang daftar periksa personal yang tersimpan terpisah untuk membantu anggota mencatat tindak lanjut harian di luar papan utama tim. |
-| **4** | **Manajemen Undangan & Hak Akses Email** | Ketua tim dapat menambahkan anggota baru beserta alamat email dan divisinya. Email yang didaftarkan otomatis terhubung ke divisi terkait saat anggota login di Portal Masuk. |
-| **5** | **Direktori Tautan Bersama** | Pusat penyimpanan tautan eksternal penting (Google Drive, Google Calendar, ruang rapat daring) agar mudah diakses seluruh anggota tanpa tenggelam di grup chat. |
+| **1** | **Header Eksklusif Forum Koor Only** | Hanya dapat diakses oleh **Ketua Pelaksana** dan **Koordinator Divisi** untuk membahas keputusan rapat strategis & eskalasi lintas divisi (terkunci `🔒` bagi Anggota). |
+| **2** | **Form Posting Agenda / Keputusan Rapat** | Ketua dan Koor dapat menambahkan topik bahasan baru secara terstruktur per kategori (*Keputusan Rapat*, *Eskalasi Lintas Divisi*). |
+| **3** | **Reply Thread (Ala *Notion Comments*)** | Setiap topik dilengkapi kolom balasan komentar interaktif antar-Koor & Ketua serta tombol **Tandai Selesai Dibahas**, sehingga diskusi terkelompok rapi per topik dan tidak tenggelam di grup WhatsApp. |
+| **4** | **Kanban Internal Divisi & Meja Pribadi** | Anggota fokus mengeksekusi tugas di papan Kanban divisinya sendiri (*Rencana → Dikerjakan → Revisi & review → Selesai*) serta mencatat *checklist* harian di **Meja Kerja Pribadi**. |
+| **5** | **Layar Proteksi Akses (*Access Denied*)** | Jika Anggota mencoba membuka *Forum Koor Only* atau ruang internal divisi lain, sistem menampilkan layar proteksi ramah dengan pintasan kembali ke **Ruang Utama** atau **Divisi Saya**. |
 
 ---
 
-## 3.3.9 Mock Up Panel Admin — Dashboard KPI & Manajemen Pesanan
+## 3.3.9 Mock Up Panel Admin — Dashboard KPI, Serah Terima Link Notion, & Notifikasi Otomatis
 
-Panel Admin (`GET /admin/dashboard` dan `/admin/orders`) merupakan antarmuka internal (*backoffice*) yang dilindungi autentikasi JWT (`AdminGuard`) untuk memantau kinerja bisnis dan memproses pesanan klien.
-
-![Gambar 3.9 Mockup Panel Admin Dashboard KPI dan Manajemen Pesanan](./png/08-admin-dashboard-orders.png)
-*Gambar 3.9 Mock Up Panel Admin — Dashboard KPI dan Manajemen Pesanan*
-
-**Penjelasan Fitur (sesuai nomor anotasi pada Gambar 3.9):**
+![Gambar 3.9 Mockup Panel Admin Dashboard KPI dan Serah Terima Link Notion](./png/08-admin-dashboard-orders.png)
+*Gambar 3.9 Mock Up Panel Admin — Dashboard KPI, Serah Terima Link Notion/Drive, & Notifikasi Otomatis WA/Email*
 
 | No | Elemen / Fitur | Penjelasan Fungsi |
 | :-: | :--- | :--- |
-| **1** | **Navigasi Backoffice Terproteksi** | Menyediakan akses ke empat modul operasional: **Dashboard**, **Pesanan (Orders)**, **Pengguna (Users)**, dan **Leads Masuk**. |
-| **2** | **8 Kartu Metrik KPI Real-Time** | Menampilkan ringkasan *Total Pesanan*, *Total Revenue*, *Free Trial Aktif*, *Menunggu Bayar*, *Proses Setup*, *Selesai*, *Total Pengguna*, dan *Leads Masuk* dengan pembaruan otomatis tiap 30 detik. |
-| **3** | **Tabel Pemantauan Pesanan Terbaru** | Memuat daftar pesanan masuk lengkap dengan nomor referensi, data pelanggan, paket layanan, nominal transaksi, dan lencana status terkini. |
-| **4** | **Kontrol Verifikasi, Status & Serah Terima Link Notion** | Admin membuka detail pesanan (`/admin/orders/:id`) untuk memverifikasi pembayaran, memperbarui tahap setup (*Diverifikasi → Proses Setup → Selesai*), serta menempelkan **Link Notion Workspace**, **Link Google Drive**, dan tipe hak akses (*Guest Trial 7 Hari Anti-Duplicate* vs *Hak Milik Penuh*) yang langsung tampil di halaman Status Pesanan klien. |
+| **1** | **Navigasi Backoffice Terproteksi (`AdminGuard`)** | Dilindungi autentikasi JWT khusus role Admin/Superadmin untuk mengakses *Dashboard*, *Pesanan*, *Pengguna*, dan *Leads*. |
+| **2** | **8 Kartu Metrik KPI Real-Time** | Memantau *Total Pesanan*, *Total Revenue*, *Free Trial Aktif*, *Menunggu Bayar*, *Proses Setup*, *Selesai*, *Total Pengguna*, dan *Leads Masuk* (*auto-refresh* 30 detik). |
+| **3** | **Tabel Pesanan & Kontrol Status** | Admin memverifikasi pembayaran dan memperbarui status pengerjaan (`Diverifikasi → Proses Setup → Selesai`) yang otomatis memperbarui Timeline klien. |
+| **4** | **Form Serah Terima Link Notion & Drive** | Pada detail pesanan (`/admin/orders/:id`), Admin menempelkan **Link Notion Workspace**, **Link Google Drive**, dan memilih tipe hak akses (*Akses Guest Free Trial 7 Hari — Anti-Duplicate* vs *Hak Milik Penuh — Bisa Duplicate*). |
+| **5** | **Tombol 1-Klik Notifikasi WA & Draft Email** | Setelah link disimpan, Admin cukup menekan 1 tombol untuk mengirim pesan WhatsApp atau membuka draft Email otomatis ke klien berisi nomor referensi, status akses Notion, dan tautan halaman Lacak Pesanan. |
